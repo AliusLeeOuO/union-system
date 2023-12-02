@@ -3,13 +3,14 @@ package jwt
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"time"
+	"union-system/config"
 )
 
 // TokenExpireDuration Token失效时间
 const TokenExpireDuration = time.Hour * 12
 
 // secret JWT密钥
-var secret = []byte("ELfI6Ly3NAfjNCmKFXcNXgad9qHkCatCyehh2tAFJG9O0uFOYE3i6zWeKgzC0Yz7jHWMrXLyNTuK4n7NA6wQGdMBNUxW0W1C26Qn")
+var secret = []byte(config.Secret)
 
 type UserInfo struct {
 	Id       uint

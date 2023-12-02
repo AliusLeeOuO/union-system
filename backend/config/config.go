@@ -37,6 +37,10 @@ type RedisConfig struct {
 	DB       int    `mapstructure:"db"`
 }
 
+var (
+	Secret string
+)
+
 func LoadConfig() *Config {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -51,6 +55,8 @@ func LoadConfig() *Config {
 	if err := viper.Unmarshal(&config); err != nil {
 		global.Logger.Panic("Error unmarshalling config: %s", err)
 	}
+
+	Secret = config.App.SecretKey
 
 	return &config
 }

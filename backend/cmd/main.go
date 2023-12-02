@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"union-system/config"
 	"union-system/internal/pkg/database"
 	"union-system/internal/pkg/fiber"
@@ -11,6 +12,9 @@ import (
 
 func main() {
 	fmt.Printf("Hello, World 👋!\n")
+
+	fmt.Printf("union-system serve\n")
+	fmt.Printf("Build with Go(%v %v/%v)\n\n\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 
 	initConfig := config.LoadConfig()
 	logger.InitLogger()

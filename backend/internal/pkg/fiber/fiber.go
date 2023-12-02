@@ -17,7 +17,7 @@ func InitFiber(servicePort int) {
 	// 调用 SetupRoutes 来添加所有定义的路由
 	handlers.SetupRoutes(app)
 
-	err := app.Listen(fmt.Sprintf(":%v", servicePort))
+	err := app.Listen(fmt.Sprintf("127.0.0.1:%v", servicePort))
 	if err != nil {
 		global.Logger.Panic("fiber lost: %v", err)
 	}

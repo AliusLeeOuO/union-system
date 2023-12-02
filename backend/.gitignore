@@ -1,0 +1,9 @@
+# Misc
+.DS_Store
+.fleet
+.idea
+.vscode
+
+# Local config files
+config.yaml
+config/config.yaml

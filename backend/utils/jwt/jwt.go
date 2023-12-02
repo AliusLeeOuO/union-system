@@ -7,7 +7,7 @@ import (
 )
 
 // TokenExpireDuration Token失效时间
-const TokenExpireDuration = time.Hour * 12
+const TokenExpireDuration = time.Hour * 24
 
 // secret JWT密钥
 var secret = []byte(config.Secret)

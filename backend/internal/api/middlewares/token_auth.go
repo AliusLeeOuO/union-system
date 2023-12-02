@@ -15,6 +15,7 @@ func TokenAuth(c *fiber.Ctx) error {
 	// 解析 Token
 	claims, err := jwt.ParseToken(tokenString)
 	if err != nil {
+		global.Logger.Info("Token 解析失败", err)
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 
@@ -23,15 +24,17 @@ func TokenAuth(c *fiber.Ctx) error {
 		// 从 Redis 中删除过期 Token
 		_, delErr := global.RedisClient.Del(c.Context(), tokenString).Result()
 		if delErr != nil {
-			return model.SendFailureResponse(c, model.SystemErrorCode)
+			global.Logger.Info("删除过期 Token 失败", delErr)
+			//return model.SendFailureResponse(c, model.SystemErrorCode)
 		}
-
+		global.Logger.Info("Token 已过期")
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 
 	// 检查 Redis 中是否存在这个 Token
 	exists, err := global.RedisClient.Exists(c.Context(), tokenString).Result()
 	if err != nil || exists == 0 {
+		global.Logger.Info("Token 不存在")
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 

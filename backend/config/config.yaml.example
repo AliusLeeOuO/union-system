@@ -1,0 +1,20 @@
+# config.yaml.example
+
+app:
+  port: 9999
+  log_level: "info"
+  debug: true
+  secret_key: "your_secret_key"
+
+database:
+  host: "your_host"
+  port: 3306
+  user: "your_user"
+  password: "your_password"
+  name: "db_union"
+
+redis:
+  host: "your_host"
+  port: 6379
+  password: "your_password"
+  db: 0

@@ -22,12 +22,14 @@ func LoginHandler(c *fiber.Ctx) error {
 
 	// 验证验证码
 	if !captcha.VerifyCode(request.CaptchaID, request.CaptchaVal) {
+		global.Logger.Info("验证码验证失败")
 		return model.SendFailureResponse(c, model.CaptchaErrorCode)
 	}
 
 	// 验证用户凭据
 	user, isValid := repository.CheckCredentials(request.Username, request.Password)
 	if !isValid {
+		global.Logger.Info("用户凭据验证失败")
 		// 使用 BaseResponse 发送失败响应
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
@@ -38,6 +40,7 @@ func LoginHandler(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
+		global.Logger.Info("生成 Token 出错", err)
 		// 生成 Token 出错
 		return model.SendFailureResponse(c, model.SystemErrorCode)
 	}
@@ -53,6 +56,7 @@ func LoginHandler(c *fiber.Ctx) error {
 
 	_, err = pipe.Exec(c.Context())
 	if err != nil {
+		global.Logger.Info("保存 Token 出错", err)
 		return model.SendFailureResponse(c, model.SystemErrorCode)
 	}
 
@@ -65,6 +69,7 @@ func LoginHandler(c *fiber.Ctx) error {
 		"token":    tokenStr,
 	}
 
+	global.Logger.Info("用户登录成功,已签发凭据：", user.Username)
 	// 使用 BaseResponse 发送成功响应
 	return model.SendSuccessResponse(c, responseData)
 }

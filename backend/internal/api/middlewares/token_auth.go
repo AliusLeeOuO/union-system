@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/global"
@@ -10,8 +11,19 @@ import (
 
 func TokenAuth(c *fiber.Ctx) error {
 	// 从请求中获取 Token
-	tokenString := c.Get("Authorization")
-
+	authorizationString := c.Get("Authorization")
+	// 检查 Token 是否存在
+	if authorizationString == "" {
+		global.Logger.Info("Token 不存在1")
+		return model.SendFailureResponse(c, model.AuthFailedCode)
+	}
+	// 检查 Token 是否以 Bearer 开头
+	if len(authorizationString) < 7 || authorizationString[:7] != "Bearer " {
+		global.Logger.Info("Token 不存在2")
+		return model.SendFailureResponse(c, model.AuthFailedCode)
+	}
+	// 获取 Token
+	tokenString := authorizationString[7:]
 	// 解析 Token
 	claims, err := jwt.ParseToken(tokenString)
 	if err != nil {
@@ -31,10 +43,28 @@ func TokenAuth(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 
-	// 检查 Redis 中是否存在这个 Token
-	exists, err := global.RedisClient.Exists(c.Context(), tokenString).Result()
-	if err != nil || exists == 0 {
-		global.Logger.Info("Token 不存在")
+	// 检查 Redis 中是否存在这个 Token，从user_tokens:userID中获取
+	// 构建用户的 Token 列表的 key
+	userTokenKey := fmt.Sprintf("user_tokens:%d", claims.User.Id)
+
+	// 获取用户的 Token 列表
+	tokens, err := global.RedisClient.LRange(c.Context(), userTokenKey, 0, -1).Result()
+	if err != nil {
+		//return false, err
+	}
+
+	var haveToken bool = false
+	// 检查 Token 是否在列表中
+	for _, token := range tokens {
+		if token == tokenString {
+			// Token 存在，验证通过
+			haveToken = true
+			break
+		}
+	}
+
+	if !haveToken {
+		global.Logger.Info("Token 已被注销")
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 

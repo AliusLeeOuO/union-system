@@ -15,6 +15,13 @@ interface loginResponseData {
   username: string
 }
 
+interface getUserInfoResponseData {
+  role: number
+  status: number
+  userId: number
+  username: string
+}
+
 export default function() {
   return {
     getCaptcha: (): Promise<AxiosApiResponse<getCaptchaResponseData>> => axiosInstance.get("/user/getCaptcha"),
@@ -28,6 +35,7 @@ export default function() {
       password,
       captcha_id: captchaId,
       captcha_val: captchaVal
-    }))
+    })),
+    getUserInfo: (): Promise<AxiosApiResponse<getUserInfoResponseData>> => axiosInstance.get("/user/getUserInfo"),
   }
 }

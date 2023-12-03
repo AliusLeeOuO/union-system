@@ -6,7 +6,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useScreenSafeArea } from "@vueuse/core"
+import { useDark, useScreenSafeArea } from "@vueuse/core"
 
 const {
   top,
@@ -14,6 +14,13 @@ const {
   bottom,
   left
 } = useScreenSafeArea()
+
+useDark({
+  selector: "body",
+  attribute: "arco-theme",
+  valueDark: "dark",
+  valueLight: ""
+})
 
 // 添加边距到safe-area
 const safeAreaStyle = {
@@ -23,3 +30,16 @@ const safeAreaStyle = {
   paddingLeft: `${left.value}px`
 }
 </script>
+<style lang="less">
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+//dark mode
+html[arco-theme='dark'], body[arco-theme='dark'] {
+  background-color: #111111;
+  color: #fff;
+}
+</style>

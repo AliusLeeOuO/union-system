@@ -1,6 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      SITE_TITLE: process.env.SITE_TITLE,
+      API_URL: process.env.API_URL
+    }
+  },
   app: {
     head: {
       htmlAttrs: {

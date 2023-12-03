@@ -41,6 +41,7 @@ func TokenAuth(c *fiber.Ctx) error {
 	// Token 验证通过，可以设置用户信息到上下文
 	c.Locals("userID", claims.User.Id)
 	c.Locals("username", claims.User.Username)
+	c.Locals("role", claims.User.Role)
 
 	// 继续处理请求
 	return c.Next()

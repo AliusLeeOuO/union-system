@@ -15,6 +15,7 @@ var secret = []byte(config.Secret)
 type UserInfo struct {
 	Id       uint
 	Username string
+	Role     uint
 }
 
 type MyClaims struct {

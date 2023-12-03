@@ -34,9 +34,16 @@ func LoginHandler(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 
+	// 如果被封禁，拒绝登录
+	if user.Status == 1 {
+		global.Logger.Info("用户被封禁")
+		return model.SendFailureResponse(c, model.AuthFailedCode)
+	}
+
 	var tokenStr, err = jwt.GenerateToken(jwt.UserInfo{
 		Id:       user.ID,
 		Username: user.Username,
+		Role:     user.Role,
 	})
 
 	if err != nil {

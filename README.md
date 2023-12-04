@@ -1,6 +1,6 @@
 # Union System
 
-A union system using nuxt3-ts and go-fiber.
+A union system using vue3-ts and go-fiber.
 
 Using MySQL and Redis to store data.
 

@@ -15,5 +15,6 @@ func Init(app *fiber.App) {
 	// 注册验证中间件
 	user.Use(middlewares.TokenAuth)
 	user.Get("/getUserInfo", user_handlers.GetUserInfoHandler)
+	user.Post("/changePassword", user_handlers.ChangePasswordHandler)
 	user.Post("/logout", user_handlers.LogoutHandler)
 }

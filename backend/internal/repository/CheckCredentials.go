@@ -32,3 +32,35 @@ func GetUserByID(userID uint) (*model.TbUser, error) {
 	}
 	return &user, nil
 }
+
+func ChangePasswordByID(userID uint, newPassword string) error {
+	var user model.TbUser
+	result := global.Database.First(&user, userID)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// 加密密码
+	hashedPassword, err := password_crypt.PasswordHash(newPassword)
+	if err != nil {
+		return err
+	}
+
+	// 更新密码
+	result = global.Database.Model(&user).Update("password", hashedPassword)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func CheckUserPassword(userID uint, password string) bool {
+	var user model.TbUser
+	result := global.Database.First(&user, userID)
+	if result.Error != nil {
+		return false
+	}
+
+	return password_crypt.PasswordVerify(password, user.Password)
+}

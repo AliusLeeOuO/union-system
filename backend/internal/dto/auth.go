@@ -12,3 +12,9 @@ type LoginRequest struct {
 	CaptchaID  string `json:"captcha_id" form:"captcha_id"`
 	CaptchaVal string `json:"captcha_val" form:"captcha_val"`
 }
+
+// changePasswordRequest 定义了修改密码请求的数据结构
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password" form:"old_password"`
+	NewPassword string `json:"new_password" form:"new_password"`
+}

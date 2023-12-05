@@ -32,7 +32,12 @@ var respErrorMessages = map[int]string{
 	CaptchaErrorCode:     "验证码错误",
 }
 
-func getErrorMessage(code int) string {
+func getErrorMessage(code int, errorMsg ...string) string {
+	// 如果提供了errorMsg参数，返回它
+	if len(errorMsg) > 0 {
+		return errorMsg[0]
+	}
+
 	msg, ok := respErrorMessages[code]
 	if !ok {
 		return "未知错误"
@@ -50,9 +55,9 @@ func SendSuccessResponse(c *fiber.Ctx, data interface{}) error {
 }
 
 // SendFailureResponse 发送一个失败的响应
-func SendFailureResponse(c *fiber.Ctx, code int) error {
+func SendFailureResponse(c *fiber.Ctx, code int, errorMsg ...string) error {
 	response := BaseResponse{
-		RespError: RespError{Code: code, Message: getErrorMessage(code)},
+		RespError: RespError{Code: code, Message: getErrorMessage(code, errorMsg[0])},
 	}
 	return c.Status(fiber.StatusBadRequest).JSON(response)
 }

@@ -83,7 +83,9 @@
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
+import { Message } from "@arco-design/web-vue"
 
 //PC端个人信息
 const userStore = useUserStore()
@@ -98,7 +100,11 @@ const handleClickOutside = (e: MouseEvent) => {
 // 退出登录
 const userApi = useUserApi()
 const logout = async () => {
-  await userApi.logout()
+  try {
+    await handleXhrResponse(() => userApi.logout(), Message)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const router = useRouter()

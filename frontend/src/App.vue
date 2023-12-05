@@ -7,6 +7,8 @@ import { useDark } from "@vueuse/core"
 import { onMounted } from "vue"
 import { useUserStore } from "@/stores/user"
 import useUserApi from "@/api/userApi"
+import { handleXhrResponse } from "@/api"
+import { Message } from "@arco-design/web-vue"
 
 useDark({
   selector: "body",
@@ -19,7 +21,7 @@ const userStore = useUserStore()
 const userApi = useUserApi()
 onMounted(async () => {
   if (userStore.isUserLoggedIn) {
-    await userApi.getUserInfo()
+    await handleXhrResponse(() => userApi.getUserInfo(), Message)
   }
 })
 </script>

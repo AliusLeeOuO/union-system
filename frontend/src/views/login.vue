@@ -2,17 +2,18 @@
   <div class="login-container">
     <div class="login-header">登录</div>
     <div class="login-form-container">
-      <!-- 原有的表单内容 -->
       <div>
         <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
-          <a-form-item field="username" label="用户名" validate-trigger="input" required>
+          <a-form-item field="username" label="用户名" validate-trigger="input"
+                       :rules="[{required:true,message:'请输入用户名'},{minLength:5,message:'用户名在5个字符以上'}]">
             <a-input v-model="form.username" />
           </a-form-item>
-          <a-form-item field="password" label="密码" validate-trigger="input" required>
+          <a-form-item field="password" label="密码" validate-trigger="input"
+                       :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]">
             <a-input-password v-model="form.password" />
           </a-form-item>
-          <!--验证码-->
-          <a-form-item field="captchaVal" label="验证码" validate-trigger="input" required>
+          <a-form-item field="captchaVal" label="验证码" validate-trigger="input"
+                       :rules="[{required:true,message:'请输入验证码'},{minLength:4,message:'请输入完整的验证码'}]">
             <a-input v-model="form.captchaVal" :max-length="4" />
           </a-form-item>
           <a-form-item>
@@ -22,25 +23,28 @@
               <span class="change-captcha" @click="addCaptcha">点击更换验证码</span>
             </div>
           </a-form-item>
-          <a-button type="primary" html-type="submit" long size="large">登录</a-button>
+          <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">登录</a-button>
         </a-form>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, getCurrentInstance, onMounted } from "vue"
+import { ref, reactive, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
+import { Message } from "@arco-design/web-vue"
 import type { ValidatedError } from "@arco-design/web-vue"
 
-const vueInstance = getCurrentInstance()
 const router = useRouter()
 const userApi = useUserApi()
 const userStore = useUserStore()
 
 const captchaPicture = ref("")
+const handleButtonLoading = ref(false)
+
 const form = reactive({
   username: "",
   password: "",
@@ -50,7 +54,7 @@ const form = reactive({
 
 async function addCaptcha() {
   try {
-    const { data } = await userApi.getCaptcha()
+    const { data } = await handleXhrResponse(() => userApi.getCaptcha(), Message)
     captchaPicture.value = data.data.imagePath
     form.captchaID = data.data.captchaID
   } catch (error) {
@@ -63,8 +67,12 @@ const handleSubmit = async (form: {
   errors: Record<string, ValidatedError> | undefined
 }) => {
   if (!form.errors) {
+    handleButtonLoading.value = true
     try {
-      const { data } = await userApi.login(form.values.username, form.values.password, form.values.captchaID, form.values.captchaVal)
+      const { data } = await handleXhrResponse(
+        () => userApi.login(form.values.username, form.values.password, form.values.captchaID, form.values.captchaVal),
+        Message
+      )
       // 保存数据到pinia
       userStore.userInfo.token = data.data.token
       userStore.userInfo.userName = data.data.username
@@ -75,10 +83,8 @@ const handleSubmit = async (form: {
         // 跳转到管理员页面
         await router.push("/admin/index")
       }
-    } catch (error: any) {
-      await addCaptcha()
-      console.log(error)
-      vueInstance!.appContext.config.globalProperties.$message.error(error.response.data.message)
+    } finally {
+      handleButtonLoading.value = false
     }
   }
 }
@@ -97,10 +103,7 @@ onMounted(async () => {
   background-color: #f5f5f5;
   background-image: url("@/assets/images/loginbg.jpg");
   background-size: cover;
-  @media (max-width: 600px) {
-    padding: 20px;
-    max-width: 100%;
-  }
+
   .login-header {
     font-size: 24px;
     color: #333;
@@ -110,6 +113,7 @@ onMounted(async () => {
       color: rgba(0, 0, 0, 0.8);
     }
   }
+
   .login-form-container {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 40px;
@@ -121,16 +125,19 @@ onMounted(async () => {
     @media (prefers-color-scheme: dark) {
       background-color: rgba(0, 0, 0, 0.8);
     }
+
     .captcha-block {
       .captcha {
         cursor: pointer;
       }
+
       .change-captcha {
         color: var(--color-text-2);
         cursor: pointer;
         transition: 0.3ms ease;
         margin-left: 10px;
         user-select: none;
+
         &:hover {
           color: var(--color-text-1);
         }
@@ -138,8 +145,6 @@ onMounted(async () => {
     }
   }
 }
-
-
 
 
 </style>

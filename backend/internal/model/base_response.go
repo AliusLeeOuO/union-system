@@ -21,6 +21,8 @@ const (
 	ResourceNotFoundCode = 1405
 	SystemErrorCode      = 1500
 	CaptchaErrorCode     = 2003
+	// 登录
+	LoginAuthErrorCode = 2004
 )
 
 var respErrorMessages = map[int]string{
@@ -30,6 +32,8 @@ var respErrorMessages = map[int]string{
 	ResourceNotFoundCode: "访问资源不存在",
 	SystemErrorCode:      "服务内部错误",
 	CaptchaErrorCode:     "验证码错误",
+	// 登录
+	LoginAuthErrorCode: "用户名或密码错误",
 }
 
 func getErrorMessage(code int, errorMsg ...string) string {
@@ -56,8 +60,14 @@ func SendSuccessResponse(c *fiber.Ctx, data interface{}) error {
 
 // SendFailureResponse 发送一个失败的响应
 func SendFailureResponse(c *fiber.Ctx, code int, errorMsg ...string) error {
+	var respError RespError
+	if len(errorMsg) > 0 {
+		respError = RespError{Code: code, Message: getErrorMessage(code, errorMsg[0])}
+	} else {
+		respError = RespError{Code: code, Message: getErrorMessage(code)}
+	}
 	response := BaseResponse{
-		RespError: RespError{Code: code, Message: getErrorMessage(code, errorMsg[0])},
+		RespError: respError,
 	}
 	return c.Status(fiber.StatusBadRequest).JSON(response)
 }

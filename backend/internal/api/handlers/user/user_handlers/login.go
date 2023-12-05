@@ -31,7 +31,7 @@ func LoginHandler(c *fiber.Ctx) error {
 	if !isValid {
 		global.Logger.Info("用户凭据验证失败")
 		// 使用 BaseResponse 发送失败响应
-		return model.SendFailureResponse(c, model.AuthFailedCode)
+		return model.SendFailureResponse(c, model.LoginAuthErrorCode)
 	}
 
 	// 如果被封禁，拒绝登录

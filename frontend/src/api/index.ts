@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from "axios"
+import type { Message } from "@arco-design/web-vue"
 import { useUserStore } from "@/stores/user"
 
 const API_URL: string = import.meta.env.VITE_API_URL || "/"
@@ -42,6 +43,28 @@ axiosInstance.interceptors.response.use(
 
 
 export default axiosInstance
+
+export async function handleXhrResponse<T>(axiosRequest: () => Promise<AxiosApiResponse<T>>, handlerMessage: typeof Message): Promise<AxiosApiResponse<T>> {
+  try {
+    return await axiosRequest()
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiResponse<T>>
+    if (axiosError.response) {
+      // 请求已发出，服务器以状态码响应
+      console.error("Error", axiosError.response.status, axiosError.response.data.message)
+      handlerMessage.error(axiosError.response.data.message)
+    } else if (axiosError.request) {
+      // 请求已发出，但没有收到响应
+      console.error("No response from server")
+      handlerMessage.error("服务器没有响应")
+    } else {
+      // 在设置请求时发生了一些问题
+      console.error("Error", axiosError.message)
+      handlerMessage.error(axiosError.message)
+    }
+    throw axiosError
+  }
+}
 
 export interface AxiosApiResponse<T> extends AxiosResponse {
   data: ApiResponse<T>;

@@ -38,6 +38,6 @@ export default function() {
       captcha_val: captchaVal
     })),
     getUserInfo: (): Promise<AxiosApiResponse<getUserInfoResponseData>> => axiosInstance.get("/user/getUserInfo"),
-    logout: (): Promise<AxiosApiResponse<null>> => axiosInstance.get("/user/logout")
+    logout: (): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/logout")
   }
 }

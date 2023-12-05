@@ -9,27 +9,35 @@ export const useUserStore = defineStore("user", () => {
     userRole: -1
   })
 
-  function isUserLoggedIn() {
-    return computed(() => userInfo.token.length > 0)
-  }
+  const isUserLoggedIn = computed(() => {
+    return userInfo.token.length > 0
+  })
 
-  function getUserRoleName() {
-    return computed(() => {
-      switch (userInfo.userRole) {
-        case 0:
-          return "用户"
-        case 1:
-          return "财务"
-        case 2:
-          return "管理员"
-      }
-    })
+  const getUserRoleName = computed(() => {
+    switch (userInfo.userRole) {
+      case 0:
+        return "用户"
+      case 1:
+        return "财务"
+      case 2:
+        return "管理员"
+      default:
+        return "未知"
+    }
+  })
+
+  function clearUserInfo() {
+    userInfo.token = ""
+    userInfo.userId = -1
+    userInfo.userName = ""
+    userInfo.userRole = -1
   }
 
   return {
     userInfo,
     isUserLoggedIn,
-    getUserRoleName
+    getUserRoleName,
+    clearUserInfo
   }
 }, {
   persist: {

@@ -14,21 +14,21 @@
       </router-link>
     </nav>
     <div class="header-right">
-      <div class="user-info" @click="openPersonInfo = !openPersonInfo"  v-if="userStore.isUserLoggedIn()" v-click-outside:[dropdownRef]="handleClickOutside">
+      <div class="user-info" @click="openPersonInfo = !openPersonInfo"  v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside">
         {{ userStore.userInfo.userName }}
-        [ {{ userStore.getUserRoleName().value }} ]
+        [ {{ userStore.getUserRoleName }} ]
       </div>
       <div class="user-info" v-else>
-        <a-button>登录</a-button>
+        <a-button @click="toLogin">登录</a-button>
       </div>
     </div>
-    <div class="header-pc-person-info" v-if="openPersonInfo && userStore.isUserLoggedIn()" ref="dropdownRef">
+    <div class="header-pc-person-info" v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef">
       <div class="header-pc-person-info-text">
         123
       </div>
       <div class="header-pc-person-info-button">
         <a-button>查看</a-button>
-        <a-button status="danger">退出登录</a-button>
+        <a-button status="danger" @click="logout">退出登录</a-button>
       </div>
     </div>
   </header>
@@ -81,7 +81,9 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
+import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import useUserApi from "@/api/userApi"
 
 //PC端个人信息
 const userStore = useUserStore()
@@ -91,6 +93,17 @@ const handleClickOutside = (e: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(e.target as HTMLElement)) {
     openPersonInfo.value = false
   }
+}
+
+// 退出登录
+const userApi = useUserApi()
+const logout = async () => {
+  await userApi.logout()
+}
+
+const router = useRouter()
+const toLogin = async () => {
+  await router.push("/login")
 }
 
 //手机端汉堡菜单

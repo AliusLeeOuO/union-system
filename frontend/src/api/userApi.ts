@@ -23,7 +23,7 @@ interface getUserInfoResponseData {
 }
 
 
-export default function() {
+export default function useUserApi() {
   return {
     getCaptcha: (): Promise<AxiosApiResponse<getCaptchaResponseData>> => axiosInstance.get("/user/getCaptcha"),
     login: (

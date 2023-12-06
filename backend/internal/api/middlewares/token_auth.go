@@ -37,7 +37,6 @@ func TokenAuth(c *fiber.Ctx) error {
 		_, delErr := global.RedisClient.Del(c.Context(), tokenString).Result()
 		if delErr != nil {
 			global.Logger.Info("删除过期 Token 失败", delErr)
-			//return model.SendFailureResponse(c, model.SystemErrorCode)
 		}
 		global.Logger.Info("Token 已过期")
 		return model.SendFailureResponse(c, model.AuthFailedCode)

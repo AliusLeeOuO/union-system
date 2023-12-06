@@ -8,8 +8,8 @@ import (
 	"union-system/internal/dto"
 	"union-system/internal/model"
 	"union-system/internal/repository"
-	"union-system/utils/captcha"
-	"union-system/utils/jwt"
+	"union-system/internal/service"
+	"union-system/utils/check_fields"
 )
 
 func LoginHandler(c *fiber.Ctx) error {
@@ -20,63 +20,40 @@ func LoginHandler(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 
-	// 验证验证码
-	if !captcha.VerifyCode(request.CaptchaID, request.CaptchaVal) {
-		global.Logger.Info("验证码验证失败")
-		return model.SendFailureResponse(c, model.CaptchaErrorCode)
+	// 验证字段
+	fieldsToCheck := map[string]string{
+		"Username":   request.Username,
+		"Password":   request.Password,
+		"CaptchaID":  request.CaptchaID,
+		"CaptchaVal": request.CaptchaVal,
+	}
+	ok, missingField := check_fields.CheckFields(fieldsToCheck)
+	if !ok {
+		errorMessage := fmt.Sprintf("缺少必要字段: %s", missingField)
+		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
-	// 验证用户凭据
-	user, isValid := repository.CheckCredentials(request.Username, request.Password)
-	if !isValid {
-		global.Logger.Info("用户凭据验证失败")
-		// 使用 BaseResponse 发送失败响应
-		return model.SendFailureResponse(c, model.LoginAuthErrorCode)
-	}
-
-	// 如果被封禁，拒绝登录
-	if user.Status == 1 {
-		global.Logger.Info("用户被封禁")
-		return model.SendFailureResponse(c, model.AuthFailedCode)
-	}
-
-	var tokenStr, err = jwt.GenerateToken(jwt.UserInfo{
-		Id:       user.ID,
-		Username: user.Username,
-		Role:     user.Role,
-	})
-
+	// 初始化 service
+	userRepo := repository.NewUserRepository(global.Database)
+	userService := service.NewUserService(userRepo)
+	// 调用 service 登录方法
+	userInfo, err := userService.Login(request.Username, request.Password, request.CaptchaID, request.CaptchaVal)
 	if err != nil {
-		global.Logger.Info("生成 Token 出错", err)
-		// 生成 Token 出错
-		return model.SendFailureResponse(c, model.SystemErrorCode)
+		return model.SendFailureResponse(c, model.LoginAuthErrorCode, err.Error())
 	}
 
-	// 保存 Token
-	userTokenKey := fmt.Sprintf("user_tokens:%d", user.ID)
-
+	// 保存 Token 到 Redis
+	userTokenKey := fmt.Sprintf("user_tokens:%d", userInfo.UserId)
 	// 使用 Redis 管道操作，添加新 Token，限制列表长度，设置过期时间
 	pipe := global.RedisClient.Pipeline()
-	pipe.LPush(c.Context(), userTokenKey, tokenStr)
+	pipe.LPush(c.Context(), userTokenKey, userInfo.Token)
 	pipe.LTrim(c.Context(), userTokenKey, 0, 2) // 保持列表最多 3 个元素
 	pipe.Expire(c.Context(), userTokenKey, 24*time.Hour)
 
 	_, err = pipe.Exec(c.Context())
 	if err != nil {
 		global.Logger.Info("保存 Token 出错", err)
-		return model.SendFailureResponse(c, model.SystemErrorCode)
+		return model.SendFailureResponse(c, model.SystemErrorCode, "保存 Token 出错")
 	}
-
-	// 返回 Token 以及用户的角色和状态
-	responseData := map[string]interface{}{
-		"userId":   user.ID,
-		"username": user.Username,
-		"role":     user.Role,
-		"status":   user.Status,
-		"token":    tokenStr,
-	}
-
-	global.Logger.Info("用户登录成功,已签发凭据：", user.Username)
-	// 使用 BaseResponse 发送成功响应
-	return model.SendSuccessResponse(c, responseData)
+	return model.SendSuccessResponse(c, userInfo)
 }

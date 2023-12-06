@@ -2,10 +2,10 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import { useUserStore } from "@/stores/user"
 
 export enum roles {
-  USER,
-  FINANCE,
-  ADMIN,
-  PUBLIC
+  FINANCE = 1,
+  ADMIN = 2,
+  USER = 3,
+  PUBLIC = 9999
 }
 
 type routeRecordWithRole = RouteRecordRaw & {

@@ -12,7 +12,7 @@ import (
 )
 
 func GetUserList(c *fiber.Ctx) error {
-	var request dto.GetAdminUserListRequest
+	var request dto.GetUserListRequest
 	if err := c.BodyParser(&request); err != nil {
 		// 解析错误处理
 		// 使用 BaseResponse 发送错误响应
@@ -38,15 +38,15 @@ func GetUserList(c *fiber.Ctx) error {
 	userService := service.NewUserService(userRepo)
 
 	// 调用 service 获取数据
-	adminUsers, err := userService.GetAdminUsers(pageNum, pageSize, request.Username, request.ID)
+	adminUsers, err := userService.GetAdminUsers(pageNum, pageSize, request.Username, request.ID, request.Role)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
 	}
 
 	// 转换为 DTO 列表
-	var adminUsersResponse []dto.GetAdminUserListResponse
+	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
-		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserListResponse{
+		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
 			ID:       user.ID,
 			Username: user.Username,
 			Role:     user.Role,
@@ -54,9 +54,9 @@ func GetUserList(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"data":     adminUsersResponse,
-		"page":     pageNum,
-		"pageSize": pageSize,
+	return model.SendSuccessResponse(c, dto.GetAdminUserListResponse{
+		Data:     adminUsersResponse,
+		Page:     uint(pageNum),
+		PageSize: uint(pageSize),
 	})
 }

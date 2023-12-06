@@ -38,7 +38,7 @@ func GetUserList(c *fiber.Ctx) error {
 	userService := service.NewUserService(userRepo)
 
 	// 调用 service 获取数据
-	adminUsers, err := userService.GetAdminUsers(pageNum, pageSize)
+	adminUsers, err := userService.GetAdminUsers(pageNum, pageSize, request.Username, request.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
 	}

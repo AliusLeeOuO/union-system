@@ -16,10 +16,21 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (repo *UserRepository) GetAdminUsers(page int, pageSize int) ([]model.TbUser, error) {
+func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username string, userId uint) ([]model.TbUser, error) {
 	var users []model.TbUser
 	offset := (page - 1) * pageSize
-	result := repo.DB.Omit("Password").Where("role = ?", "2").Offset(offset).Limit(pageSize).Find(&users)
+
+	dbInstance := repo.DB.Omit("Password").Offset(offset).Limit(pageSize)
+	if username != "" {
+		dbInstance = dbInstance.Where("username LIKE ?", "%"+username+"%")
+	}
+	if userId != 0 {
+		dbInstance = dbInstance.Where("id = ?", userId)
+	}
+
+	result := dbInstance.Find(&users)
+
+	//result := repo.DB.Omit("Password").Where("role = ?", "2").Offset(offset).Limit(pageSize).Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}

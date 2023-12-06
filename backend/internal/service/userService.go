@@ -58,8 +58,8 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 	return &responseData, nil
 }
 
-func (s *UserService) GetAdminUsers(page int, pageSize int) ([]model.TbUser, error) {
-	return s.Repo.GetAdminUsers(page, pageSize)
+func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint) ([]model.TbUser, error) {
+	return s.Repo.GetAdminUsers(page, pageSize, username, userId)
 }
 
 func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPassword string) error {

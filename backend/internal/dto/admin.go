@@ -6,7 +6,6 @@ type Pagination struct {
 }
 
 // GetAdminUserListRequest 定义了获取管理员用户列表请求的数据结构
-// TODO: 没写完
 type GetAdminUserListRequest struct {
 	Pagination
 	// 根据ID查询，可选
@@ -14,6 +13,7 @@ type GetAdminUserListRequest struct {
 	// 根据用户名查询，可选
 	Username string `json:"username" form:"username"`
 }
+
 type GetAdminUserListResponse struct {
 	ID       uint   `json:"id"`
 	Username string `json:"username"`

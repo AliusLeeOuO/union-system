@@ -24,7 +24,7 @@
     </div>
     <div class="header-pc-person-info" v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef">
       <div class="header-pc-person-info-text">
-        123
+        {{ userStore.userInfo.userName }}
       </div>
       <div class="header-pc-person-info-button">
         <a-button>查看</a-button>
@@ -219,6 +219,7 @@ const navList = reactive<navList[]>([
       padding: 10px;
       @media (prefers-color-scheme: dark) {
         background-color: #232323;
+        color: #fff;
       }
     }
 

@@ -18,7 +18,9 @@ func main() {
 
 	initConfig := config.LoadConfig()
 	logger.InitLogger()
-	database.InitDatabase(initConfig.Database.Host, initConfig.Database.Port, initConfig.Database.User, initConfig.Database.Password, initConfig.Database.Name)
+	//database.InitDatabase(initConfig.Database.Host, initConfig.Database.Port, initConfig.Database.User, initConfig.Database.Password, initConfig.Database.Name)
+	fmt.Println(initConfig.PostgreSQLConfig.Host, initConfig.PostgreSQLConfig.Port, initConfig.PostgreSQLConfig.User, initConfig.PostgreSQLConfig.Password, initConfig.PostgreSQLConfig.Name)
+	database.InitDatabase(initConfig.PostgreSQLConfig.Host, initConfig.PostgreSQLConfig.Port, initConfig.PostgreSQLConfig.User, initConfig.PostgreSQLConfig.Password, initConfig.PostgreSQLConfig.Name)
 	redis.InitRedis(initConfig.Redis.Host, initConfig.Redis.Port, initConfig.Redis.Password, initConfig.Redis.DB)
 	fiber.InitFiber(initConfig.App.Port)
 }

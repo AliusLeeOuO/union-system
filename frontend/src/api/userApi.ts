@@ -9,9 +9,9 @@ interface getCaptchaResponseData {
 
 interface loginResponseData {
   role: number
-  status: number
+  status: boolean
   token: string
-  userId: number
+  user_id: number
   username: string
 }
 

@@ -30,6 +30,11 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 		return nil, err
 	}
 
+	// 账户状态验证
+	if !user.IsActive {
+		return nil, errors.New("account is not active")
+	}
+
 	// 密码验证逻辑
 	if !password_crypt.PasswordVerify(password, user.Password) {
 		return nil, errors.New("invalid credentials")
@@ -37,9 +42,9 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 
 	// 创建 Token 信息
 	tokenInfo := jwt.UserInfo{
-		Id:       user.ID,
+		Id:       user.UserID,
 		Username: user.Username,
-		Role:     user.Role,
+		Role:     user.UserTypeID,
 	}
 
 	// 生成 Token 字符串
@@ -50,15 +55,15 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 
 	responseData := dto.LoginResponse{
 		Token:    tokenStr,
-		UserId:   user.ID,
+		UserId:   user.UserID,
 		Username: user.Username,
-		Role:     user.Role,
-		Status:   user.Status,
+		Role:     user.UserTypeID,
+		Status:   user.IsActive,
 	}
 	return &responseData, nil
 }
 
-func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.TbUser, error) {
+func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
 	return s.Repo.GetAdminUsers(page, pageSize, username, userId, userRole)
 }
 
@@ -76,6 +81,6 @@ func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPas
 	return nil
 }
 
-func (s *UserService) GetUserById(userId uint) (*model.TbUser, error) {
+func (s *UserService) GetUserById(userId uint) (*model.User, error) {
 	return s.Repo.GetUserByID(userId)
 }

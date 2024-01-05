@@ -26,17 +26,14 @@ const props = defineProps<{
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  .link {
-    text-align: right;
-  }
-}
-
-body[arco-theme='dark'] {
-  .header {
+  @media (prefers-color-scheme: dark) {
     background-color: transparent;
     border-bottom: 1px solid #fff;
     border-radius: 0;
+  }
+
+  .link {
+    text-align: right;
   }
 }
 

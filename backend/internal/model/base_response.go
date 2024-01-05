@@ -26,7 +26,7 @@ const (
 )
 
 var respErrorMessages = map[int]string{
-	SuccessCode:          "Success",
+	SuccessCode:          "请求处理成功",
 	QueryParamErrorCode:  "请求参数有误",
 	AuthFailedCode:       "令牌无效",
 	ResourceNotFoundCode: "访问资源不存在",

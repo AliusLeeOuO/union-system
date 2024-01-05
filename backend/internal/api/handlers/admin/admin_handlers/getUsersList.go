@@ -47,10 +47,10 @@ func GetUserList(c *fiber.Ctx) error {
 	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
 		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
-			ID:       user.ID,
+			ID:       user.UserID,
 			Username: user.Username,
-			Role:     user.Role,
-			Status:   user.Status,
+			Role:     user.UserTypeID,
+			Status:   user.IsActive,
 		})
 	}
 

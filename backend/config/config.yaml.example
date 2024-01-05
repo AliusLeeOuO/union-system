@@ -6,12 +6,12 @@ app:
   debug: true
   secret_key: "your_secret_key"
 
-database:
-  host: "your_host"
-  port: 3306
-  user: "your_user"
-  password: "your_password"
-  name: "db_union"
+PostgreSQLConfig:
+  Host: "localhost"
+  port: 5432
+  User: "user_aaa"
+  Password: "aaa"
+  Name: "db_union"
 
 redis:
   host: "your_host"

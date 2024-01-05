@@ -3,6 +3,7 @@ package user_handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
+	"union-system/internal/dto"
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/internal/service"
@@ -26,11 +27,11 @@ func GetUserInfoHandler(c *fiber.Ctx) error {
 	}
 
 	// 准备返回的数据
-	responseData := map[string]interface{}{
-		"userID":   user.ID,
-		"username": user.Username,
-		"role":     user.Role,
-		"status":   user.Status,
+	responseData := dto.UserInfoResponse{
+		UserID:   user.UserID,
+		Username: user.Username,
+		Role:     user.UserTypeID,
+		Status:   user.IsActive,
 	}
 
 	// 发送成功响应

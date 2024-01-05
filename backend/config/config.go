@@ -7,9 +7,9 @@ import (
 
 // Config 结构体定义了整个应用的配置
 type Config struct {
-	App      AppConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
+	App              AppConfig
+	Redis            RedisConfig
+	PostgreSQLConfig PostgreSQLConfig
 }
 
 // AppConfig 结构体定义了应用配置
@@ -20,8 +20,8 @@ type AppConfig struct {
 	SecretKey string `mapstructure:"secret_key"`
 }
 
-// DatabaseConfig 结构体定义了数据库配置
-type DatabaseConfig struct {
+// PostgreSQLConfig 结构体定义了 PostgreSQL 配置
+type PostgreSQLConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
 	User     string `mapstructure:"user"`

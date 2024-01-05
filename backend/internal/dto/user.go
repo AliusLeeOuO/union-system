@@ -9,7 +9,7 @@ type LoginResponse struct {
 	UserId   uint   `json:"user_id"`
 	Username string `json:"username"`
 	Role     uint   `json:"role"`
-	Status   uint   `json:"status"`
+	Status   bool   `json:"status"`
 	Token    string `json:"token"`
 }
 
@@ -25,4 +25,12 @@ type LoginRequest struct {
 type ChangePasswordRequest struct {
 	OldPassword string `json:"old_password" form:"old_password"`
 	NewPassword string `json:"new_password" form:"new_password"`
+}
+
+// UserInfoResponse 定义了获取用户信息响应的数据结构
+type UserInfoResponse struct {
+	UserID   uint   `json:"user_id"`
+	Username string `json:"username"`
+	Role     uint   `json:"role"`
+	Status   bool   `json:"status"`
 }

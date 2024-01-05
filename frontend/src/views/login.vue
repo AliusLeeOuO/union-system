@@ -5,7 +5,7 @@
       <div>
         <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
           <a-form-item field="username" label="用户名" validate-trigger="input"
-                       :rules="[{required:true,message:'请输入用户名'},{minLength:5,message:'用户名在5个字符以上'}]">
+                       :rules="[{required:true,message:'请输入用户名'},{minLength:4,message:'用户名在4个字符以上'}]">
             <a-input v-model="form.username" />
           </a-form-item>
           <a-form-item field="password" label="密码" validate-trigger="input"
@@ -76,7 +76,7 @@ const handleSubmit = async (form: {
       // 保存数据到pinia
       userStore.userInfo.token = data.data.token
       userStore.userInfo.userName = data.data.username
-      userStore.userInfo.userId = data.data.userId
+      userStore.userInfo.userId = data.data.user_id
       userStore.userInfo.userRole = data.data.role
       // TODO: 根据角色跳转到不同的页面
       if (userStore.userInfo.userRole === 2) {

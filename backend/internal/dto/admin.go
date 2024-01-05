@@ -26,5 +26,5 @@ type GetAdminUserResponse struct {
 	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Role     uint   `json:"role"`
-	Status   uint   `json:"status"`
+	Status   bool   `json:"status"`
 }

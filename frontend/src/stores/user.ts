@@ -18,7 +18,7 @@ export const useUserStore = defineStore("user", () => {
       case 0:
         return "用户"
       case 1:
-        return "财务"
+        return "管理员"
       case 2:
         return "管理员"
       default:

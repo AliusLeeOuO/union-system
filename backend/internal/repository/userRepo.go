@@ -16,8 +16,8 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.TbUser, error) {
-	var users []model.TbUser
+func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
+	var users []model.User
 	offset := (page - 1) * pageSize
 
 	dbInstance := repo.DB.Omit("Password").Offset(offset).Limit(pageSize)
@@ -39,8 +39,8 @@ func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username strin
 	return users, nil
 }
 
-func (repo *UserRepository) GetUserByUsername(username string) (*model.TbUser, error) {
-	var user model.TbUser
+func (repo *UserRepository) GetUserByUsername(username string) (*model.User, error) {
+	var user model.User
 	result := repo.DB.Where("username = ?", username).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
@@ -48,8 +48,8 @@ func (repo *UserRepository) GetUserByUsername(username string) (*model.TbUser, e
 	return &user, nil
 }
 
-func (repo *UserRepository) GetUserByID(userID uint) (*model.TbUser, error) {
-	var user model.TbUser
+func (repo *UserRepository) GetUserByID(userID uint) (*model.User, error) {
+	var user model.User
 	result := repo.DB.First(&user, userID)
 	if result.Error != nil {
 		return nil, result.Error
@@ -58,7 +58,7 @@ func (repo *UserRepository) GetUserByID(userID uint) (*model.TbUser, error) {
 }
 
 func (repo *UserRepository) CheckUserPassword(userID uint, password string) bool {
-	var user model.TbUser
+	var user model.User
 	result := repo.DB.First(&user, userID)
 	if result.Error != nil {
 		return false
@@ -68,7 +68,7 @@ func (repo *UserRepository) CheckUserPassword(userID uint, password string) bool
 }
 
 func (repo *UserRepository) ChangePasswordByID(userID uint, newPassword string) error {
-	var user model.TbUser
+	var user model.User
 	result := repo.DB.First(&user, userID)
 	if result.Error != nil {
 		return result.Error

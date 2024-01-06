@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"union-system/internal/model"
 )
@@ -16,8 +17,9 @@ func RoleAuthAdmin(c *fiber.Ctx) error {
 		// 未获取到用户信息的处理逻辑...
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
+	fmt.Println(userID, username, role)
 	// 检查用户角色
-	if role.(uint) != 2 {
+	if role.(uint) != 1 {
 		// 用户角色不匹配的处理逻辑...
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}

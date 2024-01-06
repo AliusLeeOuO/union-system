@@ -16,6 +16,12 @@ type GetUserListRequest struct {
 	Role uint `json:"role" form:"role"`
 }
 
+// GetAssistanceTypeRequest 定义了获取援助类型列表请求的数据结构
+type GetAssistanceTypeRequest struct {
+	AssistanceTypeId uint   `json:"assistance_type_id" form:"assistance_type_id"`
+	TypeName         string `json:"type_name" form:"type_name"`
+}
+
 type GetAdminUserListResponse struct {
 	Data     []GetAdminUserResponse `json:"data"`
 	Page     uint                   `json:"page"`

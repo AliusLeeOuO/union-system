@@ -13,4 +13,5 @@ func Init(app *fiber.App) {
 	admin.Use(middlewares.TokenAuth)
 	admin.Use(middlewares.RoleAuthAdmin)
 	admin.Post("/getUserList", admin_handlers.GetUserList)
+	admin.Post("/getAssistanceType", admin_handlers.GetAssistanceType)
 }

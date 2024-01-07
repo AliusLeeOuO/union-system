@@ -1,4 +1,4 @@
-package admin_handlers
+package admin_assistance
 
 import (
 	"github.com/gofiber/fiber/v2"

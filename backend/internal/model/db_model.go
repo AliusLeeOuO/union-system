@@ -92,3 +92,40 @@ type UserType struct {
 	TypeID   uint   `gorm:"primary_key;column:type_id"`
 	TypeName string `gorm:"column:type_name"`
 }
+
+// AssistanceStatus 对应于 tb_assistance_status
+type AssistanceStatus struct {
+	StatusID   uint   `gorm:"primary_key;column:status_id"`
+	StatusName string `gorm:"column:status_name"`
+}
+
+// AssistanceRequest 对应于 tb_assistance_request
+type AssistanceRequest struct {
+	RequestID      uint           `gorm:"primary_key;column:request_id"`
+	MemberID       uint           `gorm:"column:member_id"`
+	StatusID       uint           `gorm:"column:status_id"`
+	TypeID         uint           `gorm:"column:type_id"`
+	Description    string         `gorm:"column:description"`
+	CreatedAt      time.Time      `gorm:"column:created_at"`
+	UpdatedAt      time.Time      `gorm:"column:updated_at"`
+	AssistanceType AssistanceType `gorm:"foreignKey:type_id"`
+}
+
+// AssistanceResponse 对应于 tb_assistance_response
+type AssistanceResponse struct {
+	ResponseID   uint      `gorm:"primary_key;column:response_id"`
+	RequestID    uint      `gorm:"column:request_id"`
+	ResponderID  uint      `gorm:"column:responder_id"`
+	ResponseText string    `gorm:"column:response_text"`
+	CreatedAt    time.Time `gorm:"column:created_at"`
+}
+
+// AssistanceFeedback 对应于 tb_assistance_feedback
+type AssistanceFeedback struct {
+	FeedbackID uint      `gorm:"primary_key;column:feedback_id"`
+	RequestID  uint      `gorm:"column:request_id"`
+	MemberID   uint      `gorm:"column:member_id"`
+	Rating     int       `gorm:"column:rating"`
+	Comment    string    `gorm:"column:comment"`
+	CreatedAt  time.Time `gorm:"column:created_at"`
+}

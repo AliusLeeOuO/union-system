@@ -1,9 +1,7 @@
 package admin_assistance
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"strconv"
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
@@ -20,15 +18,12 @@ func GetAssistanceList(c *fiber.Ctx) error {
 		// 使用 BaseResponse 发送错误响应
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
-	// 打印字段
-	fmt.Println("GetAssistanceList:")
-	fmt.Println(form)
 	// 验证字段
-	fieldsToCheck := map[string]string{
-		"PageSize": strconv.Itoa(int(form.PageSize)),
-		"PageNum":  strconv.Itoa(int(form.PageNum)),
+	fieldsToCheck := map[string]interface{}{
+		"PageSize": int(form.PageSize),
+		"PageNum":  int(form.PageSize),
 	}
-	ok, missingField := check_fields.CheckFields(fieldsToCheck)
+	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := "缺少必要字段: " + missingField
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)

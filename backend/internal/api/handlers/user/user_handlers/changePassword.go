@@ -21,11 +21,11 @@ func ChangePasswordHandler(c *fiber.Ctx) error {
 	}
 
 	// 验证字段
-	fieldsToCheck := map[string]string{
+	fieldsToCheck := map[string]interface{}{
 		"OldPassword": request.OldPassword,
 		"NewPassword": request.NewPassword,
 	}
-	ok, missingField := check_fields.CheckFields(fieldsToCheck)
+	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := fmt.Sprintf("缺少必要字段: %s", missingField)
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)

@@ -21,15 +21,6 @@ type ActivityType struct {
 	TypeName       string `gorm:"column:type_name"`
 }
 
-// Assistance tb_assistance
-type Assistance struct {
-	AssistanceID     uint      `gorm:"primary_key;column:assistance_id"`
-	AssistanceTypeID int       `gorm:"column:assistance_type_id"`
-	Description      string    `gorm:"column:description"`
-	RequestDate      time.Time `gorm:"column:request_date"`
-	UserID           int       `gorm:"column:user_id"`
-}
-
 // AssistanceType tb_assistance_type
 type AssistanceType struct {
 	AssistanceTypeID uint   `gorm:"primary_key;column:assistance_type_id"`
@@ -101,14 +92,17 @@ type AssistanceStatus struct {
 
 // AssistanceRequest 对应于 tb_assistance_request
 type AssistanceRequest struct {
-	RequestID      uint           `gorm:"primary_key;column:request_id"`
-	MemberID       uint           `gorm:"column:member_id"`
-	StatusID       uint           `gorm:"column:status_id"`
-	TypeID         uint           `gorm:"column:type_id"`
-	Description    string         `gorm:"column:description"`
-	CreatedAt      time.Time      `gorm:"column:created_at"`
-	UpdatedAt      time.Time      `gorm:"column:updated_at"`
-	AssistanceType AssistanceType `gorm:"foreignKey:type_id"`
+	RequestID   uint      `gorm:"primary_key;column:request_id"`
+	Title       string    `gorm:"column:title"`
+	MemberID    uint      `gorm:"column:member_id"`
+	StatusID    uint      `gorm:"column:status_id"`
+	TypeID      uint      `gorm:"column:type_id"`
+	Description string    `gorm:"column:description"`
+	CreatedAt   time.Time `gorm:"column:created_at"`
+	UpdatedAt   time.Time `gorm:"column:updated_at"`
+	// 辅助字段
+	AssistanceType   AssistanceType   `gorm:"foreignKey:type_id"`
+	AssistanceStatus AssistanceStatus `gorm:"foreignKey:StatusID"`
 }
 
 // AssistanceResponse 对应于 tb_assistance_response

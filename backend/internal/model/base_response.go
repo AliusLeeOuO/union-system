@@ -15,25 +15,27 @@ type RespError struct {
 }
 
 const (
-	SuccessCode          = 0
-	AuthFailedCode       = 1000
-	QueryParamErrorCode  = 1400
-	ResourceNotFoundCode = 1405
-	SystemErrorCode      = 1500
-	CaptchaErrorCode     = 2003
-	// 登录
-	LoginAuthErrorCode = 2004
+	SuccessCode              = 0
+	AuthFailedCode           = 1000
+	QueryParamErrorCode      = 1400
+	ResourceNotFoundCode     = 1405
+	SystemErrorCode          = 1500
+	CaptchaErrorCode         = 2003
+	LoginAuthErrorCode       = 2004
+	NotFoundErrorCode        = 2005
+	OperationFailedErrorCode = 2006
 )
 
 var respErrorMessages = map[int]string{
-	SuccessCode:          "请求处理成功",
-	QueryParamErrorCode:  "请求参数有误",
-	AuthFailedCode:       "令牌无效",
-	ResourceNotFoundCode: "访问资源不存在",
-	SystemErrorCode:      "服务内部错误",
-	CaptchaErrorCode:     "验证码错误",
-	// 登录
-	LoginAuthErrorCode: "用户名或密码错误",
+	SuccessCode:              "请求处理成功",
+	QueryParamErrorCode:      "请求参数有误",
+	AuthFailedCode:           "令牌无效",
+	ResourceNotFoundCode:     "访问资源不存在",
+	SystemErrorCode:          "服务内部错误",
+	CaptchaErrorCode:         "验证码错误",
+	LoginAuthErrorCode:       "用户名或密码错误",
+	NotFoundErrorCode:        "找不到资源",
+	OperationFailedErrorCode: "操作失败",
 }
 
 func getErrorMessage(code int, errorMsg ...string) string {

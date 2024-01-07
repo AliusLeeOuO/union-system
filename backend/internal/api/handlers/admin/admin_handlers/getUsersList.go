@@ -2,7 +2,6 @@ package admin_handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"strconv"
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
@@ -19,11 +18,11 @@ func GetUserList(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 
-	fieldsToCheck := map[string]string{
-		"pageSize": strconv.Itoa(int(request.PageSize)),
-		"pageNum":  strconv.Itoa(int(request.PageNum)),
+	fieldsToCheck := map[string]interface{}{
+		"pageSize": int(request.PageSize),
+		"pageNum":  int(request.PageSize),
 	}
-	ok, missingField := check_fields.CheckFields(fieldsToCheck)
+	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := "缺少必要字段: " + missingField
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)

@@ -21,13 +21,13 @@ func LoginHandler(c *fiber.Ctx) error {
 	}
 
 	// 验证字段
-	fieldsToCheck := map[string]string{
+	fieldsToCheck := map[string]interface{}{
 		"Username":   request.Username,
 		"Password":   request.Password,
 		"CaptchaID":  request.CaptchaID,
 		"CaptchaVal": request.CaptchaVal,
 	}
-	ok, missingField := check_fields.CheckFields(fieldsToCheck)
+	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := fmt.Sprintf("缺少必要字段: %s", missingField)
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)

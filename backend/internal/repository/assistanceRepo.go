@@ -66,3 +66,20 @@ func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListReque
 
 	return response, nil
 }
+
+func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceRequest, []model.AssistanceResponse, error) {
+	var assistance model.AssistanceRequest
+	var responses []model.AssistanceResponse
+
+	// 获取工单信息
+	if err := r.DB.Preload("AssistanceType").Preload("AssistanceStatus").First(&assistance, requestID).Error; err != nil {
+		return assistance, nil, err
+	}
+
+	// 获取相关的交流记录
+	if err := r.DB.Where("request_id = ?", requestID).Find(&responses).Error; err != nil {
+		return assistance, nil, err
+	}
+
+	return assistance, responses, nil
+}

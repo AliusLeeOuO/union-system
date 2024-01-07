@@ -7,4 +7,6 @@ func Init(app fiber.Router) {
 	// 注册路由
 	assistance.Post("/requests", GetAssistanceList)
 	assistance.Post("/getAssistanceType", GetAssistanceType)
+	assistance.Post("/viewAssistance", ViewAssistance)
+	assistance.Post("/replyAssistance", ReplyAssistance)
 }

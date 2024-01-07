@@ -30,10 +30,9 @@ type ViewAssistanceResponse struct {
 }
 
 type ReplyAssistanceRequest struct {
-	RequestID    uint   `json:"request_id"`
-	ResponderID  uint   `json:"responder_id"`
-	ResponseText string `json:"response_text"`
-	NewStatusID  uint   `json:"new_status_id"`
+	RequestID    uint   `json:"request_id" form:"request_id"`
+	ResponseText string `json:"response_text" form:"response_text"`
+	NewStatusID  uint   `json:"new_status_id" form:"new_status_id"`
 }
 
 type ReplyAssistanceResponse struct {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 	"union-system/internal/dto"
-	"union-system/internal/dto/dto_admin"
 	"union-system/internal/model"
 	"union-system/internal/repository"
 )
@@ -25,23 +24,24 @@ func (s *AssistanceService) ViewAssistance(requestID uint) (model.AssistanceRequ
 	return s.Repo.ViewAssistance(requestID)
 }
 
-func (s *AssistanceService) ReplyAssistance(request dto_admin.ReplyAssistanceRequest) error {
+func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, responseText string, newStatusID uint) error {
 	// 检查工单状态
 	var assistance model.AssistanceRequest
-	if err := s.Repo.DB.First(&assistance, request.RequestID).Error; err != nil {
+	if err := s.Repo.DB.Preload("AssistanceStatus").First(&assistance, requestID).Error; err != nil {
 		return err
 	}
 
 	// 检查工单是否已关闭
-	if assistance.StatusID == 4 { // closedStatusID = 4 表示“已关闭”的状态ID
+	closedStatusID := uint(4) // closedStatusID = 4 表示“已关闭”的状态ID
+	if assistance.StatusID == closedStatusID {
 		return errors.New("cannot reply to a closed assistance request")
 	}
 
 	// 创建新的回复记录
 	response := model.AssistanceResponse{
-		RequestID:    request.RequestID,
-		ResponderID:  request.ResponderID,
-		ResponseText: request.ResponseText,
+		RequestID:    requestID,
+		ResponderID:  responderID,
+		ResponseText: responseText,
 		CreatedAt:    time.Now(),
 	}
 	if err := s.Repo.DB.Create(&response).Error; err != nil {
@@ -49,8 +49,8 @@ func (s *AssistanceService) ReplyAssistance(request dto_admin.ReplyAssistanceReq
 	}
 
 	// 更新工单状态
-	if request.NewStatusID != 0 {
-		assistance.StatusID = request.NewStatusID
+	if newStatusID != 0 {
+		assistance.StatusID = newStatusID
 		if err := s.Repo.DB.Save(&assistance).Error; err != nil {
 			return err
 		}

@@ -30,7 +30,7 @@ func GetUserList(c *fiber.Ctx) error {
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))
 	adminUsers, total, err := userService.GetAdminUsers(int(request.PageNum), int(request.PageSize), request.Username, request.ID, request.Role)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
+		return model.SendFailureResponse(c, model.InternalServerErrorCode)
 	}
 
 	var adminUsersResponse []dto.GetAdminUserResponse
@@ -46,8 +46,8 @@ func GetUserList(c *fiber.Ctx) error {
 	return model.SendSuccessResponse(c, dto.GetAdminUserListResponse{
 		Data: adminUsersResponse,
 		PageResponse: dto.PageResponse{
-			PageSize: uint(request.PageSize),
-			PageNum:  uint(request.PageNum),
+			PageSize: request.PageSize,
+			PageNum:  request.PageNum,
 			Total:    uint(total),
 		},
 	})

@@ -90,21 +90,39 @@ func (r *AssistanceRepository) CreateNewAssistance(assistance model.AssistanceRe
 	return r.DB.Create(&assistance).Error
 }
 
-func (r *AssistanceRepository) CreateResponse(response model.AssistanceResponse) error {
-	return r.DB.Create(&response).Error
+// AdminReplyToAssistance 管理员回复工单
+func (r *AssistanceRepository) AdminReplyToAssistance(requestID, responderID uint, responseText string, newStatusID uint) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		// 创建新的回复记录
+		response := model.AssistanceResponse{
+			RequestID:    requestID,
+			ResponderID:  responderID,
+			ResponseText: responseText,
+			CreatedAt:    time.Now(),
+		}
+		if err := tx.Create(&response).Error; err != nil {
+			return err
+		}
+
+		// 更新工单状态
+		if newStatusID != 0 {
+			if err := tx.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", newStatusID).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
-func (r *AssistanceRepository) UpdateRequestStatus(requestID, statusID uint) error {
-	return r.DB.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", statusID).Error
-}
-
+// GetAssistanceRequest 获取工单信息
 func (r *AssistanceRepository) GetAssistanceRequest(requestID uint) (*model.AssistanceRequest, error) {
 	var request model.AssistanceRequest
 	err := r.DB.Preload("AssistanceStatus").First(&request, requestID).Error
 	return &request, err
 }
 
-// ReplyToAssistance 回复工单
+// ReplyToAssistance 用户回复工单
 func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, responseText string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		// 验证工单发起人
@@ -160,6 +178,7 @@ func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uin
 	return r.DB.Model(&assistanceRequest).Update("status_id", 4).Error
 }
 
+// GetAssistanceType 获取工单类型
 func (r *AssistanceRepository) GetAssistanceType() ([]model.AssistanceType, error) {
 	var assistanceTypes []model.AssistanceType
 	result := r.DB.Find(&assistanceTypes)

@@ -25,6 +25,7 @@ const (
 	NotFoundErrorCode        = 2005
 	OperationFailedErrorCode = 2006
 	InvalidFileTypeErrorCode = 2007
+	InternalServerErrorCode  = 5000
 )
 
 var respErrorMessages = map[int]string{
@@ -38,6 +39,7 @@ var respErrorMessages = map[int]string{
 	NotFoundErrorCode:        "找不到资源",
 	OperationFailedErrorCode: "操作失败",
 	InvalidFileTypeErrorCode: "无效的文件类型",
+	InternalServerErrorCode:  "服务内部错误",
 }
 
 func getErrorMessage(code int, errorMsg ...string) string {

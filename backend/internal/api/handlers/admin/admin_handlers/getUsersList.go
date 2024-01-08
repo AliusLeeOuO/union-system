@@ -13,14 +13,13 @@ import (
 func GetUserList(c *fiber.Ctx) error {
 	var request dto.GetUserListRequest
 	if err := c.BodyParser(&request); err != nil {
-		// 解析错误处理
-		// 使用 BaseResponse 发送错误响应
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 
+	// 校验字段
 	fieldsToCheck := map[string]interface{}{
 		"pageSize": int(request.PageSize),
-		"pageNum":  int(request.PageSize),
+		"pageNum":  int(request.PageNum),
 	}
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
@@ -28,21 +27,12 @@ func GetUserList(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
-	// 获取分页参数
-	pageSize := int(request.PageSize)
-	pageNum := int(request.PageNum)
-
-	// 初始化 service
-	userRepo := repository.NewUserRepository(global.Database)
-	userService := service.NewUserService(userRepo)
-
-	// 调用 service 获取数据
-	adminUsers, err := userService.GetAdminUsers(pageNum, pageSize, request.Username, request.ID, request.Role)
+	userService := service.NewUserService(repository.NewUserRepository(global.Database))
+	adminUsers, total, err := userService.GetAdminUsers(int(request.PageNum), int(request.PageSize), request.Username, request.ID, request.Role)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
 	}
 
-	// 转换为 DTO 列表
 	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
 		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
@@ -54,8 +44,11 @@ func GetUserList(c *fiber.Ctx) error {
 	}
 
 	return model.SendSuccessResponse(c, dto.GetAdminUserListResponse{
-		Data:     adminUsersResponse,
-		Page:     uint(pageNum),
-		PageSize: uint(pageSize),
+		Data: adminUsersResponse,
+		PageResponse: dto.PageResponse{
+			PageSize: uint(request.PageSize),
+			PageNum:  uint(request.PageNum),
+			Total:    uint(total),
+		},
 	})
 }

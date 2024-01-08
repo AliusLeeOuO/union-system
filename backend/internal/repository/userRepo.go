@@ -20,23 +20,40 @@ func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username strin
 	var users []model.User
 	offset := (page - 1) * pageSize
 
-	dbInstance := repo.DB.Omit("Password").Offset(offset).Limit(pageSize)
+	query := repo.DB.Model(&model.User{}).Omit("Password").Offset(offset).Limit(pageSize)
 	if username != "" {
-		dbInstance = dbInstance.Where("username LIKE ?", "%"+username+"%")
+		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
 	if userId != 0 {
-		dbInstance = dbInstance.Where("id = ?", userId)
+		query = query.Where("user_id = ?", userId)
 	}
 	if userRole != 0 {
-		dbInstance = dbInstance.Where("role = ?", userRole)
+		query = query.Where("user_type_id = ?", userRole)
 	}
 
-	result := dbInstance.Find(&users)
-
-	if result.Error != nil {
-		return nil, result.Error
+	if err := query.Find(&users).Error; err != nil {
+		return nil, err
 	}
 	return users, nil
+}
+
+func (repo *UserRepository) CountAdminUsers(username string, userId uint, userRole uint) (int64, error) {
+	var count int64
+	query := repo.DB.Model(&model.User{})
+	if username != "" {
+		query = query.Where("username LIKE ?", "%"+username+"%")
+	}
+	if userId != 0 {
+		query = query.Where("user_id = ?", userId)
+	}
+	if userRole != 0 {
+		query = query.Where("user_type_id = ?", userRole)
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func (repo *UserRepository) GetUserByUsername(username string) (*model.User, error) {

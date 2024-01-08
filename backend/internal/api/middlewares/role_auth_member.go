@@ -5,7 +5,7 @@ import (
 	"union-system/internal/model"
 )
 
-func RoleAuthAdmin(c *fiber.Ctx) error {
+func RoleAuthMember(c *fiber.Ctx) error {
 	// 读取用户信息
 	userID := c.Locals("userID")
 	username := c.Locals("username")
@@ -17,7 +17,7 @@ func RoleAuthAdmin(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 	// 检查用户角色
-	if role.(uint) != 1 {
+	if role.(uint) != 2 {
 		// 用户角色不匹配的处理逻辑...
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}

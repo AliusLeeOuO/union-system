@@ -24,16 +24,17 @@ func (s *AssistanceService) ViewAssistance(requestID uint) (model.AssistanceRequ
 	return s.Repo.ViewAssistance(requestID)
 }
 
+// ReplyAssistance 用于回复工单
 func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, responseText string, newStatusID uint) error {
 	// 检查工单状态
-	var assistance model.AssistanceRequest
-	if err := s.Repo.DB.Preload("AssistanceStatus").First(&assistance, requestID).Error; err != nil {
+	assistanceRequest, err := s.Repo.GetAssistanceRequest(requestID)
+	if err != nil {
 		return err
 	}
 
 	// 检查工单是否已关闭
-	closedStatusID := uint(4) // closedStatusID = 4 表示“已关闭”的状态ID
-	if assistance.StatusID == closedStatusID {
+	closedStatusID := uint(4) // 假设 4 为“已关闭”的状态ID
+	if assistanceRequest.StatusID == closedStatusID {
 		return errors.New("cannot reply to a closed assistance request")
 	}
 
@@ -44,17 +45,38 @@ func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, respons
 		ResponseText: responseText,
 		CreatedAt:    time.Now(),
 	}
-	if err := s.Repo.DB.Create(&response).Error; err != nil {
+	if err := s.Repo.CreateResponse(response); err != nil {
 		return err
 	}
 
 	// 更新工单状态
 	if newStatusID != 0 {
-		assistance.StatusID = newStatusID
-		if err := s.Repo.DB.Save(&assistance).Error; err != nil {
+		if err := s.Repo.UpdateRequestStatus(requestID, newStatusID); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func (s *AssistanceService) CreateNewAssistance(memberID uint, request dto.NewAssistanceRequest) error {
+	newAssistance := model.AssistanceRequest{
+		MemberID:    memberID,
+		TypeID:      request.TypeID,
+		Title:       request.Title,
+		Description: request.Description,
+		StatusID:    1, // 假设 1 为初始状态
+		CreatedAt:   time.Now(),
+	}
+
+	err := s.Repo.CreateNewAssistance(newAssistance)
+	return err
+}
+
+func (s *AssistanceService) UserReplyAssistance(request dto.UserReplyAssistanceRequest, userID uint) error {
+	return s.Repo.ReplyToAssistance(request.RequestID, userID, request.ResponseText)
+}
+
+func (s *AssistanceService) CloseAssistance(request dto.CloseAssistanceRequest, userID uint) error {
+	return s.Repo.CloseAssistanceRequest(request.RequestID, userID)
 }

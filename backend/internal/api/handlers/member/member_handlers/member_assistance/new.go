@@ -1,4 +1,4 @@
-package admin_assistance
+package member_assistance
 
 import (
 	"fmt"
@@ -11,21 +11,18 @@ import (
 	"union-system/utils/check_fields"
 )
 
-func ReplyAssistance(c *fiber.Ctx) error {
-	var form dto.ReplyAssistanceRequest
+func NewAssistance(c *fiber.Ctx) error {
+	var form dto.NewAssistanceRequest
 	if err := c.BodyParser(&form); err != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 	fmt.Println("form:", form)
 
-	// 从 JWT 中获取 userID
-	userID := c.Locals("userID").(uint)
-
 	// 验证字段
 	fieldsToCheck := map[string]interface{}{
-		"RequestID":    int(form.RequestID),
-		"ResponseText": form.ResponseText,
-		"NewStatusID":  form.NewStatusID,
+		"Title":       form.Title,
+		"Description": form.Description,
+		"TypeID":      int(form.TypeID),
 	}
 	fmt.Println("fieldsCheck:", fieldsToCheck)
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
@@ -34,15 +31,16 @@ func ReplyAssistance(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
-	// 业务逻辑处理
+	// 从 JWT 中获取 MemberID
+	memberID := c.Locals("userID").(uint)
+
 	assistanceService := service.NewAssistanceService(repository.NewAssistanceRepository(global.Database))
-	if err := assistanceService.ReplyAssistance(form.RequestID, userID, form.ResponseText, form.NewStatusID); err != nil {
+	if err := assistanceService.CreateNewAssistance(memberID, form); err != nil {
 		return model.SendFailureResponse(c, model.OperationFailedErrorCode, err.Error())
 	}
 
-	response := dto.ReplyAssistanceResponse{
-		Success: true,
-		Message: "Assistance replied successfully",
-	}
-	return model.SendSuccessResponse(c, response)
+	return model.SendSuccessResponse(c, fiber.Map{
+		"success": true,
+		"message": "Assistance request created successfully",
+	})
 }

@@ -59,9 +59,8 @@ type AssistanceTypeResponse struct {
 }
 
 type GetAdminUserListResponse struct {
-	Data     []GetAdminUserResponse `json:"data"`
-	Page     uint                   `json:"page"`
-	PageSize uint                   `json:"page_size"`
+	PageResponse
+	Data []GetAdminUserResponse `json:"data"`
 }
 
 type GetAdminUserResponse struct {

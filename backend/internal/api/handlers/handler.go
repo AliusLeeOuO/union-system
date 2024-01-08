@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"union-system/internal/api/handlers/admin"
+	"union-system/internal/api/handlers/member"
 	"union-system/internal/api/handlers/user"
 )
 
@@ -11,4 +12,5 @@ func SetupRoutes(app *fiber.App) {
 
 	user.Init(app)
 	admin.Init(app)
+	member.Init(app)
 }

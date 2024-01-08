@@ -63,8 +63,18 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 	return &responseData, nil
 }
 
-func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
-	return s.Repo.GetAdminUsers(page, pageSize, username, userId, userRole)
+func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, int64, error) {
+	users, err := s.Repo.GetAdminUsers(page, pageSize, username, userId, userRole)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	count, err := s.Repo.CountAdminUsers(username, userId, userRole)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return users, count, nil
 }
 
 func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPassword string) error {

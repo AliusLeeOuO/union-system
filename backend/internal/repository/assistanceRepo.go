@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"errors"
 	"gorm.io/gorm"
+	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
 )
@@ -82,4 +84,78 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	}
 
 	return assistance, responses, nil
+}
+
+func (r *AssistanceRepository) CreateNewAssistance(assistance model.AssistanceRequest) error {
+	return r.DB.Create(&assistance).Error
+}
+
+func (r *AssistanceRepository) CreateResponse(response model.AssistanceResponse) error {
+	return r.DB.Create(&response).Error
+}
+
+func (r *AssistanceRepository) UpdateRequestStatus(requestID, statusID uint) error {
+	return r.DB.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", statusID).Error
+}
+
+func (r *AssistanceRepository) GetAssistanceRequest(requestID uint) (*model.AssistanceRequest, error) {
+	var request model.AssistanceRequest
+	err := r.DB.Preload("AssistanceStatus").First(&request, requestID).Error
+	return &request, err
+}
+
+// ReplyToAssistance 回复工单
+func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, responseText string) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		// 验证工单发起人
+		var assistanceRequest model.AssistanceRequest
+		if err := tx.Where("request_id = ?", requestID).First(&assistanceRequest).Error; err != nil {
+			return err
+		}
+
+		// 验证工单是否属于该用户
+		if assistanceRequest.MemberID != userID {
+			return errors.New("user is not the owner of the assistance request")
+		}
+
+		// 验证工单状态
+		if assistanceRequest.StatusID == 4 {
+			return errors.New("cannot reply to a closed assistance request")
+		}
+
+		// 创建回复记录
+		response := model.AssistanceResponse{
+			RequestID:    requestID,
+			ResponderID:  userID,
+			ResponseText: responseText,
+			CreatedAt:    time.Now(),
+		}
+
+		if err := tx.Create(&response).Error; err != nil {
+			return err
+		}
+
+		// 更新工单状态
+		if err := tx.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", 1).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uint) error {
+	// 验证工单是否属于该用户
+	var assistanceRequest model.AssistanceRequest
+	err := r.DB.Where("request_id = ?", requestID).First(&assistanceRequest).Error
+	if err != nil {
+		return err
+	}
+
+	if assistanceRequest.MemberID != userID {
+		return errors.New("unauthorized to close this assistance request")
+	}
+
+	// 更新状态为“已关闭”
+	return r.DB.Model(&assistanceRequest).Update("status_id", 4).Error
 }

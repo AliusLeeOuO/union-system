@@ -1,6 +1,8 @@
-package dto_admin
+package dto
 
 import "time"
+
+// admin dto
 
 // ViewAssistanceRequest 定义了查看特定工单请求的数据结构
 type ViewAssistanceRequest struct {
@@ -38,4 +40,22 @@ type ReplyAssistanceRequest struct {
 type ReplyAssistanceResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+}
+
+// member dto
+
+// NewAssistanceRequest 接收发起工单请求的数据结构
+type NewAssistanceRequest struct {
+	TypeID      uint   `json:"type_id" form:"type_id"`
+	Title       string `json:"title" form:"title"`
+	Description string `json:"description" form:"description"`
+}
+
+type UserReplyAssistanceRequest struct {
+	RequestID    uint   `json:"request_id" form:"request_id"`
+	ResponseText string `json:"response_text" form:"response_text"`
+}
+
+type CloseAssistanceRequest struct {
+	RequestID uint `json:"request_id" form:"request_id"`
 }

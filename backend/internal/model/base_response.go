@@ -24,6 +24,7 @@ const (
 	LoginAuthErrorCode       = 2004
 	NotFoundErrorCode        = 2005
 	OperationFailedErrorCode = 2006
+	InvalidFileTypeErrorCode = 2007
 )
 
 var respErrorMessages = map[int]string{
@@ -36,6 +37,7 @@ var respErrorMessages = map[int]string{
 	LoginAuthErrorCode:       "用户名或密码错误",
 	NotFoundErrorCode:        "找不到资源",
 	OperationFailedErrorCode: "操作失败",
+	InvalidFileTypeErrorCode: "无效的文件类型",
 }
 
 func getErrorMessage(code int, errorMsg ...string) string {

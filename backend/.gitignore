@@ -7,3 +7,7 @@
 # Local config files
 config.yaml
 config/config.yaml
+
+# Upload files
+upload/*
+!uploads/.gitkeep

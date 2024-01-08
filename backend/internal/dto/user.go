@@ -13,6 +13,12 @@ type LoginResponse struct {
 	Token    string `json:"token"`
 }
 
+// UploadFileResponse 定义了上传文件响应的数据结构
+type UploadFileResponse struct {
+	FileName string `json:"file_name"`
+	FileURL  string `json:"file_url"`
+}
+
 // LoginRequest 定义了登录请求的数据结构
 type LoginRequest struct {
 	Username   string `json:"username" form:"username"`

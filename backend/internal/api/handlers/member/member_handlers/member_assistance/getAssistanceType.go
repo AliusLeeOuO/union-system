@@ -1,4 +1,4 @@
-package admin_assistance
+package member_assistance
 
 import (
 	"github.com/gofiber/fiber/v2"

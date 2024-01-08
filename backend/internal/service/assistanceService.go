@@ -80,3 +80,19 @@ func (s *AssistanceService) UserReplyAssistance(request dto.UserReplyAssistanceR
 func (s *AssistanceService) CloseAssistance(request dto.CloseAssistanceRequest, userID uint) error {
 	return s.Repo.CloseAssistanceRequest(request.RequestID, userID)
 }
+
+func (s *AssistanceService) GetAssistanceType() ([]dto.GetAssistanceTypeRequest, error) {
+	assistanceTypes, err := s.Repo.GetAssistanceType()
+	if err != nil {
+		return nil, err
+	}
+	// 将数据库查询结果转换为响应数据
+	var response []dto.GetAssistanceTypeRequest
+	for _, assistanceType := range assistanceTypes {
+		response = append(response, dto.GetAssistanceTypeRequest{
+			AssistanceTypeId: assistanceType.AssistanceTypeID,
+			TypeName:         assistanceType.TypeName,
+		})
+	}
+	return response, nil
+}

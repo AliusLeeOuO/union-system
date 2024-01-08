@@ -159,3 +159,12 @@ func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uin
 	// 更新状态为“已关闭”
 	return r.DB.Model(&assistanceRequest).Update("status_id", 4).Error
 }
+
+func (r *AssistanceRepository) GetAssistanceType() ([]model.AssistanceType, error) {
+	var assistanceTypes []model.AssistanceType
+	result := r.DB.Find(&assistanceTypes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assistanceTypes, nil
+}

@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/gofiber/fiber/v2"
 	"union-system/internal/api/handlers/admin/admin_handlers"
+	"union-system/internal/api/handlers/admin/admin_handlers/admin_activity"
 	"union-system/internal/api/handlers/admin/admin_handlers/admin_assistance"
 	"union-system/internal/api/middlewares"
 )
@@ -18,4 +19,6 @@ func Init(app *fiber.App) {
 
 	// 注册assistance路由
 	admin_assistance.Init(admin)
+	// 注册activity路由
+	admin_activity.Init(admin)
 }

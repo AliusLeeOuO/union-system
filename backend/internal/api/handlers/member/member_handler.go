@@ -2,6 +2,7 @@ package member
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"union-system/internal/api/handlers/member/member_handlers/member_activity"
 	"union-system/internal/api/handlers/member/member_handlers/member_assistance"
 	"union-system/internal/api/middlewares"
 )
@@ -15,4 +16,6 @@ func Init(app *fiber.App) {
 
 	// 注册assistance路由
 	member_assistance.Init(member)
+	// 注册activity路由
+	member_activity.Init(member)
 }

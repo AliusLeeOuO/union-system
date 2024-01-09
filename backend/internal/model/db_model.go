@@ -10,9 +10,10 @@ type Activity struct {
 	StartTime        time.Time `gorm:"column:start_time"`
 	EndTime          time.Time `gorm:"column:end_time"`
 	Location         string    `gorm:"column:location"`
-	ParticipantLimit int       `gorm:"column:participant_limit"`
-	ActivityTypeID   int       `gorm:"column:activity_type_id"`
-	CreatorID        int       `gorm:"column:creator_id"`
+	ParticipantLimit uint      `gorm:"column:participant_limit"`
+	ActivityTypeID   uint      `gorm:"column:activity_type_id"`
+	CreatorID        uint      `gorm:"column:creator_id"`
+	IsActive         bool      `gorm:"column:is_active"`
 }
 
 // ActivityType tb_activity_type

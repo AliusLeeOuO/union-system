@@ -43,5 +43,11 @@ func CheckFieldsWithDefaults(fields map[string]interface{}) (bool, string) {
 
 // isZero 检查给定值是否为其类型的零值
 func isZero(v interface{}) bool {
+	// 特殊处理布尔类型：false 不被视为零值
+	if _, ok := v.(bool); ok {
+		return false // 布尔值总是被认为是非零的
+	}
+
+	// 对于其他类型，使用 reflect.DeepEqual 检查零值
 	return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
 }

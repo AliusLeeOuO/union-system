@@ -51,3 +51,7 @@ func (r *ActivityRepository) EditActivity(activity model.Activity) error {
 		Select("ActivityName", "Description", "StartTime", "EndTime", "Location", "ParticipantLimit", "ActivityTypeID", "IsActive").
 		Updates(activity).Error
 }
+
+func (r *ActivityRepository) DeleteActivity(activityID uint) error {
+	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("removed", true).Error
+}

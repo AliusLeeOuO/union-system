@@ -125,3 +125,7 @@ func (s *ActivityService) EditActivity(activityID uint, req dto.CreateOrModifyAc
 
 	return activityID, nil
 }
+
+func (s *ActivityService) DeleteActivity(activityID uint) error {
+	return s.Repo.DeleteActivity(activityID)
+}

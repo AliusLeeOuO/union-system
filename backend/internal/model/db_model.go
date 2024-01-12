@@ -14,6 +14,7 @@ type Activity struct {
 	ActivityTypeID   uint      `gorm:"column:activity_type_id"`
 	CreatorID        uint      `gorm:"column:creator_id"`
 	IsActive         bool      `gorm:"column:is_active"`
+	Removed          bool      `gorm:"column:removed"`
 }
 
 // ActivityType tb_activity_type

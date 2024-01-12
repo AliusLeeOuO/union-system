@@ -10,8 +10,8 @@ func Init(app fiber.Router) {
 	activity.Get("/type", GetActivityType)
 	activity.Post("/create", CreateActivityHandler)
 	activity.Put("/edit/:activityId", ModifyActivityHandler)
-	//activity.Delete("/delete/{activityId}")
-	//activity.Get("/registrations/{activityId}")
+	activity.Delete("/delete/:activityId", DeleteActivityHandler)
+	//activity.Get("/registrations/:activityId")
 	//activity.Post("/notify/{activityId}")
 	//activity.Get("/history")
 }

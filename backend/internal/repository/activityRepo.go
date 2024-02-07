@@ -55,3 +55,26 @@ func (r *ActivityRepository) EditActivity(activity model.Activity) error {
 func (r *ActivityRepository) DeleteActivity(activityID uint) error {
 	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("removed", true).Error
 }
+
+func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]model.Activity, uint, error) {
+	var activities []model.Activity
+
+	var totalInt int64 = 0
+	// 先获取总活动数
+	result := r.DB.Model(&model.Activity{}).Where("removed = ?", false).Count(&totalInt)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	// 获取当前页的活动列表
+	offset := (pageNum - 1) * pageSize
+	result = r.DB.Where("removed = ?", false).
+		Offset(int(offset)).
+		Limit(int(pageSize)).
+		Find(&activities)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return activities, uint(totalInt), nil
+}

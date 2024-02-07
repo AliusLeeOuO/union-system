@@ -50,3 +50,20 @@ type EditActivityRequest struct {
 	MaxParticipants uint   `json:"maxParticipants"`
 	ActivityTypeID  uint   `json:"activityTypeId"`
 }
+
+type ActivityResponse struct {
+	ActivityID      uint   `json:"activityId"`
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	StartTime       string `json:"startTime"`
+	EndTime         string `json:"endTime"`
+	Location        string `json:"location"`
+	MaxParticipants uint   `json:"maxParticipants"`
+	ActivityTypeID  uint   `json:"activityTypeId"`
+	IsActive        bool   `json:"isActive"`
+}
+
+type UserGetActivityListResponse struct {
+	PageResponse
+	Data []ActivityResponse `json:"data"`
+}

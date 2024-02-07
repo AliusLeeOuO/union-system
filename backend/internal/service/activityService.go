@@ -129,3 +129,27 @@ func (s *ActivityService) EditActivity(activityID uint, req dto.CreateOrModifyAc
 func (s *ActivityService) DeleteActivity(activityID uint) error {
 	return s.Repo.DeleteActivity(activityID)
 }
+
+func (s *ActivityService) GetAllActivities(pageSize uint, pageNum uint) ([]dto.ActivityResponse, uint, error) {
+	activities, total, err := s.Repo.GetAllActivities(pageSize, pageNum)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var activityResponses []dto.ActivityResponse
+	for _, activity := range activities {
+		activityResponses = append(activityResponses, dto.ActivityResponse{
+			ActivityID:      activity.ActivityID,
+			Title:           activity.ActivityName,
+			Description:     activity.Description,
+			StartTime:       activity.StartTime.Format(time.RFC3339),
+			EndTime:         activity.EndTime.Format(time.RFC3339),
+			Location:        activity.Location,
+			MaxParticipants: activity.ParticipantLimit,
+			ActivityTypeID:  activity.ActivityTypeID,
+			IsActive:        activity.IsActive,
+		})
+	}
+
+	return activityResponses, total, nil
+}

@@ -38,6 +38,10 @@ export default function useUserApi() {
       captcha_val: captchaVal
     })),
     getUserInfo: (): Promise<AxiosApiResponse<getUserInfoResponseData>> => axiosInstance.get("/user/getUserInfo"),
-    logout: (): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/logout")
+    logout: (): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/logout"),
+    changePassword: (oldPassword: string, newPassword: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/changePassword", qs.stringify({
+      old_password: oldPassword,
+      new_password: newPassword
+    }))
   }
 }

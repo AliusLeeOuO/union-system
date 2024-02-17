@@ -37,6 +37,7 @@ import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
 import { Message } from "@arco-design/web-vue"
 import type { ValidatedError } from "@arco-design/web-vue"
+import { roles } from "@/router"
 
 const router = useRouter()
 const userApi = useUserApi()
@@ -79,9 +80,12 @@ const handleSubmit = async (form: {
       userStore.userInfo.userId = data.data.user_id
       userStore.userInfo.userRole = data.data.role
       // TODO: 根据角色跳转到不同的页面
-      if (userStore.userInfo.userRole === 2) {
+      if (userStore.userInfo.userRole === roles.ADMIN) {
         // 跳转到管理员页面
         await router.push("/admin/index")
+      } else if (userStore.userInfo.userRole === roles.USER) {
+        // 跳转到用户页面
+        await router.push("/member/index")
       }
     } finally {
       handleButtonLoading.value = false

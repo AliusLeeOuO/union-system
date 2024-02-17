@@ -1,12 +1,10 @@
 <template>
   <header class="header-pc">
     <div class="header-left">
-      <router-link to="/index" custom v-slot="{ navigate }">
-        <div @click="navigate" class="logo">工会管理系统</div>
-      </router-link>
+      <div @click="toIndex" class="logo">工会管理系统</div>
     </div>
     <nav>
-      <router-link :to="item.path" v-for="item in navList" :key="item.title"
+      <router-link :to="item.path" v-for="item in navIndex" :key="item.title"
                    class="nav-item">
         <div>
           {{ item.title }}
@@ -27,7 +25,7 @@
         {{ userStore.userInfo.userName }}
       </div>
       <div class="header-pc-person-info-button">
-        <a-button>查看</a-button>
+        <a-button @click="toUserIndex">查看</a-button>
         <a-button status="danger" @click="logout">退出登录</a-button>
       </div>
     </div>
@@ -70,7 +68,7 @@
         </div>
       </div>
       <div class="mobile-nav-main">
-        <router-link :to="item.path" v-for="item in navList" :key="item.title" @click="openMobileNav = false"
+        <router-link :to="item.path" v-for="item in navIndex" :key="item.title" @click="openMobileNav = false"
                      class="mobile-nav-item">
           {{ item.title }}
         </router-link>
@@ -80,21 +78,30 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
 import { Message } from "@arco-design/web-vue"
+import { roles } from "@/router"
 
 //PC端个人信息
 const userStore = useUserStore()
 const dropdownRef = ref<HTMLElement | null>(null)
 const openPersonInfo = ref(false)
 const handleClickOutside = (e: MouseEvent) => {
+  // 点击外部关闭个人信息
   if (dropdownRef.value && !dropdownRef.value.contains(e.target as HTMLElement)) {
     openPersonInfo.value = false
   }
+}
+
+// 跳转到用户个人中心
+const toUserIndex = async () => {
+  await router.push("/user")
+  // 关闭个人信息
+  openPersonInfo.value = false
 }
 
 // 退出登录
@@ -102,6 +109,8 @@ const userApi = useUserApi()
 const logout = async () => {
   try {
     await handleXhrResponse(() => userApi.logout(), Message)
+    userStore.clearUserInfo()
+    await router.push("/login")
   } catch (e) {
     console.log(e)
   }
@@ -121,13 +130,56 @@ interface navList {
   title: string
   path: string
 }
-
+// 公共导航栏
 const navList = reactive<navList[]>([
   {
     title: "首页",
     path: "/index"
   }
 ])
+// 会员导航栏
+const memberNavList = reactive<navList[]>([
+  {
+    title: "首页",
+    path: "/member/index"
+  },
+  {
+    title: "活动",
+    path: "/member/activity"
+  }
+])
+// 管理员导航栏
+const adminNavList = reactive<navList[]>([
+  {
+    title: "首页",
+    path: "/admin/index"
+  }
+])
+
+// 监听用户登录状态，切换导航栏
+const navIndex = computed(() => {
+  if (userStore.isUserLoggedIn) {
+    if (userStore.userInfo.userRole === roles.ADMIN) {
+      return adminNavList
+    } else if (userStore.userInfo.userRole === roles.USER) {
+      return memberNavList
+    }
+  }
+  return navList
+})
+
+// 根据角色跳转首页
+const toIndex = async () => {
+  if (userStore.isUserLoggedIn) {
+    if (userStore.userInfo.userRole === roles.ADMIN) {
+      await router.push("/admin/index")
+    } else if (userStore.userInfo.userRole === roles.USER) {
+      await router.push("/member/index")
+    }
+  } else {
+    await router.push("/index")
+  }
+}
 
 </script>
 
@@ -253,6 +305,7 @@ const navList = reactive<navList[]>([
     display: flex;
     justify-content: center;
     align-items: center;
+
   }
 }
 

@@ -15,12 +15,10 @@ export const useUserStore = defineStore("user", () => {
 
   const getUserRoleName = computed(() => {
     switch (userInfo.userRole) {
-      case 0:
-        return "用户"
       case 1:
         return "管理员"
       case 2:
-        return "管理员"
+        return "用户"
       default:
         return "未知"
     }

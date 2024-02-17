@@ -2,9 +2,8 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import { useUserStore } from "@/stores/user"
 
 export enum roles {
-  FINANCE = 1,
-  ADMIN = 2,
-  USER = 3,
+  ADMIN = 1,
+  USER = 2,
   PUBLIC = 9999
 }
 
@@ -43,6 +42,15 @@ const routes: Array<routeRecordWithRole> = [
         name: "index",
         component: () => import("@/views/index.vue"),
         meta: {
+          roles: roles.PUBLIC
+        }
+      },
+      {
+        path: "/user",
+        name: "user",
+        component: () => import("@/views/user/index.vue"),
+        meta: {
+          // todo: 这里需要根据用户角色来判断
           roles: roles.PUBLIC
         }
       },
@@ -91,6 +99,36 @@ const routes: Array<routeRecordWithRole> = [
             }
           }
         ]
+      },
+      // 用户路由
+      {
+        path: "/member",
+        name: "member",
+        meta: {
+          roles: roles.USER
+        },
+        children: [
+          {
+            path: "/member",
+            redirect: "/member/index"
+          },
+          {
+            path: "/member/index",
+            name: "memberIndex",
+            component: () => import("@/views/member/index.vue"),
+            meta: {
+              roles: roles.USER
+            }
+          },
+          {
+            path: "/member/activity",
+            name: "memberActivity",
+            component: () => import("@/views/member/activity.vue"),
+            meta: {
+              roles: roles.USER
+            }
+          }
+        ]
       }
     ]
   }
@@ -103,7 +141,7 @@ const router = createRouter({
 
 router.beforeEach((to, form, next) => {
   const userStore = useUserStore()
-  // 权限控制，如果没有权限则跳转到404
+  // 权限控制，如果没有权限则跳转到没有权限页面
   // 如果是公共页面则不需要权限
   if (to.meta.roles !== roles.PUBLIC) {
     // 如果没有登录则跳转到登录页面

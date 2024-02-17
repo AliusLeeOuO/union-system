@@ -17,6 +17,7 @@ declare module 'vue' {
     AInputPassword: typeof import('@arco-design/web-vue')['InputPassword']
     ALink: typeof import('@arco-design/web-vue')['Link']
     AOption: typeof import('@arco-design/web-vue')['Option']
+    APagination: typeof import('@arco-design/web-vue')['Pagination']
     ARow: typeof import('@arco-design/web-vue')['Row']
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ASpace: typeof import('@arco-design/web-vue')['Space']

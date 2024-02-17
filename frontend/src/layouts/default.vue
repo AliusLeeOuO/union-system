@@ -11,7 +11,7 @@
 </script>
 <style scoped lang="less">
 main {
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 20px auto;
   padding: 0 20px;
 }

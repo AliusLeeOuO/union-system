@@ -19,6 +19,7 @@ interface activityListResponse {
   maxParticipants: number
   activityTypeId: number
   isActive: boolean
+  registrationCount: number
 }
 
 export default function useMemberApi() {

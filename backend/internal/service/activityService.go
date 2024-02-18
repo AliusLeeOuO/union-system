@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
@@ -132,6 +133,89 @@ func (s *ActivityService) DeleteActivity(activityID uint) error {
 
 func (s *ActivityService) GetAllActivities(pageSize uint, pageNum uint) ([]dto.ActivityResponse, uint, error) {
 	activities, total, err := s.Repo.GetAllActivities(pageSize, pageNum)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var activityResponses []dto.ActivityResponse
+	for _, activity := range activities {
+		activityResponses = append(activityResponses, dto.ActivityResponse{
+			ActivityID:        activity.ActivityID,
+			Title:             activity.ActivityName,
+			Description:       activity.Description,
+			StartTime:         activity.StartTime.Format(time.RFC3339),
+			EndTime:           activity.EndTime.Format(time.RFC3339),
+			Location:          activity.Location,
+			MaxParticipants:   activity.ParticipantLimit,
+			ActivityTypeID:    activity.ActivityTypeID,
+			IsActive:          activity.IsActive,
+			RegistrationCount: activity.RegistrationCount,
+		})
+	}
+
+	return activityResponses, total, nil
+}
+
+func (s *ActivityService) GetActivityDetails(activityID uint) (dto.ActivityResponse, error) {
+	activityDetails, err := s.Repo.GetActivityDetails(activityID)
+	if err != nil {
+		return dto.ActivityResponse{}, err
+	}
+
+	// 将 model.ActivityWithRegistrationCount 映射到 dto.ActivityDetailsResponse
+	return dto.ActivityResponse{
+		ActivityID:        activityDetails.ActivityID,
+		Title:             activityDetails.ActivityName,
+		Description:       activityDetails.Description,
+		StartTime:         activityDetails.StartTime.Format(time.RFC3339),
+		EndTime:           activityDetails.EndTime.Format(time.RFC3339),
+		Location:          activityDetails.Location,
+		MaxParticipants:   activityDetails.ParticipantLimit,
+		ActivityTypeID:    activityDetails.ActivityTypeID,
+		RegistrationCount: activityDetails.RegistrationCount,
+		IsActive:          activityDetails.IsActive,
+	}, nil
+}
+
+func (s *ActivityService) RegisterForActivity(userID, activityID uint) error {
+	// 获取活动详情
+	activity, err := s.Repo.GetActivityDetails(activityID)
+	if err != nil {
+		return err
+	}
+
+	// 检查活动是否被关闭或已经过了活动时间
+	if !activity.IsActive || activity.Removed || time.Now().After(activity.EndTime) {
+		return errors.New("活动已关闭或已过期")
+	}
+
+	// 检查报名人数是否已达到限制
+	if activity.RegistrationCount >= activity.ParticipantLimit {
+		return errors.New("活动报名人数已满")
+	}
+
+	// 执行报名操作
+	return s.Repo.RegisterForActivity(userID, activityID)
+}
+
+func (s *ActivityService) UnregisterFromActivity(userID, activityID uint) error {
+	// 获取活动详情
+	activity, err := s.Repo.GetActivityDetails(activityID)
+	if err != nil {
+		return err
+	}
+
+	// 检查是否超出了取消报名的时间（例如，活动开始前）
+	if time.Now().After(activity.EndTime) {
+		return errors.New("活动已开始，无法取消报名")
+	}
+
+	// 执行取消报名操作
+	return s.Repo.UnregisterFromActivity(userID, activityID)
+}
+
+func (s *ActivityService) GetRegisteredActivities(userID, pageSize, pageNum uint) ([]dto.ActivityResponse, uint, error) {
+	activities, total, err := s.Repo.GetRegisteredActivities(userID, pageSize, pageNum)
 	if err != nil {
 		return nil, 0, err
 	}

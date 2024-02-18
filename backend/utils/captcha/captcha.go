@@ -23,7 +23,7 @@ func CreateCaptcha() (*dto.CaptchaResponse, error) {
 
 	driver := driverString.ConvertFonts()        // 将配置的字体转换为 DriverString 可用的格式。
 	c := base64Captcha.NewCaptcha(driver, store) // 创建一个新的 base64Captcha 实例。
-	id, b64s, err := c.Generate()                // 生成验证码，返回验证码ID、base64编码的图片和可能的错误。
+	id, b64s, _, err := c.Generate()             // 生成验证码，返回验证码ID、base64编码的图片和可能的错误。
 	if err != nil {
 		return nil, err // 如果有错误发生，则返回错误。
 	}

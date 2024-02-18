@@ -49,8 +49,8 @@ onMounted(async () => {
       <div class="activity-item" v-for="item in activityList" :key="item.activityId">
         <div class="activity-item-title">{{ item.title }}</div>
         <div class="activity-item-description">{{ item.description }}</div>
-        <div class="activity-item-time">报名人数：{{ item.maxParticipants }}</div>
-        <div class="activity-item-time">地址：{{ item.location }}</div>
+        <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
+        <div class="activity-item-location">地址：{{ item.location }}</div>
         <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
           {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
         </div>
@@ -78,6 +78,7 @@ onMounted(async () => {
     padding: 20px;
     margin-top: 20px;
     margin-bottom: 20px;
+    cursor: pointer;
     // dark mode
     @media (prefers-color-scheme: dark) {
       background-color: #232324;
@@ -103,6 +104,14 @@ onMounted(async () => {
     }
 
     .activity-item-time {
+      margin-top: 10px;
+    }
+
+    .activity-item-persons {
+      margin-top: 10px;
+    }
+
+    .activity-item-location {
       margin-top: 10px;
     }
   }

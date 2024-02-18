@@ -1,7 +1,6 @@
 package admin_assistance
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
 	"union-system/internal/dto"
@@ -16,7 +15,6 @@ func ReplyAssistance(c *fiber.Ctx) error {
 	if err := c.BodyParser(&form); err != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
-	fmt.Println("form:", form)
 
 	// 从 JWT 中获取 userID
 	userID := c.Locals("userID").(uint)
@@ -27,7 +25,6 @@ func ReplyAssistance(c *fiber.Ctx) error {
 		"ResponseText": form.ResponseText,
 		"NewStatusID":  form.NewStatusID,
 	}
-	fmt.Println("fieldsCheck:", fieldsToCheck)
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := "缺少必要字段: " + missingField

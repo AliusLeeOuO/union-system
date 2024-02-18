@@ -1,7 +1,6 @@
 package member_assistance
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
 	"union-system/internal/dto"
@@ -16,7 +15,6 @@ func NewAssistance(c *fiber.Ctx) error {
 	if err := c.BodyParser(&form); err != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
-	fmt.Println("form:", form)
 
 	// 验证字段
 	fieldsToCheck := map[string]interface{}{
@@ -24,7 +22,6 @@ func NewAssistance(c *fiber.Ctx) error {
 		"Description": form.Description,
 		"TypeID":      int(form.TypeID),
 	}
-	fmt.Println("fieldsCheck:", fieldsToCheck)
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
 		errorMessage := "缺少必要字段: " + missingField

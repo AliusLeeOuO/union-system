@@ -52,18 +52,25 @@ type EditActivityRequest struct {
 }
 
 type ActivityResponse struct {
-	ActivityID      uint   `json:"activityId"`
-	Title           string `json:"title"`
-	Description     string `json:"description"`
-	StartTime       string `json:"startTime"`
-	EndTime         string `json:"endTime"`
-	Location        string `json:"location"`
-	MaxParticipants uint   `json:"maxParticipants"`
-	ActivityTypeID  uint   `json:"activityTypeId"`
-	IsActive        bool   `json:"isActive"`
+	ActivityID        uint   `json:"activityId"`
+	Title             string `json:"title"`
+	Description       string `json:"description"`
+	StartTime         string `json:"startTime"`
+	EndTime           string `json:"endTime"`
+	Location          string `json:"location"`
+	MaxParticipants   uint   `json:"maxParticipants"`
+	ActivityTypeID    uint   `json:"activityTypeId"`
+	IsActive          bool   `json:"isActive"`
+	RegistrationCount uint   `json:"registrationCount"`
 }
 
 type UserGetActivityListResponse struct {
+	PageResponse
+	Data []ActivityResponse `json:"data"`
+}
+
+// UserGetRegisteredActivityListResponse 用于返回用户已报名活动列表的响应
+type UserGetRegisteredActivityListResponse struct {
 	PageResponse
 	Data []ActivityResponse `json:"data"`
 }

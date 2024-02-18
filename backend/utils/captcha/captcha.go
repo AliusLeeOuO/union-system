@@ -14,10 +14,10 @@ func CreateCaptcha() (*dto.CaptchaResponse, error) {
 	var driverString base64Captcha.DriverString // 创建一个 DriverString 结构体实例，用于配置验证码的参数。
 
 	// 设置验证码字符源，这里包含数字和大小写字母。
-	driverString.Source = "1234567890QWERTYUPLKJHGFDSAZXCVBNMqwertyupkjhgfdsazxcvbnm"
+	driverString.Source = "123456789QWERTYUPLKJHGFDSAZXCVBNMqwertyupkjhgfdsazxcvbnm"
 	driverString.Width = 120                                                      // 设置验证码图片的宽度。
 	driverString.Height = 50                                                      // 设置验证码图片的高度。
-	driverString.NoiseCount = 0                                                   // 设置验证码噪点数量，这里设置为 0。
+	driverString.NoiseCount = 3                                                   // 设置验证码噪点数量，这里设置为 3。
 	driverString.Length = 4                                                       // 设置验证码的长度，这里设置为 4 个字符。
 	driverString.Fonts = []string{"RitaSmith.ttf", "actionj.ttf", "chromohv.ttf"} // 设置验证码的字体。
 

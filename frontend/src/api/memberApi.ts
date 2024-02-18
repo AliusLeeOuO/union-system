@@ -27,6 +27,7 @@ export default function useMemberApi() {
     activityList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/list", qs.stringify({
       page_size: pageSize,
       page_num: pageNum
-    }))
+    })),
+    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityListResponse>> => axiosInstance.get(`/member/activity/detail/${activityId}`)
   }
 }

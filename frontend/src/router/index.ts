@@ -127,6 +127,16 @@ const routes: Array<routeRecordWithRole> = [
             meta: {
               roles: roles.USER
             }
+          },
+          {
+            path: "/member/activityDetail/:id",
+            name: "memberActivityDetail",
+            component: () => import("@/views/member/activityDetail.vue")
+          },
+          {
+            path: "/member/assistance",
+            name: "memberAssistance",
+            component: () => import("@/views/member/assistance.vue")
           }
         ]
       }

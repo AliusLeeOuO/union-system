@@ -46,7 +46,7 @@ onMounted(async () => {
   <div class="activity-content">
     <h2>活动列表</h2>
     <div class="activity-items">
-      <div class="activity-item" v-for="item in activityList" :key="item.activityId">
+      <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item" v-for="item in activityList" :key="item.activityId">
         <div class="activity-item-title">{{ item.title }}</div>
         <div class="activity-item-description">{{ item.description }}</div>
         <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
@@ -54,7 +54,7 @@ onMounted(async () => {
         <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
           {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
         </div>
-      </div>
+      </router-link>
     </div>
     <div class="activity-pagination">
       <a-pagination
@@ -73,6 +73,9 @@ onMounted(async () => {
 .activity-content {
   // 改成圆角
   .activity-item {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     border-radius: 10px;
     background-color: #f5f5f5;
     padding: 20px;

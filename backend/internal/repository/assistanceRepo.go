@@ -74,9 +74,17 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	var responses []model.AssistanceResponse
 
 	// 获取工单信息
-	if err := r.DB.Preload("AssistanceType").Preload("AssistanceStatus").First(&assistance, requestID).Error; err != nil {
+	if err := r.DB.Preload("AssistanceType").First(&assistance, "request_id = ?", requestID).Error; err != nil {
 		return assistance, nil, err
 	}
+
+	// 手动实现，根据assistanceRequest中的status_id查询AssistanceStatus
+	var assistanceStatus model.AssistanceStatus
+	if err := r.DB.First(&assistanceStatus, assistance.StatusID).Error; err != nil {
+		// 处理错误
+		return assistance, nil, err
+	}
+	assistance.AssistanceStatus = assistanceStatus
 
 	// 获取相关的交流记录
 	if err := r.DB.Where("request_id = ?", requestID).Find(&responses).Error; err != nil {
@@ -186,4 +194,34 @@ func (r *AssistanceRepository) GetAssistanceType() ([]model.AssistanceType, erro
 		return nil, result.Error
 	}
 	return assistanceTypes, nil
+}
+
+func (r *AssistanceRepository) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]model.AssistanceRequest, uint, error) {
+	var assistances []model.AssistanceRequest
+	var total int64
+	offset := (pageNum - 1) * pageSize
+
+	// 计算总数
+	countResult := r.DB.Model(&model.AssistanceRequest{}).Where("member_id = ?", memberID).Count(&total)
+	if countResult.Error != nil {
+		return nil, 0, countResult.Error
+	}
+
+	// 获取数据
+	result := r.DB.Preload("AssistanceType").Preload("AssistanceStatus").Where("member_id = ?", memberID).Offset(int(offset)).Limit(int(pageSize)).Find(&assistances)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return assistances, uint(total), nil
+}
+
+// GetAssistanceStatus 获取工单状态
+func (r *AssistanceRepository) GetAssistanceStatus() ([]model.AssistanceStatus, error) {
+	var assistanceStatus []model.AssistanceStatus
+	result := r.DB.Find(&assistanceStatus)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assistanceStatus, nil
 }

@@ -1,8 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/gofiber/fiber/v2"
 	"time"
+	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
 	"union-system/internal/repository"
@@ -35,7 +38,7 @@ func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, respons
 	}
 
 	// 检查工单是否已关闭
-	closedStatusID := uint(4) // 假设 4 为“已关闭”的状态ID
+	closedStatusID := uint(4) // 4 为“已关闭”的状态ID
 	if assistanceRequest.StatusID == closedStatusID {
 		return errors.New("cannot reply to a closed assistance request")
 	}
@@ -82,6 +85,60 @@ func (s *AssistanceService) GetAssistanceType() ([]dto.GetAssistanceTypeRequest,
 			AssistanceTypeId: assistanceType.AssistanceTypeID,
 			TypeName:         assistanceType.TypeName,
 		})
+	}
+	return response, nil
+}
+
+func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]dto.MyAssistanceResponse, uint, error) {
+	assistances, total, err := s.Repo.GetMyAssistances(memberID, pageSize, pageNum)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var responses []dto.MyAssistanceResponse
+	for _, a := range assistances {
+		responses = append(responses, dto.MyAssistanceResponse{
+			AssistanceID:     a.RequestID,
+			Description:      a.Description,
+			RequestDate:      a.CreatedAt.Format(time.RFC3339),
+			AssistanceTypeID: a.AssistanceType.AssistanceTypeID,
+			AssistanceType:   a.AssistanceType.TypeName,
+			StatusID:         a.StatusID,
+			Title:            a.Title,
+		})
+	}
+
+	return responses, total, nil
+}
+
+// GetAssistanceStatus 获取工单状态
+func (s *AssistanceService) GetAssistanceStatus(c *fiber.Ctx) ([]dto.AssistanceStatusResponse, error) {
+	const assistanceStatusCacheKey = "assistanceStatuses"
+	// 尝试从 Redis 缓存中读取
+	cachedStatuses, err := global.RedisClient.Get(c.Context(), assistanceStatusCacheKey).Result()
+	if err == nil && cachedStatuses != "" {
+		var cachedResponse []dto.AssistanceStatusResponse
+		if err := json.Unmarshal([]byte(cachedStatuses), &cachedResponse); err == nil {
+			return cachedResponse, nil // 返回缓存的数据
+		}
+	}
+	// 如果缓存未命中或存在错误，从数据库加载
+	statuses, err := s.Repo.GetAssistanceStatus()
+	if err != nil {
+		return nil, err
+	}
+	var response []dto.AssistanceStatusResponse
+	for _, status := range statuses {
+		response = append(response, dto.AssistanceStatusResponse{
+			ID:   status.StatusID,
+			Name: status.StatusName,
+		})
+	}
+
+	// 将结果序列化并存储到 Redis 缓存中
+	serialized, err := json.Marshal(response)
+	if err == nil {
+		global.RedisClient.Set(c.Context(), assistanceStatusCacheKey, serialized, 24*time.Hour) // 缓存 24 小时
 	}
 	return response, nil
 }

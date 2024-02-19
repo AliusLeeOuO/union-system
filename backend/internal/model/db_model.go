@@ -104,8 +104,8 @@ type AssistanceRequest struct {
 	CreatedAt   time.Time `gorm:"column:created_at"`
 	UpdatedAt   time.Time `gorm:"column:updated_at"`
 	// 辅助字段
+	AssistanceStatus AssistanceStatus `gorm:"foreignKey:status_id"`
 	AssistanceType   AssistanceType   `gorm:"foreignKey:type_id"`
-	AssistanceStatus AssistanceStatus `gorm:"foreignKey:StatusID"`
 }
 
 // AssistanceResponse 对应于 tb_assistance_response

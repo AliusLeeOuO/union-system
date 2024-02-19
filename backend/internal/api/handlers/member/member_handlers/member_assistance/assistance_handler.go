@@ -10,4 +10,6 @@ func Init(app fiber.Router) {
 	assistance.Post("/reply", UserReplyAssistance)
 	assistance.Post("/close", CloseAssistance)
 	assistance.Get("/type", GetAssistanceType)
+	assistance.Post("/list", GetMyAssistances)
+	assistance.Post("/view", ViewAssistance)
 }

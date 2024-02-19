@@ -1,13 +1,127 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <div>
     <h1>帮助</h1>
   </div>
+  <a-tabs default-active-key="1">
+    <a-tab-pane key="1" title="我的请求">
+      <div class="my-assistant-overview">
+        <div class="my-assistant-overview-block">
+          <div class="my-assistant-overview-title">总工单数</div>
+          <div class="my-assistant-overview-content">{{ overviewItem.total }}</div>
+        </div>
+        <div class="my-assistant-overview-block">
+          <div class="my-assistant-overview-title">待我处理</div>
+          <div class="my-assistant-overview-content">{{ overviewItem.pending }}</div>
+        </div>
+        <div class="my-assistant-overview-block">
+          <div class="my-assistant-overview-title">处理中</div>
+          <div class="my-assistant-overview-content">{{ overviewItem.pending }}</div>
+        </div>
+      </div>
+      <a-table :columns="columns" :data="tableData" size="large" >
+        <template #status="{ record }">
+          <a-tag color="cyan" v-if="record.status_id === 1">待审核</a-tag>
+          <a-tag color="blue" v-else-if="record.status_id === 2">处理中</a-tag>
+          <a-tag color="green" v-else-if="record.status_id === 3">已解决</a-tag>
+          <a-tag color="gray" v-else-if="record.status_id === 4">已关闭</a-tag>
+        </template>
+        <template #action="{ record }">
+          <router-link :to="`/member/assistanceDetail/${record.assistance_id}`">
+            <a-button>查看</a-button>
+          </router-link>
+        </template>
+      </a-table>
+    </a-tab-pane>
+    <a-tab-pane key="2" title="新建请求">
+      新建请求
+    </a-tab-pane>
+  </a-tabs>
 </template>
+<script setup lang="ts">
+import { reactive, onMounted } from "vue"
+import useMemberApi from "@/api/memberApi"
+import type { assistanceListResponse } from "@/api/memberApi"
+import { Message } from "@arco-design/web-vue"
+import { handleXhrResponse } from "@/api"
+import dayjs from "dayjs"
 
+const memberApi = useMemberApi()
+
+const getMyRequest = async () => {
+  const { data } = await handleXhrResponse(() => memberApi.assistanceList(10, 1), Message)
+  // 清除原有数据
+  tableData.splice(0, tableData.length)
+  data.data.assistances.forEach((item: assistanceListResponse) => {
+    tableData.push({
+      title: item.title,
+      assistance_id: item.assistance_id,
+      assistance_type: item.assistance_type,
+      assistance_type_id: item.assistance_type_id,
+      description: item.description,
+      request_date: dayjs(item.request_date).format("YYYY-MM-DD HH:mm:ss"),
+      status: item.status,
+      status_id: item.status_id,
+    })
+  })
+  overviewItem.total = data.data.total
+}
+
+onMounted(async () => {
+  await getMyRequest()
+})
+
+const overviewItem = reactive({
+  total: 0,
+  pending: 0,
+  processing: 0
+})
+
+const columns = [
+  {
+    title: "请求编号",
+    dataIndex: "assistance_id"
+  },
+  {
+    title: "标题",
+    dataIndex: "title"
+  },
+  {
+    title: "类型",
+    dataIndex: "assistance_type"
+  },
+  {
+    title: "状态",
+    slotName: "status"
+  },
+  {
+    title: "提交时间",
+    dataIndex: "request_date"
+  },
+  {
+    title: "操作",
+    slotName: "action"
+  }
+]
+const tableData = reactive<assistanceListResponse[]>([])
+</script>
 <style scoped lang="less">
+.my-assistant-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 5px;
+  padding: 20px;
 
+  .my-assistant-overview-block {
+    text-align: center;
+
+    .my-assistant-overview-title {
+      font-size: 12px;
+    }
+
+    .my-assistant-overview-content {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+  }
+}
 </style>

@@ -137,6 +137,11 @@ const routes: Array<routeRecordWithRole> = [
             path: "/member/assistance",
             name: "memberAssistance",
             component: () => import("@/views/member/assistance.vue")
+          },
+          {
+            path: "/member/assistanceDetail/:id",
+            name: "memberAssistanceDetail",
+            component: () => import("@/views/member/assistanceDetail.vue")
           }
         ]
       }

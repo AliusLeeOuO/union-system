@@ -10,6 +10,7 @@ type ViewAssistanceRequest struct {
 }
 
 type AssistanceResponse struct {
+	ResponseID   uint      `json:"response_id"`
 	ResponderID  uint      `json:"responder_id"`
 	ResponseText string    `json:"response_text"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -27,7 +28,10 @@ type ViewAssistanceResponse struct {
 	AssistanceType string                   `json:"assistance_type"`
 	Title          string                   `json:"title"`
 	Description    string                   `json:"description"`
+	CreatedAt      string                   `json:"created_at"`
+	UpdatedAt      string                   `json:"updated_at"`
 	Status         AssistanceStatusResponse `json:"status"`
+	Type           GetAssistanceTypeRequest `json:"type"`
 	Responses      []AssistanceResponse     `json:"responses"`
 }
 
@@ -58,4 +62,28 @@ type UserReplyAssistanceRequest struct {
 
 type CloseAssistanceRequest struct {
 	RequestID uint `json:"request_id" form:"request_id"`
+}
+
+// MyAssistanceResponse 用于封装单个工单的详细信息
+type MyAssistanceResponse struct {
+	Title            string `json:"title"`
+	AssistanceID     uint   `json:"assistance_id"`
+	Description      string `json:"description"`
+	RequestDate      string `json:"request_date"`
+	AssistanceTypeID uint   `json:"assistance_type_id"`
+	AssistanceType   string `json:"assistance_type"`
+	StatusID         uint   `json:"status_id"`
+}
+
+// MyAssistancesListResponse 用于返回会员的工单列表和分页信息
+type MyAssistancesListResponse struct {
+	PageResponse
+	AssistanceStatus []AssistanceStatusDTO  `json:"assistance_status"`
+	Assistances      []MyAssistanceResponse `json:"assistances"`
+}
+
+// AssistanceStatusDTO 用于封装状态ID和状态名称
+type AssistanceStatusDTO struct {
+	StatusID   uint   `json:"status_id"`
+	StatusName string `json:"status_name"`
 }

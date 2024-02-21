@@ -19,7 +19,6 @@
             <a-form-item field="role" label="角色">
               <a-select :style="{width:'200px'}" placeholder="选择角色" v-model="searchFormItem.role">
                 <a-option :value="roles.ADMIN">管理员</a-option>
-                <a-option :value="roles.FINANCE">财务</a-option>
                 <a-option :value="roles.USER">用户</a-option>
               </a-select>
             </a-form-item>

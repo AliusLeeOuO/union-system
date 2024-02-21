@@ -15,7 +15,7 @@ func GetAssistanceType(c *fiber.Ctx) error {
 	// 初始化 service
 	assistanceTypeService := service.NewAssistanceService(repository.NewAssistanceRepository(global.Database))
 	// 调用 service 获取数据
-	request, err := assistanceTypeService.GetAssistanceType()
+	request, err := assistanceTypeService.GetAssistanceType(c)
 	if err != nil {
 		// 使用 BaseResponse 发送错误响应
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)

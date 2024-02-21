@@ -18,7 +18,11 @@
           <div class="my-assistant-overview-content">{{ overviewItem.pending }}</div>
         </div>
       </div>
-      <a-table :columns="columns" :data="tableData" size="large" >
+      <a-table :columns="columns" :data="tableData" size="large" @page-change="changePage" :pagination="{
+        total: overviewItem.total,
+        pageSize: 10,
+        showSizeChanger: false
+      }">
         <template #status="{ record }">
           <a-tag color="cyan" v-if="record.status_id === 1">待审核</a-tag>
           <a-tag color="blue" v-else-if="record.status_id === 2">处理中</a-tag>
@@ -33,22 +37,63 @@
       </a-table>
     </a-tab-pane>
     <a-tab-pane key="2" title="新建请求">
-      新建请求
+      <a-form :model="newFormItem" :label-col-props="{
+        span: 2
+      }" :wrapper-col-props="{
+        span: 22
+      }">
+        <a-form-item field="type_id" label="请求类型" required>
+          <a-radio-group v-model="newFormItem.type_id" type="button">
+            <a-radio :value="item.assistance_type_id" v-for="item in assistanceType" :key="item.assistance_type_id">
+              {{ item.type_name }}
+            </a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <a-form-item field="title" label="请求标题"
+                     :rules="[{required:true,message:'name is required'},{minLength:5,message:'最少需要5个字符'}]"
+                     :validate-trigger="['change','input']"
+        >
+          <a-input v-model="newFormItem.title" placeholder="输入请求标题" />
+        </a-form-item>
+        <a-form-item label="详细信息"
+                     validate-trigger="input"
+                     :rules="[{required:true,message:'请输入详细信息'}]"
+                     field="description"
+        >
+          <a-textarea
+            placeholder="在这里输入详细信息"
+            :auto-size="{
+              minRows: 3
+            }"
+            v-model="newFormItem.description"
+          />
+        </a-form-item>
+        <div>
+          <a-button type="primary" @click="submitRequest" long size="large">提交</a-button>
+        </div>
+      </a-form>
     </a-tab-pane>
   </a-tabs>
 </template>
 <script setup lang="ts">
 import { reactive, onMounted } from "vue"
 import useMemberApi from "@/api/memberApi"
-import type { assistanceListResponse } from "@/api/memberApi"
+import type { assistanceListResponse, assistanceTypeResponse } from "@/api/memberApi"
 import { Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import dayjs from "dayjs"
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const memberApi = useMemberApi()
 
+const pageItem = reactive({
+  pageSize: 10,
+  current: 1
+})
+
 const getMyRequest = async () => {
-  const { data } = await handleXhrResponse(() => memberApi.assistanceList(10, 1), Message)
+  const { data } = await handleXhrResponse(() => memberApi.assistanceList(pageItem.pageSize, pageItem.current), Message)
   // 清除原有数据
   tableData.splice(0, tableData.length)
   data.data.assistances.forEach((item: assistanceListResponse) => {
@@ -60,15 +105,11 @@ const getMyRequest = async () => {
       description: item.description,
       request_date: dayjs(item.request_date).format("YYYY-MM-DD HH:mm:ss"),
       status: item.status,
-      status_id: item.status_id,
+      status_id: item.status_id
     })
   })
   overviewItem.total = data.data.total
 }
-
-onMounted(async () => {
-  await getMyRequest()
-})
 
 const overviewItem = reactive({
   total: 0,
@@ -103,6 +144,38 @@ const columns = [
   }
 ]
 const tableData = reactive<assistanceListResponse[]>([])
+
+const changePage = async (page: number) => {
+  pageItem.current = page
+  await getMyRequest()
+}
+
+// 新建请求
+const newFormItem = reactive({
+  title: "",
+  type_id: 0,
+  description: ""
+})
+
+const assistanceType = reactive<assistanceTypeResponse[]>([])
+const getAssistanceType = async () => {
+  const { data } = await handleXhrResponse(() => memberApi.assistanceType(), Message)
+  assistanceType.splice(0, assistanceType.length)
+  assistanceType.push(...data.data)
+}
+
+const submitRequest = async () => {
+  const { data } = await handleXhrResponse(() => memberApi.assistanceNew(newFormItem.type_id, newFormItem.title, newFormItem.description), Message)
+  Message.success("提交成功")
+  await router.push(`/member/assistanceDetail/${data.data.request_id}`)
+}
+
+
+onMounted(async () => {
+  await getMyRequest()
+  await getAssistanceType()
+})
+
 </script>
 <style scoped lang="less">
 .my-assistant-overview {

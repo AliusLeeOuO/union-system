@@ -32,12 +32,13 @@ func NewAssistance(c *fiber.Ctx) error {
 	memberID := c.Locals("userID").(uint)
 
 	assistanceService := service.NewAssistanceService(repository.NewAssistanceRepository(global.Database))
-	if err := assistanceService.CreateNewAssistance(memberID, form); err != nil {
+
+	id, err := assistanceService.CreateNewAssistance(memberID, form)
+	if err != nil {
 		return model.SendFailureResponse(c, model.OperationFailedErrorCode, err.Error())
 	}
 
 	return model.SendSuccessResponse(c, fiber.Map{
-		"success": true,
-		"message": "Assistance request created successfully",
+		"request_id": id,
 	})
 }

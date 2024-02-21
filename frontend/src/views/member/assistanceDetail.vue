@@ -1,8 +1,18 @@
 <template>
-  <h1>
-    帮助
-  </h1>
-  <a-steps label-placement="vertical" :current="state.status.id">
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
+  <div class="assistance-status">
+    <div class="description-title">援助状态</div>
+    <a-button @click="closeModal = true" v-if="state.status.id !== 4">关闭本援助</a-button>
+  </div>
+  <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
     <a-step description="This is a description">待审核</a-step>
     <a-step description="This is a description">处理中</a-step>
     <a-step description="This is a description">已解决</a-step>
@@ -11,25 +21,71 @@
   <div>
     <a-descriptions :data="descriptionData" size="large" title="帮助信息" layout="inline-vertical" :column="4"
                     bordered />
-    <div>交流记录</div>
-    <!--  TODO: 这里后端要传回复者的用户名   -->
-    <a-comment v-for="response in state.responses" :author="`response.responder_id`" :key="response.response_id"
-               :content="response.response_text"
-               :datetime="dayjs(response.created_at).format('YYYY-MM-DD HH:mm:ss')" />
-    <a-textarea placeholder="在这里输入你的回复" auto-size />
-    <a-button type="primary">提交回复</a-button>
+    <div>
+      <div class="description-title">交流记录</div>
+      <div>
+        <a-empty v-if="state.responses.length === 0" />
+        <!--  TODO: 这里后端要传回复者的用户名   -->
+        <a-comment v-for="response in state.responses"
+                   :author="`response.responder_id`"
+                   :key="response.response_id"
+                   :content="response.response_text"
+                   :datetime="dayjs(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
+                   v-else
+        />
+      </div>
+      <div v-if="state.status.id !== 4">
+        <div class="description-title">补充反馈</div>
+        <a-form :model="submitAssistanceForm" @submit="handleSubmit">
+          <a-form-item hide-label
+                       validate-trigger="input"
+                       :rules="[{required:true,message:'请输入回复内容'}]"
+                       field="response_text"
+          >
+            <a-textarea
+              placeholder="在这里输入你的回复"
+              auto-size
+              v-model="submitAssistanceForm.response_text"
+            />
+          </a-form-item>
+          <div class="submit-button">
+            <a-button type="primary" html-type="submit">提交回复</a-button>
+          </div>
+        </a-form>
+      </div>
+    </div>
   </div>
+  <a-modal v-model:visible="closeModal" @ok="closeAssistance">
+    <template #title>
+      关闭援助
+    </template>
+    <div>
+      确定关闭本援助吗？关闭后将无法再次开启。
+    </div>
+  </a-modal>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router"
 import useMemberApi, { type assistanceDetailResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
-import { onMounted, reactive } from "vue"
+import { Message, type ValidatedError } from "@arco-design/web-vue"
+import { onMounted, reactive, ref } from "vue"
 import dayjs from "dayjs"
 
 const memberApi = useMemberApi()
 const route = useRoute()
+
+// 面包屑
+const routes = [
+  {
+    path: "/member/assistance",
+    label: "帮助"
+  },
+  {
+    path: route.path,
+    label: "查看详情"
+  }
+]
 
 
 const getAssistanceDetail = async () => {
@@ -83,8 +139,75 @@ onMounted(async () => {
   await getAssistanceDetail()
 })
 
+// 提交回复
+const handleSubmit = async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    try {
+      await handleXhrResponse(() => memberApi.assistanceReply(Number(route.params.id), form.values.response_text), Message)
+      // state.responses.push(data.data)
+      Message.success("回复成功")
+      submitAssistanceForm.response_text = ""
+      await getAssistanceDetail()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+const submitAssistanceForm = reactive({
+  response_text: ""
+})
+
+
+// 关闭援助
+const closeModal = ref(false)
+const closeAssistance = async () => {
+  try {
+    await handleXhrResponse(() => memberApi.assistanceClose(Number(route.params.id)), Message)
+    Message.success("关闭成功")
+    await getAssistanceDetail()
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 </script>
 <style scoped lang="less">
+.assistance-status {
+  display: flex;
+  justify-content: space-between;
+}
 
+
+.step-items {
+  margin: 20px 0;
+}
+
+.description-title {
+  margin-top: 10px;
+  font-size: 16px;
+  padding-bottom: 5px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 8px; /* 方块的宽度 */
+    height: 18px; /* 方块的高度 */
+    background-color: rgb(var(--primary-6)); /* 方块的颜色 */
+    margin-right: 8px; /* 和文本之间的距离 */
+    vertical-align: middle;
+  }
+}
+
+.submit-textarea {
+  padding: 5px 0;
+}
+
+.submit-button {
+  display: flex;
+  justify-content: flex-end;
+}
 </style>

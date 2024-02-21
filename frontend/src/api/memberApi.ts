@@ -66,6 +66,15 @@ export interface assistanceDetailResponseData {
   created_at: string
 }
 
+export interface assistanceTypeResponse {
+  assistance_type_id: number
+  type_name: string
+}
+
+export interface assistanceNewResponse {
+  request_id: number
+}
+
 export default function useMemberApi() {
   return {
     activityList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/list", qs.stringify({
@@ -79,6 +88,19 @@ export default function useMemberApi() {
     })),
     assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> => axiosInstance.post(`/member/assistance/view`, qs.stringify({
       request_id: assistanceId
+    })),
+    assistanceReply: (requestId: number, responseText: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/assistance/reply", qs.stringify({
+      request_id: requestId,
+      response_text: responseText
+    })),
+    assistanceClose: (requestId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/assistance/close", qs.stringify({
+      request_id: requestId
+    })),
+    assistanceType: (): Promise<AxiosApiResponse<assistanceTypeResponse[]>> => axiosInstance.get("/member/assistance/type"),
+    assistanceNew: (assistanceTypeId: number, title: string, description: string): Promise<AxiosApiResponse<assistanceNewResponse>> => axiosInstance.post("/member/assistance/new", qs.stringify({
+      type_id: assistanceTypeId,
+      title,
+      description
     }))
   }
 }

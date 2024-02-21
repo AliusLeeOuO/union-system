@@ -94,8 +94,12 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	return assistance, responses, nil
 }
 
-func (r *AssistanceRepository) CreateNewAssistance(assistance model.AssistanceRequest) error {
-	return r.DB.Create(&assistance).Error
+func (r *AssistanceRepository) CreateNewAssistance(assistance *model.AssistanceRequest) (uint, error) {
+	// 使用指针传递模型，这样Gorm可以更新模型中的ID字段
+	if err := r.DB.Create(assistance).Error; err != nil {
+		return 0, err // 返回错误
+	}
+	return assistance.RequestID, nil // 返回插入行的ID
 }
 
 // AdminReplyToAssistance 管理员回复工单

@@ -23,7 +23,6 @@ const submitChangePassword = async (form: {
 }) => {
   if (!form.errors) {
     // 提交修改密码
-    console.log(form.values)
     try {
       await handleXhrResponse(() => userApi.changePassword(form.values.oldPassword, form.values.newPassword), Message)
       Message.success("修改密码成功")

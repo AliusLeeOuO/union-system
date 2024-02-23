@@ -1,8 +1,14 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"time"
+	"union-system/global"
 	"union-system/internal/model"
 )
 
@@ -31,10 +37,42 @@ func (r *ActivityRepository) GetActivityType() ([]model.ActivityType, error) {
 	return activityType, result.Error
 }
 
-func (r *ActivityRepository) GetActivityTypeById(activityId uint) (model.ActivityType, error) {
-	var activity model.ActivityType
-	result := r.DB.Where("activity_type_id = ?", activityId).First(&activity)
-	return activity, result.Error
+func (r *ActivityRepository) GetActivityTypeById(c *fiber.Ctx, activityId uint) (model.ActivityType, error) {
+	var activityType model.ActivityType
+
+	// 构建用于该活动类型的缓存键
+	cacheKey := fmt.Sprintf("activityType:%d", activityId)
+
+	// 尝试从 Redis 缓存获取活动类型数据
+	cachedData, err := global.RedisClient.Get(c.Context(), cacheKey).Result()
+	if errors.Is(err, redis.Nil) {
+		// 缓存未命中，从数据库获取
+		result := r.DB.Where("activity_type_id = ?", activityId).First(&activityType)
+		if result.Error != nil {
+			return model.ActivityType{}, result.Error
+		}
+
+		// 将查询结果序列化为 JSON 并存储到 Redis 缓存
+		serializedData, err := json.Marshal(activityType)
+		if err == nil {
+			// 设置缓存，这里使用 1 小时过期时间作为示例
+			global.RedisClient.Set(c.Context(), cacheKey, serializedData, time.Hour)
+		}
+
+		return activityType, nil
+	} else if err != nil {
+		// 处理可能的 Redis 错误
+		return model.ActivityType{}, err
+	}
+
+	// 如果缓存命中，反序列化缓存的 JSON 数据到 activityType 对象
+	err = json.Unmarshal([]byte(cachedData), &activityType)
+	if err != nil {
+		// 如果反序列化失败，返回错误
+		return model.ActivityType{}, err
+	}
+
+	return activityType, nil
 }
 
 func (r *ActivityRepository) CreateActivity(activity model.Activity) (uint, error) {

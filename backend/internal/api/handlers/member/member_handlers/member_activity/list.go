@@ -28,7 +28,7 @@ func GetActivitiesHandler(c *fiber.Ctx) error {
 	}
 
 	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
-	activities, total, err := activityService.GetAllActivities(from.PageSize, from.PageNum)
+	activities, total, err := activityService.GetAllActivities(c, from.PageSize, from.PageNum)
 	if err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode, err.Error())
 	}

@@ -48,7 +48,7 @@ func CreateActivityHandler(c *fiber.Ctx) error {
 	}
 	// 初始化 service 检查活动类型
 	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
-	activityType, err := activityService.GetActivityTypeById(req.Type)
+	activityType, err := activityService.GetActivityTypeById(c, req.Type)
 	if err != nil || activityType.ActivityTypeId != req.Type {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, "活动类型不存在")
 	}

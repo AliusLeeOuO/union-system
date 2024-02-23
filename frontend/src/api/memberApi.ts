@@ -18,6 +18,7 @@ interface activityListResponse {
   location: string
   maxParticipants: number
   activityTypeId: number
+  activityTypeName: string
   isActive: boolean
   registrationCount: number
 }
@@ -82,6 +83,14 @@ export default function useMemberApi() {
       page_num: pageNum
     })),
     activityDetail: (activityId: number): Promise<AxiosApiResponse<activityListResponse>> => axiosInstance.get(`/member/activity/detail/${activityId}`),
+    activityRegister: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/activity/register/${activityId}`),
+    activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/member/activity/cancel/${activityId}`),
+    // TODO:类型没写
+    activityRegList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<any>> => axiosInstance.post("/member/history", qs.stringify({
+      page_size: pageSize,
+      page_num: pageNum
+    })),
+    activityType: (): Promise<AxiosApiResponse<any>> => axiosInstance.get("/member/type"),
     assistanceList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<assistanceListResponseData>> => axiosInstance.post("/member/assistance/list", qs.stringify({
       page_size: pageSize,
       page_num: pageNum

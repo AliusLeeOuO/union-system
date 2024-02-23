@@ -32,7 +32,7 @@ func GetRegisteredActivities(c *fiber.Ctx) error {
 	}
 
 	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
-	activities, total, err := activityService.GetRegisteredActivities(userID, form.PageSize, form.PageNum)
+	activities, total, err := activityService.GetRegisteredActivities(c, userID, form.PageSize, form.PageNum)
 	if err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode, "Failed to retrieve registered activities")
 	}

@@ -147,7 +147,6 @@ const handleSubmit = async (form: {
   if (!form.errors) {
     try {
       await handleXhrResponse(() => memberApi.assistanceReply(Number(route.params.id), form.values.response_text), Message)
-      // state.responses.push(data.data)
       Message.success("回复成功")
       submitAssistanceForm.response_text = ""
       await getAssistanceDetail()

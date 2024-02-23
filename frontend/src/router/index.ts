@@ -4,6 +4,7 @@ import { useUserStore } from "@/stores/user"
 export enum roles {
   ADMIN = 1,
   USER = 2,
+  LOGIN = 9998,
   PUBLIC = 9999
 }
 
@@ -50,8 +51,7 @@ const routes: Array<routeRecordWithRole> = [
         name: "user",
         component: () => import("@/views/user/index.vue"),
         meta: {
-          // todo: 这里需要根据用户角色来判断
-          roles: roles.PUBLIC
+          roles: roles.LOGIN
         }
       },
       {
@@ -159,12 +159,12 @@ router.beforeEach((to, form, next) => {
   // 权限控制，如果没有权限则跳转到没有权限页面
   // 如果是公共页面则不需要权限
   if (to.meta.roles !== roles.PUBLIC) {
-    // 如果没有登录则跳转到登录页面
-    if (userStore.userInfo.token.length === 0) {
-      next({ path: "/login" })
+    // 如果该页面需要登录权限
+    if ((to.meta.roles === roles.LOGIN && !userStore.isUserLoggedIn) || !userStore.isUserLoggedIn) {
+      next({ name: "/login" })
       return
     }
-    if (to.meta.roles !== userStore.userInfo.userRole) {
+    if (to.meta.roles !== userStore.userInfo.userRole && to.meta.roles !== roles.LOGIN) {
       next({ path: `/noAuth` })
       return
     }

@@ -22,7 +22,7 @@ func GetActivityDetails(c *fiber.Ctx) error {
 	// 初始化 service
 	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
 	// 调用 service 方法获取活动详情
-	activityDetails, err := activityService.GetActivityDetails(uint(activityID))
+	activityDetails, err := activityService.GetActivityDetails(c, uint(activityID))
 	if err != nil {
 		// 如果查询失败，返回错误响应
 		return model.SendFailureResponse(c, model.QueryParamErrorCode, "Failed to retrieve activity details")

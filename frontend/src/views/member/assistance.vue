@@ -37,7 +37,7 @@
       </a-table>
     </a-tab-pane>
     <a-tab-pane key="2" title="新建请求">
-      <a-form :model="newFormItem" :label-col-props="{
+      <a-form :model="newFormItem" @submit="submitRequest" :label-col-props="{
         span: 2
       }" :wrapper-col-props="{
         span: 22
@@ -50,7 +50,7 @@
           </a-radio-group>
         </a-form-item>
         <a-form-item field="title" label="请求标题"
-                     :rules="[{required:true,message:'name is required'},{minLength:5,message:'最少需要5个字符'}]"
+                     :rules="[{required:true,message:'请输入标题'},{minLength:5,message:'最少需要5个字符'}]"
                      :validate-trigger="['change','input']"
         >
           <a-input v-model="newFormItem.title" placeholder="输入请求标题" />
@@ -69,7 +69,7 @@
           />
         </a-form-item>
         <div>
-          <a-button type="primary" @click="submitRequest" long size="large">提交</a-button>
+          <a-button type="primary" long size="large" html-type="submit">提交</a-button>
         </div>
       </a-form>
     </a-tab-pane>
@@ -79,7 +79,7 @@
 import { reactive, onMounted } from "vue"
 import useMemberApi from "@/api/memberApi"
 import type { assistanceListResponse, assistanceTypeResponse } from "@/api/memberApi"
-import { Message } from "@arco-design/web-vue"
+import { Message,type ValidatedError } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import dayjs from "dayjs"
 import { useRouter } from "vue-router"
@@ -164,10 +164,15 @@ const getAssistanceType = async () => {
   assistanceType.push(...data.data)
 }
 
-const submitRequest = async () => {
-  const { data } = await handleXhrResponse(() => memberApi.assistanceNew(newFormItem.type_id, newFormItem.title, newFormItem.description), Message)
-  Message.success("提交成功")
-  await router.push(`/member/assistanceDetail/${data.data.request_id}`)
+const submitRequest = async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    const { data } = await handleXhrResponse(() => memberApi.assistanceNew(newFormItem.type_id, newFormItem.title, newFormItem.description), Message)
+    Message.success("提交成功")
+    await router.push(`/member/assistanceDetail/${data.data.request_id}`)
+  }
 }
 
 

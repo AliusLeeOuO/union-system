@@ -60,6 +60,7 @@ type ActivityResponse struct {
 	Location          string `json:"location"`
 	MaxParticipants   uint   `json:"maxParticipants"`
 	ActivityTypeID    uint   `json:"activityTypeId"`
+	ActivityTypeName  string `json:"activityTypeName"`
 	IsActive          bool   `json:"isActive"`
 	RegistrationCount uint   `json:"registrationCount"`
 }

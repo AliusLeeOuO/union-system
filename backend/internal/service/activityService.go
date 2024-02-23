@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
@@ -58,8 +59,8 @@ func (s *ActivityService) GetActivityType() ([]dto.GetActivityTypeRequest, error
 	return activityTypeRequest, nil
 }
 
-func (s *ActivityService) GetActivityTypeById(activityId uint) (dto.GetActivityTypeRequest, error) {
-	activity, err := s.Repo.GetActivityTypeById(activityId)
+func (s *ActivityService) GetActivityTypeById(c *fiber.Ctx, activityId uint) (dto.GetActivityTypeRequest, error) {
+	activity, err := s.Repo.GetActivityTypeById(c, activityId)
 	if err != nil {
 		return dto.GetActivityTypeRequest{}, err
 	}
@@ -131,15 +132,18 @@ func (s *ActivityService) DeleteActivity(activityID uint) error {
 	return s.Repo.DeleteActivity(activityID)
 }
 
-func (s *ActivityService) GetAllActivities(pageSize uint, pageNum uint) ([]dto.ActivityResponse, uint, error) {
+func (s *ActivityService) GetAllActivities(c *fiber.Ctx, pageSize uint, pageNum uint) ([]dto.ActivityResponse, uint, error) {
 	activities, total, err := s.Repo.GetAllActivities(pageSize, pageNum)
 	if err != nil {
 		return nil, 0, err
 	}
 
+	// 使用map来存储活动类型，避免重复查询
+	activityTypeMap := make(map[uint]model.ActivityType)
+
 	var activityResponses []dto.ActivityResponse
 	for _, activity := range activities {
-		activityResponses = append(activityResponses, dto.ActivityResponse{
+		var resp = dto.ActivityResponse{
 			ActivityID:        activity.ActivityID,
 			Title:             activity.ActivityName,
 			Description:       activity.Description,
@@ -150,17 +154,30 @@ func (s *ActivityService) GetAllActivities(pageSize uint, pageNum uint) ([]dto.A
 			ActivityTypeID:    activity.ActivityTypeID,
 			IsActive:          activity.IsActive,
 			RegistrationCount: activity.RegistrationCount,
-		})
+		}
+		// 查询活动类型
+		if _, ok := activityTypeMap[activity.ActivityTypeID]; !ok {
+			activityType, getTypeError := s.Repo.GetActivityTypeById(c, activity.ActivityTypeID)
+			if getTypeError != nil {
+				return nil, 0, err
+			}
+			activityTypeMap[activity.ActivityTypeID] = activityType
+		}
+		resp.ActivityTypeName = activityTypeMap[activity.ActivityTypeID].TypeName
+		activityResponses = append(activityResponses, resp)
 	}
 
 	return activityResponses, total, nil
 }
 
-func (s *ActivityService) GetActivityDetails(activityID uint) (dto.ActivityResponse, error) {
+func (s *ActivityService) GetActivityDetails(c *fiber.Ctx, activityID uint) (dto.ActivityResponse, error) {
 	activityDetails, err := s.Repo.GetActivityDetails(activityID)
 	if err != nil {
 		return dto.ActivityResponse{}, err
 	}
+
+	// 查询ActivityTypeName
+	activityType, err := s.Repo.GetActivityTypeById(c, activityDetails.ActivityTypeID)
 
 	// 将 model.ActivityWithRegistrationCount 映射到 dto.ActivityDetailsResponse
 	return dto.ActivityResponse{
@@ -172,6 +189,7 @@ func (s *ActivityService) GetActivityDetails(activityID uint) (dto.ActivityRespo
 		Location:          activityDetails.Location,
 		MaxParticipants:   activityDetails.ParticipantLimit,
 		ActivityTypeID:    activityDetails.ActivityTypeID,
+		ActivityTypeName:  activityType.TypeName,
 		RegistrationCount: activityDetails.RegistrationCount,
 		IsActive:          activityDetails.IsActive,
 	}, nil
@@ -214,15 +232,18 @@ func (s *ActivityService) UnregisterFromActivity(userID, activityID uint) error 
 	return s.Repo.UnregisterFromActivity(userID, activityID)
 }
 
-func (s *ActivityService) GetRegisteredActivities(userID, pageSize, pageNum uint) ([]dto.ActivityResponse, uint, error) {
+func (s *ActivityService) GetRegisteredActivities(c *fiber.Ctx, userID, pageSize, pageNum uint) ([]dto.ActivityResponse, uint, error) {
 	activities, total, err := s.Repo.GetRegisteredActivities(userID, pageSize, pageNum)
 	if err != nil {
 		return nil, 0, err
 	}
 
+	// 使用map来存储活动类型，避免重复查询
+	activityTypeMap := make(map[uint]model.ActivityType)
+
 	var activityResponses []dto.ActivityResponse
 	for _, activity := range activities {
-		activityResponses = append(activityResponses, dto.ActivityResponse{
+		var resp = dto.ActivityResponse{
 			ActivityID:      activity.ActivityID,
 			Title:           activity.ActivityName,
 			Description:     activity.Description,
@@ -232,7 +253,18 @@ func (s *ActivityService) GetRegisteredActivities(userID, pageSize, pageNum uint
 			MaxParticipants: activity.ParticipantLimit,
 			ActivityTypeID:  activity.ActivityTypeID,
 			IsActive:        activity.IsActive,
-		})
+		}
+
+		// 查询活动类型
+		if _, ok := activityTypeMap[activity.ActivityTypeID]; !ok {
+			activityType, getTypeError := s.Repo.GetActivityTypeById(c, activity.ActivityTypeID)
+			if getTypeError != nil {
+				return nil, 0, err
+			}
+			activityTypeMap[activity.ActivityTypeID] = activityType
+		}
+		resp.ActivityTypeName = activityTypeMap[activity.ActivityTypeID].TypeName
+		activityResponses = append(activityResponses, resp)
 	}
 
 	return activityResponses, total, nil

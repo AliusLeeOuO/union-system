@@ -14,7 +14,7 @@ func RegisterCORS() fiber.Handler {
 			}
 			return true
 		},
-		AllowMethods:     "POST, GET, OPTIONS",
+		AllowMethods:     "POST, GET, DELETE, OPTIONS",
 		AllowHeaders:     "Content-Type, AccessToken, X-CSRF-Token, Authorization, Token",
 		AllowCredentials: true,
 		ExposeHeaders:    "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type",

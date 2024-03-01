@@ -110,6 +110,10 @@ export default function useMemberApi() {
       type_id: assistanceTypeId,
       title,
       description
+    })),
+    assistanceMemberList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<assistanceListResponseData>> => axiosInstance.post("/member/assistance/member/list", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
     }))
   }
 }

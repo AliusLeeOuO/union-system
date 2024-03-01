@@ -32,7 +32,32 @@
       </div>
     </a-tab-pane>
     <a-tab-pane key="2" title="我的活动">
-      Content of Tab Panel 2
+        <div class="activity-content">
+          <div class="activity-items">
+            <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item" v-for="item in activityList" :key="item.activityId">
+              <div class="activity-item-title">{{ item.title }}</div>
+              <div class="activity-item-description">{{ item.description }}</div>
+              <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
+              <div class="activity-item-location">
+                地址：{{ item.location }}
+                活动类型：{{ item.activityTypeName }}
+              </div>
+              <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
+                {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
+              </div>
+            </router-link>
+          </div>
+          <div class="activity-pagination">
+            <a-pagination
+              :total="pagination.total"
+              v-model:page-size="pagination.pageSize"
+              v-model:current="pagination.current"
+              :default-page-size="5"
+              show-page-size @change="pageChange"
+              @page-size-change="pageSizeChange"
+            />
+          </div>
+        </div>
     </a-tab-pane>
   </a-tabs>
 </template>

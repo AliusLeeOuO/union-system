@@ -12,5 +12,5 @@ func Init(app fiber.Router) {
 	activity.Post("/register/:activityId", RegisterForActivity)
 	//activity.Post("/feedback/{activityId}")
 	activity.Delete("/cancel/:activityId", UnregisterFromActivity)
-	activity.Get("/history", GetRegisteredActivities)
+	activity.Post("/history", GetRegisteredActivities)
 }

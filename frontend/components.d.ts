@@ -30,6 +30,7 @@ declare module 'vue' {
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ASelectOption: typeof import('@arco-design/web-vue')['SelectOption']
     ASpace: typeof import('@arco-design/web-vue')['Space']
+    AStatistic: typeof import('@arco-design/web-vue')['Statistic']
     AStep: typeof import('@arco-design/web-vue')['Step']
     ASteps: typeof import('@arco-design/web-vue')['Steps']
     ATable: typeof import('@arco-design/web-vue')['Table']

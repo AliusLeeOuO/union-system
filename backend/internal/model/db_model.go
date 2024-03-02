@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 // Activity tb_activity
 type Activity struct {
@@ -32,17 +34,48 @@ type AssistanceType struct {
 
 // Fee tb_fee
 type Fee struct {
-	FeeID       uint      `gorm:"primary_key;column:fee_id"`
-	UserID      int       `gorm:"column:user_id"`
-	Amount      float64   `gorm:"column:amount"`
-	PaymentDate time.Time `gorm:"column:payment_date"`
-	PeriodID    int       `gorm:"column:period_id"`
+	FeeID         uint          `gorm:"primary_key;column:fee_id"`
+	UserID        int           `gorm:"column:user_id"`
+	Amount        float64       `gorm:"column:amount"`
+	PaymentDate   time.Time     `gorm:"column:payment_date"`
+	PeriodID      int           `gorm:"column:period_id"`
+	PaymentMethod PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
 }
 
 // FeePeriod tb_fee_period
 type FeePeriod struct {
-	PeriodID   uint   `gorm:"primary_key;column:period_id"`
+	PeriodID   uint   `gorm:"column:period_id;primary_key"`
 	PeriodName string `gorm:"column:period_name"`
+}
+
+// FeeStandard tb_fee_standard
+type FeeStandard struct {
+	StandardID uint    `gorm:"column:standard_id;primaryKey;autoIncrement"`
+	Amount     float64 `gorm:"column:amount;type:decimal(10,2);not null"`
+	CategoryID uint    `gorm:"column:category_id"`
+}
+
+// MemberCategory tb_member_category
+type MemberCategory struct {
+	CategoryID uint   `gorm:"primaryKey;column:category_id;autoIncrement"`
+	Name       string `gorm:"column:name;size:255;not null"`
+}
+
+// PaymentMethod tb_payment_method
+type PaymentMethod struct {
+	MethodID uint   `gorm:"primaryKey;column:method_id;autoIncrement"`
+	Name     string `gorm:"column:name;size:255;not null"`
+}
+
+// FeeBill tb_fee_bill
+type FeeBill struct {
+	BillID        uint      `gorm:"primary_key;column:bill_id"`
+	UserID        int       `gorm:"column:user_id"`
+	Amount        float64   `gorm:"column:amount"`
+	CreatedAt     time.Time `gorm:"column:created_at"`
+	DueDate       time.Time `gorm:"column:due_date"`
+	Paid          bool      `gorm:"column:paid"`
+	BillingPeriod string    `gorm:"column:billing_period"` // 新增字段
 }
 
 // MemberInfo tb_member_info
@@ -73,6 +106,21 @@ type User struct {
 	RegistrationDate time.Time `gorm:"column:registration_date"`
 	UserTypeID       uint      `gorm:"column:user_type_id"`
 	IsActive         bool      `gorm:"column:is_active"`
+}
+
+// MemberFeeInfo tb_member_fee_info
+type MemberFeeInfo struct {
+	InfoID        uint   `gorm:"primaryKey;column:info_id"`
+	UserID        uint   `gorm:"column:user_id"`
+	IsFeeActive   bool   `gorm:"column:is_fee_active"`
+	FeeStartMonth string `gorm:"column:fee_start_month"`
+}
+
+// MemberDetails 对应于 tb_member_details
+type MemberDetails struct {
+	UserID        uint      `gorm:"primaryKey;column:user_id"`
+	IsFeeActive   bool      `gorm:"column:is_fee_active;default:false"`
+	FeeStartMonth time.Time `gorm:"column:fee_start_month"`
 }
 
 // UserActivity tb_user_activity

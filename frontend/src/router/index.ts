@@ -131,17 +131,34 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/member/activityDetail/:id",
             name: "memberActivityDetail",
-            component: () => import("@/views/member/activityDetail.vue")
+            component: () => import("@/views/member/activityDetail.vue"),
+            meta: {
+              roles: roles.USER
+            }
           },
           {
             path: "/member/assistance",
             name: "memberAssistance",
-            component: () => import("@/views/member/assistance.vue")
+            component: () => import("@/views/member/assistance.vue"),
+            meta: {
+              roles: roles.USER
+            }
           },
           {
             path: "/member/assistanceDetail/:id",
             name: "memberAssistanceDetail",
-            component: () => import("@/views/member/assistanceDetail.vue")
+            component: () => import("@/views/member/assistanceDetail.vue"),
+            meta: {
+              roles: roles.USER
+            }
+          },
+          {
+            path: "/member/fee",
+            name: "memberFee",
+            component: () => import("@/views/member/fee.vue"),
+            meta: {
+              roles: roles.USER
+            }
           }
         ]
       }

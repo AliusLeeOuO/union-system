@@ -6,16 +6,13 @@
     <a-tab-pane key="1" title="我的请求">
       <div class="my-assistant-overview">
         <div class="my-assistant-overview-block">
-          <div class="my-assistant-overview-title">总工单数</div>
-          <div class="my-assistant-overview-content">{{ overviewItem.total }}</div>
+          <a-statistic title="总工单数" :value="overviewItem.total" :value-from="0" animation />
         </div>
         <div class="my-assistant-overview-block">
-          <div class="my-assistant-overview-title">待我处理</div>
-          <div class="my-assistant-overview-content">{{ overviewItem.pending }}</div>
+          <a-statistic title="待我处理" :value="overviewItem.pending" :value-from="0" animation />
         </div>
         <div class="my-assistant-overview-block">
-          <div class="my-assistant-overview-title">处理中</div>
-          <div class="my-assistant-overview-content">{{ overviewItem.pending }}</div>
+          <a-statistic title="处理中" :value="overviewItem.pending" :value-from="0" animation />
         </div>
       </div>
       <a-table :columns="columns" :data="tableData" size="large" @page-change="changePage" :pagination="{
@@ -79,7 +76,7 @@
 import { reactive, onMounted } from "vue"
 import useMemberApi from "@/api/memberApi"
 import type { assistanceListResponse, assistanceTypeResponse } from "@/api/memberApi"
-import { Message,type ValidatedError } from "@arco-design/web-vue"
+import { Message, type ValidatedError } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import dayjs from "dayjs"
 import { useRouter } from "vue-router"

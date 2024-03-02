@@ -2,11 +2,12 @@
   <div>
     <h1>会员活动</h1>
   </div>
-  <a-tabs default-active-key="1">
+  <a-tabs default-active-key="1" @change="changePanel">
     <a-tab-pane key="1" title="活动列表">
       <div class="activity-content">
         <div class="activity-items">
-          <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item" v-for="item in activityList" :key="item.activityId">
+          <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item"
+                       v-for="item in activityList" :key="item.activityId">
             <div class="activity-item-title">{{ item.title }}</div>
             <div class="activity-item-description">{{ item.description }}</div>
             <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
@@ -32,38 +33,40 @@
       </div>
     </a-tab-pane>
     <a-tab-pane key="2" title="我的活动">
-        <div class="activity-content">
-          <div class="activity-items">
-            <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item" v-for="item in activityList" :key="item.activityId">
-              <div class="activity-item-title">{{ item.title }}</div>
-              <div class="activity-item-description">{{ item.description }}</div>
-              <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
-              <div class="activity-item-location">
-                地址：{{ item.location }}
-                活动类型：{{ item.activityTypeName }}
-              </div>
-              <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
-                {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
-              </div>
-            </router-link>
-          </div>
-          <div class="activity-pagination">
-            <a-pagination
-              :total="pagination.total"
-              v-model:page-size="pagination.pageSize"
-              v-model:current="pagination.current"
-              :default-page-size="5"
-              show-page-size @change="pageChange"
-              @page-size-change="pageSizeChange"
-            />
-          </div>
+      <a-empty v-if="memberActivityList.length === 0"/>
+      <div class="activity-content" v-else>
+        <div class="activity-items">
+          <router-link :to="`/member/activityDetail/${item.activityId}`" class="activity-item"
+                       v-for="item in memberActivityList" :key="item.activityId">
+            <div class="activity-item-title">{{ item.title }}</div>
+            <div class="activity-item-description">{{ item.description }}</div>
+            <div class="activity-item-persons">报名人数：{{ item.registrationCount }}/{{ item.maxParticipants }}</div>
+            <div class="activity-item-location">
+              地址：{{ item.location }}
+              活动类型：{{ item.activityTypeName }}
+            </div>
+            <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
+              {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
+            </div>
+          </router-link>
         </div>
+        <div class="activity-pagination">
+          <a-pagination
+            :total="memberPagination.total"
+            v-model:page-size="memberPagination.pageSize"
+            v-model:current="memberPagination.current"
+            :default-page-size="5"
+            show-page-size @change="memberPageChange"
+            @page-size-change="memberPageSizeChange"
+          />
+        </div>
+      </div>
     </a-tab-pane>
   </a-tabs>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive } from "vue"
-import useMemberApi from "@/api/memberApi"
+import useMemberApi, { type activityListResponse } from "@/api/memberApi"
 import type { activityListResponseData } from "@/api/memberApi"
 import { Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
@@ -71,7 +74,7 @@ import dayjs from "dayjs"
 
 const memberApi = useMemberApi()
 
-const activityList = reactive<activityListResponseData["data"]>([])
+const activityList = reactive<activityListResponse[]>([])
 const pagination = reactive({
   total: 0,
   pageSize: 5,
@@ -91,10 +94,52 @@ const pageChange = async (current: number) => {
 
 const getActivityList = async () => {
   const { data } = await handleXhrResponse(() => memberApi.activityList(pagination.pageSize, pagination.current), Message)
+  // 先判断是否有数据
+  if (data.data.data === null) {
+    return
+  }
   // 清除原有数据
   activityList.splice(0, activityList.length)
-  activityList.push(...data.data.data)
+  activityList.push(...data.data.data!)
   pagination.total = data.data.total
+}
+
+// 我的活动
+
+const memberActivityList = reactive<activityListResponse[]>([])
+const memberPagination = reactive({
+  total: 0,
+  pageSize: 5,
+  current: 1
+})
+const getActivityMemberList = async () => {
+  const { data } = await handleXhrResponse(() => memberApi.activityMemberList(pagination.pageSize, pagination.current), Message)
+  if (data.data.data === null) {
+    return
+  }
+  // 清除原有数据
+  activityList.splice(0, memberActivityList.length)
+  memberActivityList.push(...data.data.data!)
+  memberPagination.total = data.data.total
+}
+
+const memberPageChange = async (current: number) => {
+  memberPagination.current = current
+  await getActivityMemberList()
+}
+
+const memberPageSizeChange = async (pageSize: number) => {
+  memberPagination.pageSize = pageSize
+  memberPagination.current = 1
+  await getActivityMemberList()
+}
+
+// TODO 切换时要重置分页
+const changePanel = (key: string | number) => {
+  if (key === "2") {
+    // 获取我的活动
+    getActivityMemberList()
+  }
 }
 
 onMounted(async () => {

@@ -151,6 +151,10 @@ const memberNavList = reactive<navList[]>([
     title: "帮助",
     path: "/member/assistance"
   },
+  {
+    title: "会费",
+    path: "/member/fee"
+  }
 ])
 // 管理员导航栏
 const adminNavList = reactive<navList[]>([

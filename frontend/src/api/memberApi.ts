@@ -6,10 +6,10 @@ export interface activityListResponseData {
   total: number
   page_size: number
   page_num: number
-  data: activityListResponse[]
+  data: activityListResponse[] | null
 }
 
-interface activityListResponse {
+export interface activityListResponse {
   activityId: number
   title: string
   description: string
@@ -76,6 +76,35 @@ export interface assistanceNewResponse {
   request_id: number
 }
 
+export interface feeStandardResponse {
+  standard_id: number
+  amount: number
+  category_id: number
+}
+
+export interface feeHistoryResponseData {
+  total: number
+  page_size: number
+  page_num: number
+  history: feeHistoryResponse[] | null
+}
+
+export interface feeHistoryResponse {
+  bill_id: number
+  user_id: number
+  amount: number
+  due_date: string
+  fee_period: string
+  fee_category: string
+  payment_status: boolean
+  created_at: string
+}
+
+export interface feeWaitingResponseData {
+  bills: feeHistoryResponse[] | null
+}
+
+
 export default function useMemberApi() {
   return {
     activityList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/list", qs.stringify({
@@ -86,11 +115,11 @@ export default function useMemberApi() {
     activityRegister: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/activity/register/${activityId}`),
     activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/member/activity/cancel/${activityId}`),
     // TODO:类型没写
-    activityRegList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<any>> => axiosInstance.post("/member/history", qs.stringify({
+    activityType: (): Promise<AxiosApiResponse<any>> => axiosInstance.get("/member/activity/type"),
+    activityMemberList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/history", qs.stringify({
       page_size: pageSize,
       page_num: pageNum
     })),
-    activityType: (): Promise<AxiosApiResponse<any>> => axiosInstance.get("/member/type"),
     assistanceList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<assistanceListResponseData>> => axiosInstance.post("/member/assistance/list", qs.stringify({
       page_size: pageSize,
       page_num: pageNum
@@ -111,9 +140,16 @@ export default function useMemberApi() {
       title,
       description
     })),
-    assistanceMemberList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<assistanceListResponseData>> => axiosInstance.post("/member/assistance/member/list", qs.stringify({
-      page_num: pageNum,
-      page_size: pageSize
-    }))
+    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> => axiosInstance.post("/member/fee/standard"),
+    feeHistory: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeHistoryResponseData>> => axiosInstance.post("/member/fee/list", qs.stringify({
+        page_size: pageSize,
+        page_num: pageNum
+      })
+    ),
+    waitingFeeList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeWaitingResponseData>> => axiosInstance.post("/member/fee/waiting", qs.stringify({
+        page_size: pageSize,
+        page_num: pageNum
+      })
+    )
   }
 }

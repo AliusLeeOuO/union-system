@@ -47,5 +47,5 @@ func GetRegisteredActivities(c *fiber.Ctx) error {
 		},
 	}
 
-	return c.JSON(response)
+	return model.SendSuccessResponse(c, response)
 }

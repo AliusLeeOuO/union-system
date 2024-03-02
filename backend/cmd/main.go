@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 	"union-system/config"
+	"union-system/cron"
 	"union-system/internal/pkg/database"
 	"union-system/internal/pkg/fiber"
 	"union-system/internal/pkg/logger"
@@ -20,5 +21,7 @@ func main() {
 	logger.InitLogger()
 	database.InitDatabase(initConfig.PostgreSQLConfig.Host, initConfig.PostgreSQLConfig.Port, initConfig.PostgreSQLConfig.User, initConfig.PostgreSQLConfig.Password, initConfig.PostgreSQLConfig.Name)
 	redis.InitRedis(initConfig.Redis.Host, initConfig.Redis.Port, initConfig.Redis.Password, initConfig.Redis.DB)
+	// 初始化定时任务
+	cron.InitCron()
 	fiber.InitFiber(initConfig.App.Port)
 }

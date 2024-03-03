@@ -12,7 +12,16 @@
       </router-link>
     </nav>
     <div class="header-right">
-      <div class="user-info" @click="openPersonInfo = !openPersonInfo"  v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside">
+      <router-link to="/member/notification" custom v-slot="{ navigate }" v-if="userStore.userInfo.userRole === roles.USER">
+        <a-badge :count="9" :offset="[-20, -2]" @click="navigate">
+          <div class="header-notification">
+            <span>通知</span>
+            <IconNotification />
+          </div>
+        </a-badge>
+      </router-link>
+      <div class="user-info" @click="openPersonInfo = !openPersonInfo" v-if="userStore.isUserLoggedIn"
+           v-click-outside:[dropdownRef]="handleClickOutside">
         {{ userStore.userInfo.userName }}
         [ {{ userStore.getUserRoleName }} ]
       </div>
@@ -84,6 +93,7 @@ import { useUserStore } from "@/stores/user"
 import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
 import { Message } from "@arco-design/web-vue"
+import { IconNotification } from "@arco-design/web-vue/es/icon"
 import { roles } from "@/router"
 
 //PC端个人信息
@@ -130,6 +140,7 @@ interface navList {
   title: string
   path: string
 }
+
 // 公共导航栏
 const navList = reactive<navList[]>([
   {
@@ -270,16 +281,17 @@ const toIndex = async () => {
     top: 70px;
     z-index: 99;
     background-color: #fff;
-    color: #000;
+    color: rgb(var(--color-text-1));
     border-radius: 5px;
     width: 320px;
     overflow: hidden;
     animation: show-person-info 0.2s ease-in-out;
+
     .header-pc-person-info-text {
       padding: 10px;
+      color: rgb(var(--color-text-1));
       @media (prefers-color-scheme: dark) {
         background-color: #232323;
-        color: #fff;
       }
     }
 
@@ -289,9 +301,11 @@ const toIndex = async () => {
       display: flex;
       justify-content: flex-end;
       align-items: center;
+
       & > * {
         margin-left: 5px;
       }
+
       // dark mode
       @media (prefers-color-scheme: dark) {
         background-color: #424242;
@@ -306,6 +320,22 @@ const toIndex = async () => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  .header-notification {
+    font-size: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s;
+    &:hover {
+      color: rgb(var(--primary-6));
+    }
+    span {
+      font-size: 14px;
+      margin-right: 5px;
+    }
+  }
+
   .user-info {
     margin-right: 10px;
     height: 100%;
@@ -425,6 +455,7 @@ body[arco-theme='dark'] {
   .header-pc {
     nav {
       flex: 1;
+
       .nav-item {
         color: rgb(201, 205, 212);
 
@@ -477,7 +508,7 @@ body[arco-theme='dark'] {
 
       .mobile-nav-main {
         .mobile-nav-item {
-          color: #fff;
+          color: rgb(var(--color-text-1));
         }
       }
     }

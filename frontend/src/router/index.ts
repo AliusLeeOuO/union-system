@@ -159,6 +159,14 @@ const routes: Array<routeRecordWithRole> = [
             meta: {
               roles: roles.USER
             }
+          },
+          {
+            path: "/member/notification",
+            name: "memberNotification",
+            component: () => import("@/views/member/notification.vue"),
+            meta: {
+              roles: roles.USER
+            }
           }
         ]
       }

@@ -5,6 +5,7 @@ import (
 	"union-system/internal/api/handlers/member/member_handlers/member_activity"
 	"union-system/internal/api/handlers/member/member_handlers/member_assistance"
 	"union-system/internal/api/handlers/member/member_handlers/member_fee"
+	"union-system/internal/api/handlers/member/member_handlers/member_notification"
 	"union-system/internal/api/middlewares"
 )
 
@@ -21,4 +22,6 @@ func Init(app *fiber.App) {
 	member_activity.Init(member)
 	// 注册fee路由
 	member_fee.Init(member)
+	// 注册notification路由
+	member_notification.Init(member)
 }

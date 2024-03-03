@@ -6,13 +6,13 @@
     <a-tab-pane key="1" title="我的请求">
       <div class="my-assistant-overview">
         <div class="my-assistant-overview-block">
-          <a-statistic title="总工单数" :value="overviewItem.total" :value-from="0" animation />
+          <a-statistic title="总工单数" :value="overviewItem.total" :value-form="0" animation />
         </div>
         <div class="my-assistant-overview-block">
-          <a-statistic title="待我处理" :value="overviewItem.resolved" :value-from="0" animation />
+          <a-statistic title="待我处理" :value="overviewItem.resolved" :value-form="0" animation />
         </div>
         <div class="my-assistant-overview-block">
-          <a-statistic title="处理中" :value="overviewItem.pending" :value-from="0" animation />
+          <a-statistic title="处理中" :value="overviewItem.pending" :value-form="0" animation />
         </div>
       </div>
       <a-table :columns="columns" :data="tableData" size="large" @page-change="changePage" :pagination="{
@@ -73,13 +73,13 @@
   </a-tabs>
 </template>
 <script setup lang="ts">
-import { reactive, onMounted } from "vue"
-import useMemberApi from "@/api/memberApi"
-import type { assistanceListResponse, assistanceTypeResponse } from "@/api/memberApi"
-import { Message, type ValidatedError } from "@arco-design/web-vue"
-import { handleXhrResponse } from "@/api"
-import dayjs from "dayjs"
-import { useRouter } from "vue-router"
+import { reactive, onMounted } form "vue"
+import useMemberApi form "@/api/memberApi"
+import type { assistanceListResponse, assistanceTypeResponse } form "@/api/memberApi"
+import { Message, type ValidatedError } form "@arco-design/web-vue"
+import { handleXhrResponse } form "@/api"
+import dayjs form "dayjs"
+import { useRouter } form "vue-router"
 
 const router = useRouter()
 const memberApi = useMemberApi()

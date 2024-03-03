@@ -31,7 +31,7 @@ const submitChangePassword = async (form: {
       changePasswordForm.oldPassword = ""
       changePasswordForm.newPassword = ""
       changePasswordForm.confirmPassword = ""
-    } catch (e){
+    } catch (e) {
       console.warn(e)
     }
   }
@@ -149,12 +149,11 @@ const logout = async () => {
   margin-top: 20px;
   padding: 20px;
   background-color: #f5f5f5;
-  color: #000;
+  color: rgb(var(--color-text-1));
   border-radius: 10px;
   // dark mode
   @media (prefers-color-scheme: dark) {
     background-color: #333;
-    color: #fff;
     // 阴影
     box-shadow: 0 0 10px 0 #000;
   }

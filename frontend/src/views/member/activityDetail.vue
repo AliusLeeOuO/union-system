@@ -4,29 +4,29 @@
   </div>
   <div class="activity-detail-content">
     <div class="activity-detail-item">
-      <div class="description-title">活动名称：</div>
+      <div class="description-title">活动名称</div>
       <div class="activity-detail-item-content">{{ activityDetail.title }}</div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动描述：</div>
+      <div class="description-title">活动描述</div>
       <div class="activity-detail-item-content">{{ activityDetail.description }}</div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动类型：</div>
+      <div class="description-title">活动类型</div>
       <div class="activity-detail-item-content">{{ activityDetail.activityTypeName }}</div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">报名人数：</div>
+      <div class="description-title">报名人数</div>
       <div class="activity-detail-item-content">{{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants
         }}
       </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动地址：</div>
+      <div class="description-title">活动地址</div>
       <div class="activity-detail-item-content">{{ activityDetail.location }}</div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动时间：</div>
+      <div class="description-title">活动时间</div>
       <div class="activity-detail-item-content">{{ dayjs(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }} -
         {{ dayjs(activityDetail.endTime).format("YYYY年MM月DD日 HH:mm") }}
       </div>

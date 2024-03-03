@@ -87,15 +87,6 @@ type MemberInfo struct {
 	JoinDate time.Time `gorm:"column:join_date"`
 }
 
-// Notification tb_notification
-type Notification struct {
-	NotificationID uint      `gorm:"primary_key;column:notification_id"`
-	Title          string    `gorm:"column:title"`
-	Content        string    `gorm:"column:content"`
-	PublishTime    time.Time `gorm:"column:publish_time"`
-	PublisherID    int       `gorm:"column:publisher_id"`
-}
-
 // User tb_user
 type User struct {
 	UserID           uint      `gorm:"primary_key;column:user_id"`
@@ -173,4 +164,20 @@ type AssistanceFeedback struct {
 	Rating     int       `gorm:"column:rating"`
 	Comment    string    `gorm:"column:comment"`
 	CreatedAt  time.Time `gorm:"column:created_at"`
+}
+
+// Notification tb_notification 表示系统中的通知
+type Notification struct {
+	NotificationID uint      `gorm:"primary_key;column:notification_id;autoIncrement"`
+	Title          string    `gorm:"column:title;type:varchar(255);not null"`
+	Content        string    `gorm:"column:content;type:text;not null"`
+	CreatedAt      time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP"`
+	SenderID       *uint     `gorm:"column:sender_id"` // 可以为空，表示系统通知
+}
+
+// NotificationRecipient tb_notification_recipient 表示通知和接收者之间的关系
+type NotificationRecipient struct {
+	NotificationID uint `gorm:"primary_key;column:notification_id"`
+	RecipientID    uint `gorm:"primary_key;column:recipient_id"`
+	ReadStatus     bool `gorm:"column:read_status;default:false"` // 默认为未读
 }

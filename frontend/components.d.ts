@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ABadge: typeof import('@arco-design/web-vue')['Badge']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
     ABreadcrumbItem: typeof import('@arco-design/web-vue')['BreadcrumbItem']
     AButton: typeof import('@arco-design/web-vue')['Button']
@@ -38,6 +39,7 @@ declare module 'vue' {
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
     ATag: typeof import('@arco-design/web-vue')['Tag']
     ATextarea: typeof import('@arco-design/web-vue')['Textarea']
+    NotificationBlock: typeof import('./src/components/notificationBlock.vue')['default']
     OpenSourceBlock: typeof import('./src/components/openSource/openSourceBlock.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -14,14 +14,14 @@ Using MySQL and Redis to store data.
 ## Environment
 - go 1.17
 - node 18.0.0
-- MySQL 8.0
+- PostgreSQL 16.2
 - Redis 6
 
 ## Usage
 
 ### Frontend
 
-Change api url form `frontend/.env` file.
+Change api url in `frontend/.env` file.
 ```bash
 cd frontend
 pnpm install
@@ -29,7 +29,7 @@ pnpm dev
 ```
 ### Backend
 
-Before run backend, you need change MySQL and Redis connect config form `backend/config/config.yaml` file.
+Before run backend, you need change PostgreSQL and Redis connect config in `backend/config/config.yaml` file.
 
 MySQL database schema file is `backend/config/schema.sql`.
 

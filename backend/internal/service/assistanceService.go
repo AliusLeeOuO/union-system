@@ -109,10 +109,20 @@ func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto.GetAssistance
 	return response, nil
 }
 
-func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]dto.MyAssistanceResponse, uint, error) {
+func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]dto.MyAssistanceResponse, uint, uint, uint, error) {
 	assistances, total, err := s.Repo.GetMyAssistances(memberID, pageSize, pageNum)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
+	}
+
+	// 获取已解决和待审核的工单数量
+	resolvedCount, err := s.Repo.GetAssistanceCountByStatus(memberID, 3) // resolvedStatusID是已解决状态的ID = 3
+	if err != nil {
+		return nil, 0, 0, 0, err
+	}
+	pendingReviewCount, err := s.Repo.GetAssistanceCountByStatus(memberID, 1) // pendingReviewStatusID是待审核状态的ID = 1
+	if err != nil {
+		return nil, 0, 0, 0, err
 	}
 
 	var responses []dto.MyAssistanceResponse
@@ -127,8 +137,7 @@ func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageN
 			Title:            a.Title,
 		})
 	}
-
-	return responses, total, nil
+	return responses, total, resolvedCount, pendingReviewCount, nil
 }
 
 // GetAssistanceStatus 获取工单状态

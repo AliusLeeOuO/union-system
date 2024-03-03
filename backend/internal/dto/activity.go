@@ -65,6 +65,11 @@ type ActivityResponse struct {
 	RegistrationCount uint   `json:"registrationCount"`
 }
 
+type ActivityDetailResponse struct {
+	ActivityResponse `json:"activity"`
+	IsRegistered     bool `json:"isRegistered"`
+}
+
 type UserGetActivityListResponse struct {
 	PageResponse
 	Data []ActivityResponse `json:"data"`

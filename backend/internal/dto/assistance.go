@@ -78,8 +78,10 @@ type MyAssistanceResponse struct {
 // MyAssistancesListResponse 用于返回会员的工单列表和分页信息
 type MyAssistancesListResponse struct {
 	PageResponse
-	AssistanceStatus []AssistanceStatusDTO  `json:"assistance_status"`
-	Assistances      []MyAssistanceResponse `json:"assistances"`
+	AssistanceStatus   []AssistanceStatusDTO  `json:"assistance_status"`
+	Assistances        []MyAssistanceResponse `json:"assistances"`
+	ResolvedCount      uint                   `json:"resolved_count"`
+	PendingReviewCount uint                   `json:"pending_review_count"`
 }
 
 // AssistanceStatusDTO 用于封装状态ID和状态名称

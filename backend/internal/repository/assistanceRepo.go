@@ -229,3 +229,11 @@ func (r *AssistanceRepository) GetAssistanceStatus() ([]model.AssistanceStatus, 
 	}
 	return assistanceStatus, nil
 }
+
+func (r *AssistanceRepository) GetAssistanceCountByStatus(memberID uint, statusID uint) (uint, error) {
+	var count int64
+	result := r.DB.Model(&model.AssistanceRequest{}).
+		Where("member_id = ? AND status_id = ?", memberID, statusID).
+		Count(&count)
+	return uint(count), result.Error
+}

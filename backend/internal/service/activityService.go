@@ -216,6 +216,11 @@ func (s *ActivityService) RegisterForActivity(userID, activityID uint) error {
 	return s.Repo.RegisterForActivity(userID, activityID)
 }
 
+// GetUserActivityRegistrationStatus 获取用户是否报名了某个活动
+func (s *ActivityService) GetUserActivityRegistrationStatus(userID, activityID uint) bool {
+	return s.Repo.CheckRegisterForActivity(userID, activityID)
+}
+
 func (s *ActivityService) UnregisterFromActivity(userID, activityID uint) error {
 	// 获取活动详情
 	activity, err := s.Repo.GetActivityDetails(activityID)

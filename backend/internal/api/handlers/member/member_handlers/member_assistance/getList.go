@@ -32,7 +32,7 @@ func GetMyAssistances(c *fiber.Ctx) error {
 	}
 
 	assistanceService := service.NewAssistanceService(repository.NewAssistanceRepository(global.Database))
-	assistances, total, err := assistanceService.GetMyAssistances(memberID, form.PageSize, form.PageNum)
+	assistances, total, resolvedCount, pendingReviewCount, err := assistanceService.GetMyAssistances(memberID, form.PageSize, form.PageNum)
 	if err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode, "无法获取工单列表")
 	}
@@ -52,8 +52,10 @@ func GetMyAssistances(c *fiber.Ctx) error {
 	}
 
 	return model.SendSuccessResponse(c, dto.MyAssistancesListResponse{
-		Assistances:      assistances,
-		AssistanceStatus: assistanceStatusDTO,
-		PageResponse:     dto.PageResponse{PageSize: form.PageSize, PageNum: form.PageNum, Total: total},
+		Assistances:        assistances,
+		AssistanceStatus:   assistanceStatusDTO,
+		ResolvedCount:      resolvedCount,
+		PendingReviewCount: pendingReviewCount,
+		PageResponse:       dto.PageResponse{PageSize: form.PageSize, PageNum: form.PageNum, Total: total},
 	})
 }

@@ -9,7 +9,7 @@
           <a-statistic title="总工单数" :value="overviewItem.total" :value-from="0" animation />
         </div>
         <div class="my-assistant-overview-block">
-          <a-statistic title="待我处理" :value="overviewItem.pending" :value-from="0" animation />
+          <a-statistic title="待我处理" :value="overviewItem.resolved" :value-from="0" animation />
         </div>
         <div class="my-assistant-overview-block">
           <a-statistic title="处理中" :value="overviewItem.pending" :value-from="0" animation />
@@ -106,12 +106,14 @@ const getMyRequest = async () => {
     })
   })
   overviewItem.total = data.data.total
+  overviewItem.pending = data.data.pending_review_count
+  overviewItem.resolved = data.data.resolved_count
 }
 
 const overviewItem = reactive({
   total: 0,
   pending: 0,
-  processing: 0
+  resolved: 0
 })
 
 const columns = [

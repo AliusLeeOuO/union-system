@@ -1,15 +1,15 @@
 <template>
   <div class="description-title">
-    查看会费标准
+    我的会费标准
   </div>
-  <div class="my-assistant-overview">
-    <div class="my-assistant-overview-block">
+  <div class="fee-overview">
+    <div class="fee-overview-block">
       <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation />
     </div>
-    <div class="my-assistant-overview-block">
+    <div class="fee-overview-block">
       <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation />
     </div>
-    <div class="my-assistant-overview-block">
+    <div class="fee-overview-block">
       <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
     </div>
   </div>
@@ -198,7 +198,7 @@ onMounted(async () => {
 .description-title {
   margin-top: 10px;
   font-size: 16px;
-  padding-bottom: 5px;
+  padding-bottom: 20px;
 
   &::before {
     content: "";
@@ -211,20 +211,20 @@ onMounted(async () => {
   }
 }
 
-.my-assistant-overview {
+.fee-overview {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
   padding: 20px;
 
-  .my-assistant-overview-block {
+  .fee-overview-block {
     text-align: center;
 
-    .my-assistant-overview-title {
+    .fee-overview-title {
       font-size: 12px;
     }
 
-    .my-assistant-overview-content {
+    .fee-overview-content {
       font-size: 20px;
       margin-top: 10px;
     }

@@ -156,6 +156,16 @@ func (r *ActivityRepository) GetActivityDetails(activityID uint) (model.Activity
 	return activityDetails, nil
 }
 
+func (r *ActivityRepository) CheckRegisterForActivity(userID, activityID uint) bool {
+	// 检查用户是否已经报名了该活动
+	var count int64
+	r.DB.Model(&model.UserActivity{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count)
+	if count > 0 {
+		return false
+	}
+	return true
+}
+
 func (r *ActivityRepository) RegisterForActivity(userID, activityID uint) error {
 	// 检查用户是否已经报名了该活动
 	var count int64

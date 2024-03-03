@@ -23,11 +23,18 @@ export interface activityListResponse {
   registrationCount: number
 }
 
+export interface activityDetailResponse {
+  activity: activityListResponse
+  isRegistered: boolean
+}
+
 // 会员援助列表
 export interface assistanceListResponseData {
   total: number
   page_size: number
   page_num: number
+  resolved_count: number
+  pending_review_count: number
   assistances: assistanceListResponse[]
 }
 
@@ -111,7 +118,7 @@ export default function useMemberApi() {
       page_size: pageSize,
       page_num: pageNum
     })),
-    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityListResponse>> => axiosInstance.get(`/member/activity/detail/${activityId}`),
+    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityDetailResponse>> => axiosInstance.get(`/member/activity/detail/${activityId}`),
     activityRegister: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/activity/register/${activityId}`),
     activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/member/activity/cancel/${activityId}`),
     // TODO:类型没写

@@ -17,8 +17,7 @@
       </div>
       <a-table :columns="columns" :data="tableData" size="large" @page-change="changePage" :pagination="{
         total: overviewItem.total,
-        pageSize: 10,
-        showSizeChanger: false
+        pageSize: 10
       }">
         <template #status="{ record }">
           <a-tag color="cyan" v-if="record.status_id === 1">待审核</a-tag>

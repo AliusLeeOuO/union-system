@@ -25,8 +25,7 @@
     @page-change="feeHistoryChangePage"
     :pagination="{
         total: feeHistoryPagination.total,
-        pageSize: feeHistoryPagination.pageSize,
-        showSizeChanger: false
+        pageSize: feeHistoryPagination.pageSize
       }">
     <template #created_at="{ record }">
       {{ dayjs(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
@@ -45,7 +44,6 @@
     :pagination="{
         total: waitingFeePagination.total,
         pageSize: waitingFeePagination.pageSize,
-        showSizeChanger: false
       }">
     <template #created_at="{ record }">
       {{ dayjs(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}

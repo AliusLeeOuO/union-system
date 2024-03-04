@@ -7,4 +7,6 @@ func Init(app fiber.Router) {
 
 	notification.Post("/list", GetList)
 	notification.Post("/read/:notificationId", ReadNotification)
+	notification.Post("/readAll", MarkAllNotificationsRead)
+	notification.Get("/unreadCount", GetUnreadNotificationsCount)
 }

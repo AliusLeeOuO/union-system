@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"union-system/internal/dto"
 	"union-system/internal/model"
 )
 
@@ -13,32 +14,55 @@ func NewNotificationRepository(db *gorm.DB) *NotificationRepository {
 	return &NotificationRepository{DB: db}
 }
 
-func (repo *NotificationRepository) FindNotificationsByRecipientID(recipientID uint, pageSize uint, pageNum uint) ([]model.Notification, uint, error) {
-	var notifications []model.Notification
-	var total int64
+func (repo *NotificationRepository) FindNotificationsByRecipientID(recipientID uint, pageSize uint, pageNum uint) ([]dto.NotificationWithReadStatus, uint, error) {
+	var results []dto.NotificationWithReadStatus
 
 	offset := (pageNum - 1) * pageSize
-	// 使用子查询来筛选特定接收者的通知
 	subQuery := repo.DB.
 		Model(&model.NotificationRecipient{}).
-		Select("notification_id").
-		Where("recipient_id = ?", recipientID)
+		Where("recipient_id = ?", recipientID).
+		Select("notification_id, read_status")
 
 	result := repo.DB.
-		Joins("JOIN (?) AS nr ON nr.notification_id = tb_notification.notification_id", subQuery).
+		Model(&model.Notification{}).
+		Select("tb_notification.*, nr.read_status, u.username AS sender_name, u.user_type_id AS sender_role").
+		Joins("JOIN (?) AS nr ON tb_notification.notification_id = nr.notification_id", subQuery).
+		Joins("JOIN tb_user AS u ON tb_notification.sender_id = u.user_id"). // 修改这里
 		Limit(int(pageSize)).
 		Offset(int(offset)).
-		Find(&notifications)
+		Scan(&results)
 
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
-	// 应用相同的筛选条件来计算总数
-	repo.DB.
-		Model(&model.Notification{}).
-		Joins("JOIN (?) AS nr ON nr.notification_id = tb_notification.notification_id", subQuery).
-		Count(&total)
+	var total int64
+	repo.DB.Model(&model.NotificationRecipient{}).Where("recipient_id = ?", recipientID).Count(&total)
 
-	return notifications, uint(total), nil
+	return results, uint(total), nil
+}
+
+func (repo *NotificationRepository) MarkNotificationAsRead(notificationID uint, recipientID uint) error {
+	result := repo.DB.Model(&model.NotificationRecipient{}).
+		Where("notification_id = ? AND recipient_id = ?", notificationID, recipientID).
+		Update("read_status", true)
+	return result.Error
+}
+
+func (repo *NotificationRepository) MarkAllNotificationsAsRead(recipientID uint) error {
+	result := repo.DB.Model(&model.NotificationRecipient{}).
+		Where("recipient_id = ?", recipientID).
+		Update("read_status", true)
+	return result.Error
+}
+
+func (repo *NotificationRepository) CountUnreadNotifications(recipientID uint) (uint, error) {
+	var count int64
+	result := repo.DB.Model(&model.NotificationRecipient{}).
+		Where("recipient_id = ? AND read_status = ?", recipientID, false).
+		Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return uint(count), nil
 }

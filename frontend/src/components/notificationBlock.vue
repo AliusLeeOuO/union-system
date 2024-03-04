@@ -9,7 +9,7 @@
     <div class="notification-top">
       <div class="notification-title">{{ props.title }}</div>
       <div class="notification-right">
-        <a-tag>管理员 root</a-tag>
+        <a-tag>{{ getRoleName(props.senderRole) }} {{ senderUsername }}</a-tag>
         {{ dayjs(props.createTime).format("YYYY年MM月DD日 HH:mm:ss") }}
       </div>
     </div>
@@ -25,14 +25,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from "vue"
+import { ref, watchEffect, defineProps, defineEmits } from "vue"
 import dayjs from "dayjs"
+import { handleXhrResponse } from "@/api"
+import useMemberApi from "@/api/memberApi"
+import { Message } from "@arco-design/web-vue"
+import { getRoleName } from "@/utils/roleHelper"
+import { useUserStore } from "@/stores/user"
 
 const props = defineProps<{
+  id: number
   title: string
   createTime: string
   readStatus: boolean
+  senderRole: number
+  senderUsername: string
 }>()
+
+const emit = defineEmits(["update-list"])
+
+const memberApi = useMemberApi()
+const userStore = useUserStore()
 
 const notificationContentShow = ref(false)
 // 使用HTMLElement类型断言来初始化notificationContent
@@ -41,7 +54,13 @@ const contentHeight = ref("0")
 
 function openNotificationContent() {
   notificationContentShow.value = true
+
+  if (!props.readStatus) {
+    fetchRead(props.id)
+    emit("update-list")
+  }
 }
+
 function closeNotificationContent() {
   notificationContentShow.value = false
 }
@@ -54,6 +73,14 @@ watchEffect(() => {
     contentHeight.value = "0"
   }
 })
+
+const fetchRead = async (notificationId: number) => {
+  await handleXhrResponse(
+    () => memberApi.notificationRead(notificationId),
+    Message
+  )
+
+}
 </script>
 
 <style scoped lang="less">

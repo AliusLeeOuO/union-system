@@ -124,6 +124,8 @@ export interface notificationResponseObject {
   notification_id: number
   read_status: boolean
   title: string
+  sender_name: string
+  sender_role: number
 }
 
 export default function useMemberApi() {
@@ -240,6 +242,9 @@ export default function useMemberApi() {
           page_num: pageNum,
           page_size: pageSize
         })
-      )
+      ),
+    notificationRead: (notificationId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/notification/read/${notificationId}`),
+    notificationReadAll: (): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/notification/readAll"),
+    getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get("/member/notification/unreadCount")
   }
 }

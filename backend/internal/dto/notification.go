@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"time"
+	"union-system/internal/model"
+)
 
 type NotificationInstance struct {
 	NotificationID uint      `json:"notification_id"`
@@ -8,9 +11,18 @@ type NotificationInstance struct {
 	Content        string    `json:"content"`
 	CreatedAt      time.Time `json:"created_at"`
 	ReadStatus     bool      `json:"read_status"`
+	SenderName     string    `json:"sender_name"`
+	SenderRole     uint      `json:"sender_role"`
 }
 
 type NotificationPageResponse struct {
 	PageResponse
 	Notifications []NotificationInstance `json:"notifications"`
+}
+
+type NotificationWithReadStatus struct {
+	model.Notification
+	ReadStatus bool
+	SenderName string `json:"sender_name"`
+	SenderRole uint   `json:"sender_role"`
 }

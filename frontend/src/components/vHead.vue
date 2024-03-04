@@ -12,8 +12,9 @@
       </router-link>
     </nav>
     <div class="header-right">
-      <router-link to="/member/notification" custom v-slot="{ navigate }" v-if="userStore.userInfo.userRole === roles.USER">
-        <a-badge :count="9" :offset="[-20, -2]" @click="navigate">
+      <router-link to="/member/notification" custom v-slot="{ navigate }"
+                   v-if="userStore.userInfo.userRole === roles.USER">
+        <a-badge :count="notificationStore.notificationCount" :offset="[-20, -2]" @click="navigate">
           <div class="header-notification">
             <span>通知</span>
             <IconNotification />
@@ -90,6 +91,7 @@
 import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import { useNotificationStore } from "@/stores/notification"
 import { handleXhrResponse } from "@/api"
 import useUserApi from "@/api/userApi"
 import { Message } from "@arco-design/web-vue"
@@ -98,6 +100,7 @@ import { roles } from "@/router"
 
 //PC端个人信息
 const userStore = useUserStore()
+const notificationStore = useNotificationStore()
 const dropdownRef = ref<HTMLElement | null>(null)
 const openPersonInfo = ref(false)
 const handleClickOutside = (e: MouseEvent) => {
@@ -320,6 +323,7 @@ const toIndex = async () => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
   .header-notification {
     font-size: 20px;
     margin-right: 20px;
@@ -327,9 +331,11 @@ const toIndex = async () => {
     display: flex;
     align-items: center;
     transition: color 0.3s;
+
     &:hover {
       color: rgb(var(--primary-6));
     }
+
     span {
       font-size: 14px;
       margin-right: 5px;

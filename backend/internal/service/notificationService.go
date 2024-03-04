@@ -14,20 +14,21 @@ func NewNotificationService(repo *repository.NotificationRepository) *Notificati
 }
 
 func (service *NotificationService) GetNotificationsByRecipientID(recipientID uint, pageSize uint, pageNum uint) (dto.NotificationPageResponse, error) {
-	notifications, total, err := service.Repo.FindNotificationsByRecipientID(recipientID, pageSize, pageNum)
+	notificationsWithStatus, total, err := service.Repo.FindNotificationsByRecipientID(recipientID, pageSize, pageNum)
 	if err != nil {
 		return dto.NotificationPageResponse{}, err
 	}
 
 	var dtos []dto.NotificationInstance
-	for _, n := range notifications {
+	for _, n := range notificationsWithStatus {
 		buffer := dto.NotificationInstance{
 			NotificationID: n.NotificationID,
 			Title:          n.Title,
 			Content:        n.Content,
 			CreatedAt:      n.CreatedAt,
-			// ReadStatus 需要根据NotificationRecipient来设置
-			ReadStatus: false, // TODO 假设默认未读，需要根据实际情况调整
+			ReadStatus:     n.ReadStatus,
+			SenderName:     n.SenderName,
+			SenderRole:     n.SenderRole,
 		}
 		dtos = append(dtos, buffer)
 	}
@@ -40,4 +41,17 @@ func (service *NotificationService) GetNotificationsByRecipientID(recipientID ui
 		},
 		Notifications: dtos,
 	}, nil
+}
+
+// MarkAsRead 实现 MarkAsRead 方法
+func (service *NotificationService) MarkAsRead(notificationID uint, userID uint) error {
+	return service.Repo.MarkNotificationAsRead(notificationID, userID)
+}
+
+func (service *NotificationService) MarkAllAsRead(userID uint) error {
+	return service.Repo.MarkAllNotificationsAsRead(userID)
+}
+
+func (service *NotificationService) GetUnreadNotificationCount(userID uint) (uint, error) {
+	return service.Repo.CountUnreadNotifications(userID)
 }

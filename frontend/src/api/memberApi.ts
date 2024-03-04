@@ -111,6 +111,21 @@ export interface feeWaitingResponseData {
   bills: feeHistoryResponse[] | null
 }
 
+export interface notificationListResponse {
+  page_num: number
+  page_size: number
+  total: number
+  notifications: notificationResponseObject[] | null
+}
+
+export interface notificationResponseObject {
+  content: string
+  created_at: string
+  notification_id: number
+  read_status: boolean
+  title: string
+}
+
 
 export default function useMemberApi() {
   return {
@@ -149,14 +164,18 @@ export default function useMemberApi() {
     })),
     feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> => axiosInstance.post("/member/fee/standard"),
     feeHistory: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeHistoryResponseData>> => axiosInstance.post("/member/fee/list", qs.stringify({
-        page_size: pageSize,
-        page_num: pageNum
-      })
+      page_size: pageSize,
+      page_num: pageNum
+    })
     ),
     waitingFeeList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeWaitingResponseData>> => axiosInstance.post("/member/fee/waiting", qs.stringify({
-        page_size: pageSize,
-        page_num: pageNum
-      })
-    )
+      page_size: pageSize,
+      page_num: pageNum
+    })
+    ),
+    notificationList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<notificationListResponse>> => axiosInstance.post("/member/notification/list", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    }))
   }
 }

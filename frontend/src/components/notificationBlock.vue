@@ -3,13 +3,13 @@
     'notification-block-show': notificationContentShow
   }" @click="openNotificationContent">
     <div class="notification-top">
-      <div class="notification-title">通知标题</div>
+      <div class="notification-title">{{ props.title }}</div>
       <div class="notification-right">
         <a-tag>管理员 root</a-tag>
-         2021-10-10 10:10:10
+        {{ dayjs(props.createTime).format("YYYY年MM月DD日 HH:mm:ss") }}
       </div>
     </div>
-    <div ref="notificationContent" class="notification-content" :style="{height: contentHeight}">
+    <div ref="notificationContent" class="notification-content" :style="{ height: contentHeight }">
       <div class="notification-content-show">
         <p>
           我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
@@ -39,6 +39,13 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from "vue"
+import dayjs from "dayjs";
+
+const props = defineProps<{
+  title: string
+  createTime: string
+  readStatus: boolean
+}>()
 
 const notificationContentShow = ref(false)
 // 使用HTMLElement类型断言来初始化notificationContent
@@ -96,6 +103,7 @@ watchEffect(() => {
     height: 0;
     overflow: hidden;
     transition: height 0.3s;
+
     .notification-content-show {
       p {
         margin: 20px 0;
@@ -108,6 +116,7 @@ watchEffect(() => {
     height: auto;
   }
 }
+
 .notification-block-show {
   cursor: inherit;
 }

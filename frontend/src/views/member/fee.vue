@@ -4,10 +4,10 @@
   </div>
   <div class="fee-overview">
     <div class="fee-overview-block">
-      <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-form="0" animation :precision="2" />
+      <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
     </div>
     <div class="fee-overview-block">
-      <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-form="0" animation :precision="2" />
+      <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
     </div>
     <div class="fee-overview-block">
       <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
@@ -56,11 +56,11 @@
   </a-table>
 </template>
 <script setup lang="ts">
-import { reactive, onMounted, computed } form "vue"
-import useMemberApi, { type feeHistoryResponse } form "@/api/memberApi"
-import { handleXhrResponse } form "@/api"
-import { Message } form "@arco-design/web-vue"
-import dayjs form "dayjs"
+import { reactive, onMounted, computed } from "vue"
+import useMemberApi, { type feeHistoryResponse } from "@/api/memberApi"
+import { handleXhrResponse } from "@/api"
+import { Message } from "@arco-design/web-vue"
+import dayjs from "dayjs"
 
 const memberApi = useMemberApi()
 

@@ -27,7 +27,7 @@ func (service *NotificationService) GetNotificationsByRecipientID(recipientID ui
 			Content:        n.Content,
 			CreatedAt:      n.CreatedAt,
 			// ReadStatus 需要根据NotificationRecipient来设置
-			ReadStatus: false, // 假设默认未读，需要根据实际情况调整
+			ReadStatus: false, // TODO 假设默认未读，需要根据实际情况调整
 		}
 		dtos = append(dtos, buffer)
 	}

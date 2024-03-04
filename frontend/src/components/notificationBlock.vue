@@ -1,7 +1,11 @@
 <template>
-  <div class="notification-block" :class="{
-    'notification-block-show': notificationContentShow
-  }" @click="openNotificationContent">
+  <div
+    class="notification-block"
+    :class="{
+      'notification-block-show': notificationContentShow
+    }"
+    @click="openNotificationContent"
+  >
     <div class="notification-top">
       <div class="notification-title">{{ props.title }}</div>
       <div class="notification-right">
@@ -12,24 +16,7 @@
     <div ref="notificationContent" class="notification-content" :style="{ height: contentHeight }">
       <div class="notification-content-show">
         <p>
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
-          我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容我是通知内容
+          <slot name="content"></slot>
         </p>
         <a-button long size="large" @click.stop="closeNotificationContent">关闭</a-button>
       </div>
@@ -39,7 +26,7 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from "vue"
-import dayjs from "dayjs";
+import dayjs from "dayjs"
 
 const props = defineProps<{
   title: string
@@ -50,7 +37,7 @@ const props = defineProps<{
 const notificationContentShow = ref(false)
 // 使用HTMLElement类型断言来初始化notificationContent
 const notificationContent = ref<HTMLElement | null>(null)
-const contentHeight = ref("0px")
+const contentHeight = ref("0")
 
 function openNotificationContent() {
   notificationContentShow.value = true
@@ -58,8 +45,6 @@ function openNotificationContent() {
 function closeNotificationContent() {
   notificationContentShow.value = false
 }
-
-
 
 watchEffect(() => {
   if (notificationContent.value && notificationContentShow.value) {
@@ -70,7 +55,6 @@ watchEffect(() => {
   }
 })
 </script>
-
 
 <style scoped lang="less">
 .notification-block {

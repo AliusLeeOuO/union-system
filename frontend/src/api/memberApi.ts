@@ -126,56 +126,120 @@ export interface notificationResponseObject {
   title: string
 }
 
-
 export default function useMemberApi() {
   return {
-    activityList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/list", qs.stringify({
-      page_size: pageSize,
-      page_num: pageNum
-    })),
-    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityDetailResponse>> => axiosInstance.get(`/member/activity/detail/${activityId}`),
-    activityRegister: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/activity/register/${activityId}`),
-    activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/member/activity/cancel/${activityId}`),
+    activityList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<activityListResponseData>> =>
+      axiosInstance.post(
+        "/member/activity/list",
+        qs.stringify({
+          page_size: pageSize,
+          page_num: pageNum
+        })
+      ),
+    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityDetailResponse>> =>
+      axiosInstance.get(`/member/activity/detail/${activityId}`),
+    activityRegister: (activityId: number): Promise<AxiosApiResponse<null>> =>
+      axiosInstance.post(`/member/activity/register/${activityId}`),
+    activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> =>
+      axiosInstance.delete(`/member/activity/cancel/${activityId}`),
     // TODO:类型没写
     activityType: (): Promise<AxiosApiResponse<any>> => axiosInstance.get("/member/activity/type"),
-    activityMemberList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/member/activity/history", qs.stringify({
-      page_size: pageSize,
-      page_num: pageNum
-    })),
-    assistanceList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<assistanceListResponseData>> => axiosInstance.post("/member/assistance/list", qs.stringify({
-      page_size: pageSize,
-      page_num: pageNum
-    })),
-    assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> => axiosInstance.post(`/member/assistance/view`, qs.stringify({
-      request_id: assistanceId
-    })),
-    assistanceReply: (requestId: number, responseText: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/assistance/reply", qs.stringify({
-      request_id: requestId,
-      response_text: responseText
-    })),
-    assistanceClose: (requestId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/assistance/close", qs.stringify({
-      request_id: requestId
-    })),
-    assistanceType: (): Promise<AxiosApiResponse<assistanceTypeResponse[]>> => axiosInstance.get("/member/assistance/type"),
-    assistanceNew: (assistanceTypeId: number, title: string, description: string): Promise<AxiosApiResponse<assistanceNewResponse>> => axiosInstance.post("/member/assistance/new", qs.stringify({
-      type_id: assistanceTypeId,
-      title,
-      description
-    })),
-    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> => axiosInstance.post("/member/fee/standard"),
-    feeHistory: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeHistoryResponseData>> => axiosInstance.post("/member/fee/list", qs.stringify({
-      page_size: pageSize,
-      page_num: pageNum
-    })
-    ),
-    waitingFeeList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<feeWaitingResponseData>> => axiosInstance.post("/member/fee/waiting", qs.stringify({
-      page_size: pageSize,
-      page_num: pageNum
-    })
-    ),
-    notificationList: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<notificationListResponse>> => axiosInstance.post("/member/notification/list", qs.stringify({
-      page_num: pageNum,
-      page_size: pageSize
-    }))
+    activityMemberList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<activityListResponseData>> =>
+      axiosInstance.post(
+        "/member/activity/history",
+        qs.stringify({
+          page_size: pageSize,
+          page_num: pageNum
+        })
+      ),
+    assistanceList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<assistanceListResponseData>> =>
+      axiosInstance.post(
+        "/member/assistance/list",
+        qs.stringify({
+          page_size: pageSize,
+          page_num: pageNum
+        })
+      ),
+    assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> =>
+      axiosInstance.post(
+        `/member/assistance/view`,
+        qs.stringify({
+          request_id: assistanceId
+        })
+      ),
+    assistanceReply: (requestId: number, responseText: string): Promise<AxiosApiResponse<null>> =>
+      axiosInstance.post(
+        "/member/assistance/reply",
+        qs.stringify({
+          request_id: requestId,
+          response_text: responseText
+        })
+      ),
+    assistanceClose: (requestId: number): Promise<AxiosApiResponse<null>> =>
+      axiosInstance.post(
+        "/member/assistance/close",
+        qs.stringify({
+          request_id: requestId
+        })
+      ),
+    assistanceType: (): Promise<AxiosApiResponse<assistanceTypeResponse[]>> =>
+      axiosInstance.get("/member/assistance/type"),
+    assistanceNew: (
+      assistanceTypeId: number,
+      title: string,
+      description: string
+    ): Promise<AxiosApiResponse<assistanceNewResponse>> =>
+      axiosInstance.post(
+        "/member/assistance/new",
+        qs.stringify({
+          type_id: assistanceTypeId,
+          title,
+          description
+        })
+      ),
+    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> =>
+      axiosInstance.post("/member/fee/standard"),
+    feeHistory: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<feeHistoryResponseData>> =>
+      axiosInstance.post(
+        "/member/fee/list",
+        qs.stringify({
+          page_size: pageSize,
+          page_num: pageNum
+        })
+      ),
+    waitingFeeList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<feeWaitingResponseData>> =>
+      axiosInstance.post(
+        "/member/fee/waiting",
+        qs.stringify({
+          page_size: pageSize,
+          page_num: pageNum
+        })
+      ),
+    notificationList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<notificationListResponse>> =>
+      axiosInstance.post(
+        "/member/notification/list",
+        qs.stringify({
+          page_num: pageNum,
+          page_size: pageSize
+        })
+      )
   }
 }

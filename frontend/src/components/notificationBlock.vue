@@ -31,7 +31,6 @@ import { handleXhrResponse } from "@/api"
 import useMemberApi from "@/api/memberApi"
 import { Message } from "@arco-design/web-vue"
 import { getRoleName } from "@/utils/roleHelper"
-import { useUserStore } from "@/stores/user"
 
 const props = defineProps<{
   id: number
@@ -45,7 +44,6 @@ const props = defineProps<{
 const emit = defineEmits(["update-list"])
 
 const memberApi = useMemberApi()
-const userStore = useUserStore()
 
 const notificationContentShow = ref(false)
 // 使用HTMLElement类型断言来初始化notificationContent

@@ -175,6 +175,10 @@ const adminNavList = reactive<navList[]>([
   {
     title: "首页",
     path: "/admin/index"
+  },
+  {
+    title: "用户管理",
+    path: "/admin/manageUser"
   }
 ])
 

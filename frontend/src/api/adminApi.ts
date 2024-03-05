@@ -3,14 +3,16 @@ import axiosInstance from "@/api/index"
 import qs from "qs"
 
 export interface getUserResponseData {
-  page: number
-  page_size: number
-  data: {
-    id: number
-    role: number
-    status: number
-    username: string
-  }[]
+  page_num: number
+  page_size: number,
+  total: number,
+  data: userListItem[] | null
+}
+export interface userListItem {
+  id: number
+  role: number
+  status: number
+  username: string
 }
 
 export default function useAdminApi() {

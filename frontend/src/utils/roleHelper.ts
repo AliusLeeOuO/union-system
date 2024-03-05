@@ -13,5 +13,3 @@ export function getRoleName(role: roles): string {
       return "未知角色";
   }
 }
-
-console.log(getRoleName(roles.ADMIN))

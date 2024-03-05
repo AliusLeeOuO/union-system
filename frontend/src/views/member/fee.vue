@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <h1>会费</h1>
+  </div>
   <div class="description-title">
     我的会费标准
   </div>

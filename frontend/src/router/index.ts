@@ -186,7 +186,7 @@ router.beforeEach((to, form, next) => {
   if (to.meta.roles !== roles.PUBLIC) {
     // 如果该页面需要登录权限
     if ((to.meta.roles === roles.LOGIN && !userStore.isUserLoggedIn) || !userStore.isUserLoggedIn) {
-      next({ name: "/login" })
+      next({ path: "/login" })
       return
     }
     if (to.meta.roles !== userStore.userInfo.userRole && to.meta.roles !== roles.LOGIN) {

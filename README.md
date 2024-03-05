@@ -12,7 +12,7 @@ Using MySQL and Redis to store data.
 - [x] Auto Dark Mode
 
 ## Environment
-- go 1.17
+- go 1.22
 - node 18.0.0
 - PostgreSQL 16.2
 - Redis 6

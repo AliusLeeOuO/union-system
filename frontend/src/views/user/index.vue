@@ -1,64 +1,6 @@
-<script setup lang="ts">
-import { reactive, ref } from "vue"
-import { IconPenFill, IconClose } from "@arco-design/web-vue/es/icon"
-import { useUserStore } from "@/stores/user"
-import { Message, type ValidatedError } from "@arco-design/web-vue"
-import useUserApi from "@/api/userApi"
-import { useRouter } from "vue-router"
-import { handleXhrResponse } from "@/api"
-
-const userStore = useUserStore()
-const router = useRouter()
-const userApi = useUserApi()
-
-const changePassword = ref(false)
-const changePasswordForm = reactive({
-  oldPassword: "",
-  newPassword: "",
-  confirmPassword: ""
-})
-const submitChangePassword = async (form: {
-  values: Record<string, any>;
-  errors: Record<string, ValidatedError> | undefined
-}) => {
-  if (!form.errors) {
-    // 提交修改密码
-    try {
-      await handleXhrResponse(() => userApi.changePassword(form.values.oldPassword, form.values.newPassword), Message)
-      Message.success("修改密码成功")
-      changePassword.value = false
-      // 清空表单
-      changePasswordForm.oldPassword = ""
-      changePasswordForm.newPassword = ""
-      changePasswordForm.confirmPassword = ""
-    } catch (e) {
-      console.warn(e)
-    }
-  }
-}
-// ( value: FieldValue | undefined, callback: (error?: string) => void ) => void
-const conformValidator = (value: string, callback: (error?: string) => void) => {
-  if (value !== changePasswordForm.newPassword) {
-    callback("两次输入的密码不一致")
-  } else {
-    callback()
-  }
-}
-
-const logout = async () => {
-  try {
-    await handleXhrResponse(() => userApi.logout(), Message)
-    userStore.clearUserInfo()
-    await router.push("/login")
-  } catch (e) {
-    console.log(e)
-  }
-}
-</script>
-
 <template>
   <div class="user-info">
-    <div>已登录账号：{{ userStore.userInfo.userName }} | 当前身份：{{ userStore.getUserRoleName }}</div>
+    <div>已登录账号：{{ userStore.userInfo.userName }} | 当前身份：{{ getRoleName(userStore.userInfo.userRole) }}</div>
   </div>
   <div class="user-center">
     <div class="user-center-title">账号信息</div>
@@ -74,7 +16,7 @@ const logout = async () => {
     <div class="user-center-item">
       <div class="user-center-item-left">
         <div>角色</div>
-        <div>{{ userStore.getUserRoleName }}</div>
+        <div>{{ getRoleName(userStore.userInfo.userRole) }}</div>
       </div>
       <div>
         <!--        <icon-pen-fill /> 编辑-->
@@ -138,6 +80,64 @@ const logout = async () => {
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import { reactive, ref } from "vue"
+import { IconPenFill, IconClose } from "@arco-design/web-vue/es/icon"
+import { useUserStore } from "@/stores/user"
+import { Message, type ValidatedError } from "@arco-design/web-vue"
+import useUserApi from "@/api/userApi"
+import { useRouter } from "vue-router"
+import { handleXhrResponse } from "@/api"
+import { getRoleName } from "@/utils/roleHelper"
+
+const userStore = useUserStore()
+const router = useRouter()
+const userApi = useUserApi()
+
+const changePassword = ref(false)
+const changePasswordForm = reactive({
+  oldPassword: "",
+  newPassword: "",
+  confirmPassword: ""
+})
+const submitChangePassword = async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    // 提交修改密码
+    try {
+      await handleXhrResponse(() => userApi.changePassword(form.values.oldPassword, form.values.newPassword), Message)
+      Message.success("修改密码成功")
+      changePassword.value = false
+      // 清空表单
+      changePasswordForm.oldPassword = ""
+      changePasswordForm.newPassword = ""
+      changePasswordForm.confirmPassword = ""
+    } catch (e) {
+      console.warn(e)
+    }
+  }
+}
+// ( value: FieldValue | undefined, callback: (error?: string) => void ) => void
+const conformValidator = (value: string, callback: (error?: string) => void) => {
+  if (value !== changePasswordForm.newPassword) {
+    callback("两次输入的密码不一致")
+  } else {
+    callback()
+  }
+}
+
+const logout = async () => {
+  try {
+    await handleXhrResponse(() => userApi.logout(), Message)
+    userStore.clearUserInfo()
+    await router.push("/login")
+  } catch (e) {
+    console.log(e)
+  }
+}
+</script>
 <style scoped lang="less">
 .user-info {
   text-align: center;

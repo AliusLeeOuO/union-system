@@ -2,6 +2,17 @@
   <div>
     <h1>用户管理</h1>
   </div>
+  <a-space class="prime-actions">
+    <a-button @click="submitSearch">
+      <template #icon>
+        <icon-refresh />
+      </template>
+      刷新
+    </a-button>
+    <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
+      <a-button type="primary" @click="navigate">添加新用户</a-button>
+    </router-link>
+  </a-space>
   <div class="search-item">
     <a-form
       layout="inline"
@@ -47,6 +58,9 @@
       <a-tag color="cyan" v-if="record.status">正常</a-tag>
       <a-tag color="gray" v-else>冻结</a-tag>
     </template>
+    <template #create_time="{ record }">
+      <span>{{ dayjs(record.create_time).format("YYYY-MM-DD") }}</span>
+    </template>
     <template #action="{ record }">
       <a-space class="active-buttons">
         <a-button type="primary">修改 {{ record.id }}</a-button>
@@ -63,6 +77,8 @@ import useAdminApi, { type userListItem } from "@/api/adminApi"
 import { Message } from "@arco-design/web-vue"
 import type { FormInstance } from "@arco-design/web-vue"
 import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
+import { IconRefresh } from "@arco-design/web-vue/es/icon"
+import dayjs from "dayjs"
 
 
 const adminApi = useAdminApi()
@@ -85,6 +101,10 @@ const columns: TableColumnData[] = [
   {
     title: "角色",
     slotName: "role"
+  },
+  {
+    title: "账号创建时间",
+    slotName: "create_time"
   },
   {
     title: "账号状态",
@@ -135,14 +155,7 @@ const fetchUserList = async () => {
     return
   }
 
-  for (let i = 0; i < data.data.data.length; i++) {
-    dataSource.push({
-      id: data.data.data[i].id,
-      username: data.data.data[i].username,
-      role: data.data.data[i].role,
-      status: data.data.data[i].status
-    })
-  }
+  dataSource.push(...data.data.data)
 
 }
 
@@ -153,26 +166,7 @@ onMounted(async () => {
 
 </script>
 <style scoped lang="less">
-.panel {
-  background-color: #232324;
-
-  .banner {
-    width: 100%;
-    padding: 20px 20px 0;
-    background-color: var(--color-bg-2);
-    border-radius: 4px 4px 0 0;
-    font-size: 20px;
-    line-height: 1.4;
-  }
-
-  .card-item {
-    padding: 20px;
-
-    .active-buttons {
-      & > * {
-        margin-right: 10px;
-      }
-    }
-  }
+.prime-actions {
+  margin-bottom: 10px;
 }
 </style>

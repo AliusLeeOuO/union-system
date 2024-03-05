@@ -13,6 +13,7 @@ export interface userListItem {
   role: number
   status: number
   username: string
+  create_time: string
 }
 
 export default function useAdminApi() {
@@ -28,7 +29,16 @@ export default function useAdminApi() {
       if (params.id === -1) delete params.id
       if (params.username === "") delete params.username
       if (params.role === -1) delete params.role
-      return axiosInstance.post("/admin/getUserList", qs.stringify(params))
+      return axiosInstance.post("/admin/management/getUserList", qs.stringify(params))
+    },
+    addNewUser: (username: string, password: string, role: number, email: string, phone: number): Promise<AxiosApiResponse<null>> => {
+      return axiosInstance.post("/admin/management/addNewUser", qs.stringify({
+        username,
+        password,
+        role,
+        email,
+        phone
+      }))
     }
   }
 }

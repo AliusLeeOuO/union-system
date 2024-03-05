@@ -1,7 +1,8 @@
-package admin_handlers
+package admin_management
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"time"
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
@@ -28,7 +29,7 @@ func GetUserList(c *fiber.Ctx) error {
 	}
 
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))
-	adminUsers, total, err := userService.GetAdminUsers(int(request.PageNum), int(request.PageSize), request.Username, request.ID, request.Role)
+	adminUsers, total, err := userService.GetUserList(int(request.PageNum), int(request.PageSize), request.Username, request.ID, request.Role)
 	if err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode)
 	}
@@ -36,10 +37,11 @@ func GetUserList(c *fiber.Ctx) error {
 	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
 		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
-			ID:       user.UserID,
-			Username: user.Username,
-			Role:     user.UserTypeID,
-			Status:   user.IsActive,
+			ID:         user.UserID,
+			Username:   user.Username,
+			Role:       user.UserTypeID,
+			Status:     user.IsActive,
+			CreateTime: user.RegistrationDate.Format(time.RFC3339),
 		})
 	}
 

@@ -16,11 +16,11 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (repo *UserRepository) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
+func (repo *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
 	var users []model.User
 	offset := (page - 1) * pageSize
 
-	query := repo.DB.Model(&model.User{}).Omit("Password").Offset(offset).Limit(pageSize)
+	query := repo.DB.Model(&model.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
 	if username != "" {
 		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
@@ -103,5 +103,21 @@ func (repo *UserRepository) ChangePasswordByID(userID uint, newPassword string) 
 		return result.Error
 	}
 
+	return nil
+}
+
+func (repo *UserRepository) CreateUser(username string, password string, email string, role uint, phone string) error {
+	user := model.User{
+		Username:    username,
+		Password:    password,
+		Email:       email,
+		UserTypeID:  role,
+		PhoneNumber: phone,
+	}
+
+	result := repo.DB.Omit("registration_date", "is_active").Create(&user)
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }

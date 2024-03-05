@@ -2,7 +2,7 @@
 
 A union system using vue3-ts and go-fiber.
 
-Using MySQL and Redis to store data.
+Using PostgreSQL and Redis to store data.
 
 ## Features
 

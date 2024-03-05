@@ -53,8 +53,9 @@ type GetAdminUserListResponse struct {
 }
 
 type GetAdminUserResponse struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
-	Role     uint   `json:"role"`
-	Status   bool   `json:"status"`
+	ID         uint   `json:"id"`
+	Username   string `json:"username"`
+	Role       uint   `json:"role"`
+	Status     bool   `json:"status"`
+	CreateTime string `json:"create_time"`
 }

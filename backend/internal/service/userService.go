@@ -63,8 +63,8 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 	return &responseData, nil
 }
 
-func (s *UserService) GetAdminUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, int64, error) {
-	users, err := s.Repo.GetAdminUsers(page, pageSize, username, userId, userRole)
+func (s *UserService) GetUserList(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, int64, error) {
+	users, err := s.Repo.GetUsers(page, pageSize, username, userId, userRole)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -93,4 +93,19 @@ func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPas
 
 func (s *UserService) GetUserById(userId uint) (*model.User, error) {
 	return s.Repo.GetUserByID(userId)
+}
+
+func (s *UserService) CreateUser(username, password, email string, role uint, phone string) error {
+	// 密码加密
+	passwordHash, err := password_crypt.PasswordHash(password)
+	if err != nil {
+		return err
+	}
+
+	// 创建用户
+	err = s.Repo.CreateUser(username, passwordHash, email, role, phone)
+	if err != nil {
+		return err
+	}
+	return nil
 }

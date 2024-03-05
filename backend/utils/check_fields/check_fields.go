@@ -2,6 +2,8 @@ package check_fields
 
 import (
 	"reflect"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -50,4 +52,22 @@ func isZero(v interface{}) bool {
 
 	// 对于其他类型，使用 reflect.DeepEqual 检查零值
 	return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
+}
+
+// ValidateEmail 函数接收一个字符串参数并返回一个布尔值
+// 如果输入的字符串符合邮箱格式，返回 true；否则返回 false
+func ValidateEmail(email string) bool {
+	// 定义一个邮箱的正则表达式
+	var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	return emailRegex.MatchString(email)
+}
+
+// ValidateMobile 函数接收一个 uint 参数并返回一个布尔值
+// 如果输入的 uint 符合中国大陆手机号格式，返回 true；否则返回 false
+func ValidateMobile(mobile uint) bool {
+	// 将 uint 类型的手机号转换为字符串
+	mobileStr := strconv.FormatUint(uint64(mobile), 10)
+	// 定义一个中国大陆手机号的正则表达式
+	var mobileRegex = regexp.MustCompile(`^1[3-9]\d{9}$`)
+	return mobileRegex.MatchString(mobileStr)
 }

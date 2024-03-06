@@ -92,6 +92,12 @@ const getMyRequest = async () => {
   const { data } = await handleXhrResponse(() => memberApi.assistanceList(pageItem.pageSize, pageItem.current), Message)
   // 清除原有数据
   tableData.splice(0, tableData.length)
+  overviewItem.total = data.data.total
+  overviewItem.pending = data.data.pending_review_count
+  overviewItem.resolved = data.data.resolved_count
+  if (data.data.assistances === null) {
+    return
+  }
   data.data.assistances.forEach((item: assistanceListResponse) => {
     tableData.push({
       title: item.title,
@@ -104,9 +110,6 @@ const getMyRequest = async () => {
       status_id: item.status_id
     })
   })
-  overviewItem.total = data.data.total
-  overviewItem.pending = data.data.pending_review_count
-  overviewItem.resolved = data.data.resolved_count
 }
 
 const overviewItem = reactive({

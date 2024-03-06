@@ -45,7 +45,6 @@ import { useRoute, useRouter } from "vue-router"
 import useAdminApi from "@/api/adminApi"
 
 const route = useRoute()
-const router = useRouter()
 const adminApi = useAdminApi()
 
 const solidInfo = reactive({

@@ -5,7 +5,7 @@
       <div>
         <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
           <a-form-item field="username" label="用户名" validate-trigger="input"
-                       :rules="[{required:true,message:'请输入用户名'},{minLength:4,message:'用户名在4个字符以上'}]">
+                       :rules="[{required:true,message:'请输入用户名'},{minLength:3,message:'用户名在3个字符以上'}]">
             <a-input v-model="form.username" />
           </a-form-item>
           <a-form-item field="password" label="密码" validate-trigger="input"

@@ -35,7 +35,7 @@ export interface assistanceListResponseData {
   page_num: number
   resolved_count: number
   pending_review_count: number
-  assistances: assistanceListResponse[]
+  assistances: assistanceListResponse[] | null
 }
 
 export interface assistanceListResponse {

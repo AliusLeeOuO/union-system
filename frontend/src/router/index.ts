@@ -101,7 +101,18 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/admin/addNewUser",
             name: "addNewUser",
-            component: () => import("@/views/admin/addNewUser.vue")
+            component: () => import("@/views/admin/addNewUser.vue"),
+            meta: {
+              roles: roles.ADMIN
+            }
+          },
+          {
+            path: "/admin/manageSoloUser/:id",
+            name: "manageSoloUser",
+            component: () => import("@/views/admin/manageSoloUser.vue"),
+            meta: {
+              roles: roles.ADMIN
+            }
           }
         ]
       },

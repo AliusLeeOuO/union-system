@@ -94,7 +94,7 @@ const rules: Record<string, FieldRule | FieldRule[]> = {
             callback("请选择角色")
           }
           if (value !== roles.ADMIN && value !== roles.USER) {
-            callback("match must be match!")
+            callback("请选择正确的角色")
           }
           resolve(void 0)
         })

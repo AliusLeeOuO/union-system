@@ -54,13 +54,9 @@ const form = reactive({
 })
 
 async function addCaptcha() {
-  try {
-    const { data } = await handleXhrResponse(() => userApi.getCaptcha(), Message)
-    captchaPicture.value = data.data.imagePath
-    form.captchaID = data.data.captchaID
-  } catch (error) {
-    console.log(error)
-  }
+  const { data } = await handleXhrResponse(() => userApi.getCaptcha(), Message)
+  captchaPicture.value = data.data.imagePath
+  form.captchaID = data.data.captchaID
 }
 
 const handleSubmit = async (form: {
@@ -79,7 +75,8 @@ const handleSubmit = async (form: {
       userStore.userInfo.userName = data.data.username
       userStore.userInfo.userId = data.data.user_id
       userStore.userInfo.userRole = data.data.role
-      // TODO: 根据角色跳转到不同的页面
+      userStore.userInfo.phone = data.data.phone
+      userStore.userInfo.email = data.data.email
       if (userStore.userInfo.userRole === roles.ADMIN) {
         // 跳转到管理员页面
         await router.push("/admin/index")
@@ -89,6 +86,7 @@ const handleSubmit = async (form: {
       }
     } finally {
       handleButtonLoading.value = false
+      await addCaptcha()
     }
   }
 }

@@ -21,7 +21,12 @@ const userStore = useUserStore()
 const userApi = useUserApi()
 onMounted(async () => {
   if (userStore.isUserLoggedIn) {
-    await handleXhrResponse(() => userApi.getUserInfo(), Message)
+    const { data } = await handleXhrResponse(() => userApi.getUserInfo(), Message)
+    userStore.userInfo.userName = data.data.username
+    userStore.userInfo.userId = data.data.userID
+    userStore.userInfo.userRole = data.data.role
+    userStore.userInfo.phone = data.data.phone
+    userStore.userInfo.email = data.data.email
   }
 })
 </script>

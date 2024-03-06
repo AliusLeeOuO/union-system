@@ -39,4 +39,9 @@ type UserInfoResponse struct {
 	Username string `json:"username"`
 	Role     uint   `json:"role"`
 	Status   bool   `json:"status"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+}
+type UserQueryRequest struct {
+	UserID uint `form:"user_id"`
 }

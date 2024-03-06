@@ -1,4 +1,4 @@
-package user_handlers
+package admin_management
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -7,20 +7,29 @@ import (
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/internal/service"
+	"union-system/utils/check_fields"
 )
 
 func GetUserInfoHandler(c *fiber.Ctx) error {
-	// 从 JWT 中获取 userID
-	userID := c.Locals("userID")
-	if userID == nil {
-		return model.SendFailureResponse(c, model.AuthFailedCode)
+	var form dto.UserQueryRequest
+	if err := c.BodyParser(&form); err != nil {
+		return model.SendFailureResponse(c, model.QueryParamErrorCode)
+	}
+
+	fieldsToCheck := map[string]interface{}{
+		"user_id": form.UserID,
+	}
+	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
+	if !ok {
+		errorMessage := "缺少必要字段: " + missingField
+		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
 	// 初始化 repository service
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))
 
 	// 查询用户信息
-	user, err := userService.GetUserById(userID.(uint)) // 类型断言为 uint
+	user, err := userService.GetUserById(form.UserID) // 类型断言为 uint
 	if err != nil {
 		return model.SendFailureResponse(c, model.ResourceNotFoundCode)
 	}

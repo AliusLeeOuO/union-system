@@ -13,6 +13,8 @@ interface loginResponseData {
   token: string
   user_id: number
   username: string
+  phone: string
+  email: string
 }
 
 interface getUserInfoResponseData {
@@ -20,6 +22,8 @@ interface getUserInfoResponseData {
   status: number
   userID: number
   username: string
+  phone: string
+  email: string
 }
 
 

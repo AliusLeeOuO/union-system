@@ -75,6 +75,24 @@
         </a-button>
       </div>
     </div>
+    <div class="user-center-item">
+      <div class="user-center-item-left">
+        <div>邮箱</div>
+        <div>{{ userStore.userInfo.email }}</div>
+      </div>
+      <div>
+        <!--        <icon-pen-fill /> 编辑-->
+      </div>
+    </div>
+    <div class="user-center-item">
+      <div class="user-center-item-left">
+        <div>手机号</div>
+        <div>{{ userStore.userInfo.phone }}</div>
+      </div>
+      <div>
+        <!--        <icon-pen-fill /> 编辑-->
+      </div>
+    </div>
     <div class="actions">
       <a-button @click="logout">退出登录</a-button>
     </div>

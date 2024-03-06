@@ -148,7 +148,6 @@ onMounted(async () => {
 </script>
 <style scoped lang="less">
 .activity-content {
-  // 改成圆角
   .activity-item {
     display: block;
     color: inherit;

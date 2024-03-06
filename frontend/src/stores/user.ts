@@ -6,7 +6,9 @@ export const useUserStore = defineStore("user", () => {
     token: "",
     userId: -1,
     userName: "",
-    userRole: -1
+    userRole: -1,
+    phone: "",
+    email: "",
   })
 
   const isUserLoggedIn = computed(() => {

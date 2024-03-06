@@ -8,12 +8,22 @@ export interface getUserResponseData {
   total: number,
   data: userListItem[] | null
 }
+
 export interface userListItem {
   id: number
   role: number
   status: number
   username: string
   create_time: string
+}
+
+export interface userDetail {
+  user_id: number
+  username: string
+  role: number
+  status: boolean
+  phone: string
+  email: string
 }
 
 export default function useAdminApi() {
@@ -39,6 +49,27 @@ export default function useAdminApi() {
         email,
         phone
       }))
+    },
+    getUserInfo: (user_id: number): Promise<AxiosApiResponse<userDetail>> => {
+      return axiosInstance.post("/admin/management/getUserInfo", qs.stringify({ user_id }))
+    },
+    updateUser: (user_id: number, username: string, status: boolean, phone: string, email: string, password?: string): Promise<AxiosApiResponse<null>> => {
+      const params: {
+        user_id: number,
+        username: string,
+        status: boolean,
+        phone: string,
+        email: string,
+        password?: string
+      } = {
+        user_id,
+        username,
+        status,
+        phone,
+        email
+      }
+      if (password) params.password = password
+      return axiosInstance.post("/admin/management/updateUser", qs.stringify(params))
     }
   }
 }

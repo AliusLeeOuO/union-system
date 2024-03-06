@@ -63,7 +63,9 @@
     </template>
     <template #action="{ record }">
       <a-space class="active-buttons">
-        <a-button type="primary">修改 {{ record.id }}</a-button>
+        <router-link :to="`/admin/manageSoloUser/${record.id}`" custom v-slot="{ navigate }">
+          <a-button type="primary" @click="navigate">修改</a-button>
+        </router-link>
       </a-space>
     </template>
   </a-table>

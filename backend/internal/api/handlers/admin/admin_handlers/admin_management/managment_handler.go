@@ -7,4 +7,6 @@ func Init(app fiber.Router) {
 	// 注册路由
 	management.Post("/getUserList", GetUserList)
 	management.Post("/addNewUser", AddNewUser)
+	management.Post("/getUserInfo", GetUserInfoHandler)
+	management.Post("/updateUser", UpdateUserHandler)
 }

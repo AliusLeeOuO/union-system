@@ -25,9 +25,8 @@
       <div class="description-title">交流记录</div>
       <div>
         <a-empty v-if="state.responses.length === 0" />
-        <!--  TODO: 这里后端要传回复者的用户名   -->
         <a-comment v-for="response in state.responses"
-                   :author="`response.responder_id`"
+                   :author="response.username"
                    :key="response.response_id"
                    :content="response.response_text"
                    :datetime="dayjs(response.created_at).format('YYYY-MM-DD HH:mm:ss')"

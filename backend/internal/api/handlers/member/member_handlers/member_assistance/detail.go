@@ -46,6 +46,7 @@ func ViewAssistance(c *fiber.Ctx) error {
 			ResponderID:  resp.ResponderID,
 			ResponseText: resp.ResponseText,
 			CreatedAt:    resp.CreatedAt,
+			Username:     resp.User.Username,
 		})
 	}
 

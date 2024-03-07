@@ -29,16 +29,20 @@ type GetAssistanceListRequest struct {
 // GetAssistanceListResponse 定义了获取援助列表响应的数据结构
 type GetAssistanceListResponse struct {
 	PageResponse
-	Data []GetAssistanceResponse `json:"data"`
+	AssistanceStatus []AssistanceStatusDTO   `json:"assistance_status"`
+	Data             []GetAssistanceResponse `json:"data"`
 }
 
 // GetAssistanceResponse 定义了获取援助响应的数据结构
 type GetAssistanceResponse struct {
-	ID uint `json:"id"`
-	// 将 AssistanceType 修改为嵌套结构体
-	AssistanceType AssistanceTypeResponse `json:"assistance_type"`
+	ID             uint                   `json:"id"`
 	Title          string                 `json:"title"`
+	Description    string                 `json:"description"`
 	Status         uint                   `json:"status"`
+	CreateTime     string                 `json:"create_time"`
+	UserID         uint                   `json:"user_id"`
+	Username       string                 `json:"username"`
+	AssistanceType AssistanceTypeResponse `json:"assistance_type"`
 }
 
 // AssistanceTypeResponse 定义了援助类型的响应结构
@@ -58,4 +62,23 @@ type GetAdminUserResponse struct {
 	Role       uint   `json:"role"`
 	Status     bool   `json:"status"`
 	CreateTime string `json:"create_time"`
+}
+
+type LoginLogListRequest struct {
+	Pagination
+	Status string `json:"status" form:"status"`
+}
+
+type GetLoginLogListResponse struct {
+	PageResponse
+	Data []GetLoginLogResponse `json:"data"`
+}
+
+type GetLoginLogResponse struct {
+	LogId     uint   `json:"log_id"`
+	UA        string `json:"ua"`
+	IP        string `json:"ip"`
+	Status    bool   `json:"status"`
+	LoginTime string `json:"login_time"`
+	Username  string `json:"username"`
 }

@@ -34,13 +34,16 @@ func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListReque
 	countQuery.Count(&totalCount)
 
 	// 获取分页数据
-	dataQuery := r.DB.Model(&model.AssistanceRequest{}).Preload("AssistanceType")
+	dataQuery := r.DB.Model(&model.AssistanceRequest{}).Preload("AssistanceType").Preload("User")
 	if form.ID != 0 {
 		dataQuery = dataQuery.Where("request_id = ?", form.ID)
 	}
 	if form.AssistanceTypeId != 0 {
 		dataQuery = dataQuery.Where("type_id = ?", form.AssistanceTypeId)
 	}
+
+	// 添加倒序排列
+	dataQuery = dataQuery.Order("created_at DESC")
 
 	limit := form.PageSize
 	offset := (form.PageNum - 1) * form.PageSize
@@ -56,8 +59,12 @@ func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListReque
 		response.Data[i] = dto.GetAssistanceResponse{
 			ID:             assistance.RequestID,
 			AssistanceType: dto.AssistanceTypeResponse{ID: assistance.TypeID, Name: assistance.AssistanceType.TypeName},
-			Title:          assistance.Description,
+			Title:          assistance.Title,
+			Description:    assistance.Description,
 			Status:         assistance.StatusID,
+			CreateTime:     assistance.CreatedAt.Format(time.RFC3339),
+			UserID:         assistance.MemberID,
+			Username:       assistance.User.Username,
 		}
 	}
 
@@ -86,8 +93,8 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	}
 	assistance.AssistanceStatus = assistanceStatus
 
-	// 获取相关的交流记录
-	if err := r.DB.Where("request_id = ?", requestID).Find(&responses).Error; err != nil {
+	// 获取相关的交流记录，并预加载User以获取用户名
+	if err := r.DB.Preload("User").Where("request_id = ?", requestID).Find(&responses).Error; err != nil {
 		return assistance, nil, err
 	}
 

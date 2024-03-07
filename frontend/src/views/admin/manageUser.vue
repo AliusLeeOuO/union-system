@@ -2,17 +2,21 @@
   <div>
     <h1>用户管理</h1>
   </div>
-  <a-space class="prime-actions">
-    <a-button @click="submitSearch">
-      <template #icon>
-        <icon-refresh />
-      </template>
-      刷新
-    </a-button>
-    <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
-      <a-button type="primary" @click="navigate">添加新用户</a-button>
-    </router-link>
-  </a-space>
+  <div class="prime-actions">
+    <a-space>
+      <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
+        <a-button type="primary" @click="navigate">添加新用户</a-button>
+      </router-link>
+    </a-space>
+    <a-space>
+      <a-button @click="submitSearch">
+        <template #icon>
+          <icon-refresh />
+        </template>
+        刷新
+      </a-button>
+    </a-space>
+  </div>
   <div class="search-item">
     <a-form
       layout="inline"
@@ -156,9 +160,7 @@ const fetchUserList = async () => {
   if (data.data.data === null) {
     return
   }
-
   dataSource.push(...data.data.data)
-
 }
 
 onMounted(async () => {
@@ -169,6 +171,9 @@ onMounted(async () => {
 </script>
 <style scoped lang="less">
 .prime-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 </style>

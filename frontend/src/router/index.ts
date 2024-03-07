@@ -113,6 +113,36 @@ const routes: Array<routeRecordWithRole> = [
             meta: {
               roles: roles.ADMIN
             }
+          },
+          {
+            path: "/admin/manageAssistance",
+            name: "manageAssistance",
+            component: () => import("@/views/admin/assistanceManage.vue"),
+            meta: {
+              roles: roles.ADMIN
+            }
+          },
+          {
+            path: "/admin/logView",
+            name: "logView",
+            component: () => import("@/views/admin/logView/index.vue"),
+            meta: {
+              roles: roles.ADMIN
+            },
+            children: [
+              {
+                path: "/admin/logView",
+                redirect: "/admin/loginLogView"
+              },
+              {
+                path: "/admin/loginLogView",
+                name: "loginLogView",
+                component: () => import("@/views/admin/logView/loginLogView.vue"),
+                meta: {
+                  roles: roles.ADMIN
+                }
+              }
+            ]
           }
         ]
       },

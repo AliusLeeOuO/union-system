@@ -66,7 +66,7 @@
         <div class="nav-top-right">
           <div class="close-menu-icon" @click="openMobileNav = false">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 24 24">
+                 x="0px" y="0px" viewBox="0 0 24 24">
               <line id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
                     vector-effect="non-scaling-stroke" data-svg-origin="12 6" style="transform-origin: 0 0;"
                     transform="matrix(-0.70711,-0.70711,0.70711,-0.70711,16.24266,24.72798)"></line>
@@ -179,6 +179,14 @@ const adminNavList = reactive<navList[]>([
   {
     title: "用户管理",
     path: "/admin/manageUser"
+  },
+  {
+    title: "援助管理",
+    path: "/admin/manageAssistance"
+  },
+  {
+    title: "日志审计",
+    path: "/admin/logView"
   }
 ])
 

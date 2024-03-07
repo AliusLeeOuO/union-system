@@ -14,6 +14,7 @@ type AssistanceResponse struct {
 	ResponderID  uint      `json:"responder_id"`
 	ResponseText string    `json:"response_text"`
 	CreatedAt    time.Time `json:"created_at"`
+	Username     string    `json:"username"`
 }
 
 type AssistanceStatusResponse struct {

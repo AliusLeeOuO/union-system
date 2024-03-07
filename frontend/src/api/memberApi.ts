@@ -72,6 +72,7 @@ export interface assistanceDetailResponseData {
   responder_id: number
   response_text: string
   created_at: string
+  username: string
 }
 
 export interface assistanceTypeResponse {
@@ -128,6 +129,11 @@ export interface notificationResponseObject {
   sender_role: number
 }
 
+export interface activityTypeResponse {
+  activity_type_id: number
+  type_name: string
+}
+
 export default function useMemberApi() {
   return {
     activityList: (
@@ -147,8 +153,7 @@ export default function useMemberApi() {
       axiosInstance.post(`/member/activity/register/${activityId}`),
     activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> =>
       axiosInstance.delete(`/member/activity/cancel/${activityId}`),
-    // TODO:类型没写
-    activityType: (): Promise<AxiosApiResponse<any>> => axiosInstance.get("/member/activity/type"),
+    activityType: (): Promise<AxiosApiResponse<activityTypeResponse[]>> => axiosInstance.get("/member/activity/type"),
     activityMemberList: (
       pageSize: number,
       pageNum: number

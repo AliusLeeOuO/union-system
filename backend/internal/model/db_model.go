@@ -145,6 +145,7 @@ type AssistanceRequest struct {
 	// 辅助字段
 	AssistanceStatus AssistanceStatus `gorm:"foreignKey:status_id"`
 	AssistanceType   AssistanceType   `gorm:"foreignKey:type_id"`
+	User             User             `gorm:"foreignKey:MemberID;references:UserID"`
 }
 
 // AssistanceResponse 对应于 tb_assistance_response
@@ -154,6 +155,8 @@ type AssistanceResponse struct {
 	ResponderID  uint      `gorm:"column:responder_id"`
 	ResponseText string    `gorm:"column:response_text"`
 	CreatedAt    time.Time `gorm:"column:created_at"`
+	// 添加User字段以关联User模型
+	User User `gorm:"foreignKey:ResponderID;references:UserID"`
 }
 
 // AssistanceFeedback 对应于 tb_assistance_feedback
@@ -180,4 +183,14 @@ type NotificationRecipient struct {
 	NotificationID uint `gorm:"primary_key;column:notification_id"`
 	RecipientID    uint `gorm:"primary_key;column:recipient_id"`
 	ReadStatus     bool `gorm:"column:read_status;default:false"` // 默认为未读
+}
+
+// LogLogin 对应于数据库中的 tb_log_login 表
+type LogLogin struct {
+	LogID       uint      `gorm:"primaryKey;autoIncrement;column:log_id"`      // 日志ID，自增主键
+	UA          string    `gorm:"type:text;not null;column:ua"`                // 用户代理字符串
+	IP          string    `gorm:"type:varchar(39);not null;column:ip"`         // 用户的IP地址，兼容IPv4和IPv6格式
+	LoginStatus bool      `gorm:"not null;column:login_status"`                // 登录状态
+	LoginTime   time.Time `gorm:"default:CURRENT_TIMESTAMP;column:login_time"` // 登录时间
+	Username    string    `gorm:"column:username"`                             // 用户名
 }

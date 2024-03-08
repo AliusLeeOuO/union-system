@@ -27,15 +27,17 @@
     </div>
     <div class="activity-detail-item">
       <div class="description-title">活动时间</div>
-      <div class="activity-detail-item-content">{{ dayjs(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }} -
-        {{ dayjs(activityDetail.endTime).format("YYYY年MM月DD日 HH:mm") }}
+      <div class="activity-detail-item-content">
+        {{ dayjs.tz(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }}
+        -
+        {{ dayjs.tz(activityDetail.endTime).format("YYYY年MM月DD日 HH:mm") }}
       </div>
     </div>
   </div>
- <div>
-   <a-button @click="signUpActivity" v-if="userActivityStatus.isRegistered" long size="large">报名活动</a-button>
-   <a-button @click="cancelSignUpActivity" v-else long size="large" status="warning">取消报名</a-button>
- </div>
+  <div>
+    <a-button @click="signUpActivity" v-if="userActivityStatus.isRegistered" long size="large">报名活动</a-button>
+    <a-button @click="cancelSignUpActivity" v-else long size="large" status="warning">取消报名</a-button>
+  </div>
 </template>
 <script setup lang="ts">
 import dayjs from "dayjs"
@@ -44,9 +46,18 @@ import { reactive, onMounted } from "vue"
 import { Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import { useRoute } from "vue-router"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
+dayjs.extend(timezone)
+dayjs.extend(utc)
+
+dayjs.tz.setDefault("Asia/Shanghai")
+
 
 const memberApi = useMemberApi()
 const route = useRoute()
+
 
 const activityDetail = reactive({
   title: "",
@@ -54,8 +65,8 @@ const activityDetail = reactive({
   registrationCount: 0,
   maxParticipants: 0,
   location: "",
-  startTime: "",
-  endTime: "",
+  startTime: "1970-01-01T08:00:00+08:00",
+  endTime: "1970-01-01T08:00:00+08:00",
   activityTypeName: ""
 })
 

@@ -32,7 +32,7 @@
       <a-tag color="red" v-else>失败</a-tag>
     </template>
     <template #login_time="{ record }">
-      {{ dayjs(record.login_time).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.login_time).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
   </a-table>
 </template>
@@ -43,6 +43,12 @@ import { handleXhrResponse } from "@/api"
 import { Message } from "@arco-design/web-vue"
 import dayjs from "dayjs"
 import { IconRefresh } from "@arco-design/web-vue/es/icon"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const adminApi = useAdminApi()
 

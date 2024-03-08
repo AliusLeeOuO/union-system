@@ -49,6 +49,7 @@
     :columns="columns"
     :data="dataSource"
     @page-change="changePage"
+    :loading="tableLoading"
     :pagination="{
       total: pageItem.total,
       pageSize: pageItem.pageSize,
@@ -63,7 +64,7 @@
       <a-tag color="gray" v-else>冻结</a-tag>
     </template>
     <template #create_time="{ record }">
-      <span>{{ dayjs(record.create_time).format("YYYY-MM-DD") }}</span>
+      <span>{{ dayjs.tz(record.create_time).format("YYYY-MM-DD") }}</span>
     </template>
     <template #action="{ record }">
       <a-space class="active-buttons">
@@ -85,7 +86,12 @@ import type { FormInstance } from "@arco-design/web-vue"
 import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
 import { IconRefresh } from "@arco-design/web-vue/es/icon"
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const adminApi = useAdminApi()
 const searchFormRef = ref<FormInstance | null>(null)
@@ -94,6 +100,7 @@ const searchFormItem = reactive({
   username: "",
   role: -1
 })
+const tableLoading = ref(true)
 
 const columns: TableColumnData[] = [
   {
@@ -152,15 +159,16 @@ const resetFormItem = async () => {
 }
 
 const fetchUserList = async () => {
+  tableLoading.value = true
   const { data } = await handleXhrResponse(() => adminApi.getUserList(pageItem.current, pageItem.pageSize, processedValue(), searchFormItem.username, searchFormItem.role), Message)
   dataSource.splice(0, dataSource.length)
   pageItem.total = data.data.total
   pageItem.pageSize = data.data.page_size
 
-  if (data.data.data === null) {
-    return
+  if (data.data.data !== null) {
+    dataSource.push(...data.data.data)
   }
-  dataSource.push(...data.data.data)
+  tableLoading.value = false
 }
 
 onMounted(async () => {

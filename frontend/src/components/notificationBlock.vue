@@ -10,7 +10,7 @@
       <div class="notification-title">{{ props.title }}</div>
       <div class="notification-right">
         <a-tag>{{ getRoleName(props.senderRole) }} {{ senderUsername }}</a-tag>
-        {{ dayjs(props.createTime).format("YYYY年MM月DD日 HH:mm:ss") }}
+        {{ dayjs.tz(props.createTime).format("YYYY年MM月DD日 HH:mm:ss") }}
       </div>
     </div>
     <div ref="notificationContent" class="notification-content" :style="{ height: contentHeight }">
@@ -31,6 +31,12 @@ import { handleXhrResponse } from "@/api"
 import useMemberApi from "@/api/memberApi"
 import { Message } from "@arco-design/web-vue"
 import { getRoleName } from "@/utils/roleHelper"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const props = defineProps<{
   id: number

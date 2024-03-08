@@ -69,6 +69,32 @@ export interface assistanceListItem {
   status: number
 }
 
+export interface assistanceDetailResponse {
+  id: number
+  assistance_type: string
+  title: string
+  description: string
+  created_at: string
+  updated_at: string
+  status: {
+    id: number
+    name: string
+  }
+  type: {
+    assistance_type_id: number
+    type_name: string
+  }
+  responses: assistanceDetailResponseData[]
+}
+
+export interface assistanceDetailResponseData {
+  response_id: number
+  responder_id: number
+  response_text: string
+  created_at: string
+  username: string
+}
+
 export default function useAdminApi() {
   return {
     getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = "", role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
@@ -131,6 +157,18 @@ export default function useAdminApi() {
       if (params.assistance_type_id === undefined) delete params.assistance_type_id
       if (params.id === undefined) delete params.id
       return axiosInstance.post("/admin/assistance/requests", qs.stringify(params))
-    }
+    },
+    assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> =>
+      axiosInstance.post(
+        `/admin/assistance/viewAssistance`,
+        qs.stringify({
+          request_id: assistanceId
+        })
+      ),
+    assistanceReply: (assistanceId: number, responseText: string, newStatusId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/assistance/replyAssistance", qs.stringify({
+      request_id: assistanceId,
+      response_text: responseText,
+      new_status_id: newStatusId
+    }))
   }
 }

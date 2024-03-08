@@ -16,9 +16,15 @@
 <script lang="ts" setup>
 import pkg from "../../package.json"
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const attribute = parseInt(document.documentElement.getAttribute("data-build-timestamp")!)
-const buildDate = dayjs(attribute).format("YYYYMMDD")
+const buildDate = dayjs.tz(attribute).format("YYYYMMDD")
 
 
 function toMIIT(event: MouseEvent) {

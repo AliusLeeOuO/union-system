@@ -15,8 +15,8 @@
               地址：{{ item.location }}
               活动类型：{{ item.activityTypeName }}
             </div>
-            <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
-              {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
+            <div class="activity-item-time">{{ dayjs.tz(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
+              {{ dayjs.tz(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
             </div>
           </router-link>
         </div>
@@ -45,8 +45,8 @@
               地址：{{ item.location }}
               活动类型：{{ item.activityTypeName }}
             </div>
-            <div class="activity-item-time">{{ dayjs(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
-              {{ dayjs(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
+            <div class="activity-item-time">{{ dayjs.tz(item.startTime).format("YYYY年MM月DD日 HH:mm") }} -
+              {{ dayjs.tz(item.endTime).format("YYYY年MM月DD日 HH:mm") }}
             </div>
           </router-link>
         </div>
@@ -67,12 +67,17 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue"
 import useMemberApi, { type activityListResponse } from "@/api/memberApi"
-import type { activityListResponseData } from "@/api/memberApi"
 import { Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 
 const memberApi = useMemberApi()
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const activityList = reactive<activityListResponse[]>([])
 const pagination = reactive({

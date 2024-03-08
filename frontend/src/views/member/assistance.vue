@@ -79,7 +79,11 @@ import { Message, type ValidatedError } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import dayjs from "dayjs"
 import { useRouter } from "vue-router"
-
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 const router = useRouter()
 const memberApi = useMemberApi()
 
@@ -105,7 +109,7 @@ const getMyRequest = async () => {
       assistance_type: item.assistance_type,
       assistance_type_id: item.assistance_type_id,
       description: item.description,
-      request_date: dayjs(item.request_date).format("YYYY-MM-DD HH:mm:ss"),
+      request_date: dayjs.tz(item.request_date).format("YYYY-MM-DD HH:mm:ss"),
       status: item.status,
       status_id: item.status_id
     })

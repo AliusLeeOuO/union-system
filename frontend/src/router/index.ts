@@ -123,6 +123,14 @@ const routes: Array<routeRecordWithRole> = [
             }
           },
           {
+            path: "/admin/manageAssistanceDetail/:id",
+            name: "manageAssistanceDetail",
+            component: () => import("@/views/admin/assistanceDetail.vue"),
+            meta: {
+              roles: roles.ADMIN
+            }
+          },
+          {
             path: "/admin/logView",
             name: "logView",
             component: () => import("@/views/admin/logView/index.vue"),

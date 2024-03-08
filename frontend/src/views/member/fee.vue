@@ -31,7 +31,7 @@
         pageSize: feeHistoryPagination.pageSize
       }">
     <template #created_at="{ record }">
-      {{ dayjs(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
   </a-table>
   <div class="description-title">
@@ -49,7 +49,7 @@
         pageSize: waitingFeePagination.pageSize,
       }">
     <template #created_at="{ record }">
-      {{ dayjs(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
     <template #action="{ record }">
       <a-button>缴费</a-button>
@@ -62,8 +62,14 @@ import useMemberApi, { type feeHistoryResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
 import { Message } from "@arco-design/web-vue"
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 
 const memberApi = useMemberApi()
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
 
 const currentFeeInfo = reactive({
   amount: 0,
@@ -185,7 +191,7 @@ const lastFeeDate = computed(() => {
   if (lastDate === "") {
     return "无"
   }
-  return dayjs(lastDate).format("YYYY-MM-DD")
+  return dayjs.tz(lastDate).format("YYYY-MM-DD")
 })
 
 

@@ -42,11 +42,6 @@ type ReplyAssistanceRequest struct {
 	NewStatusID  uint   `json:"new_status_id" form:"new_status_id"`
 }
 
-type ReplyAssistanceResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-}
-
 // member dto
 
 // NewAssistanceRequest 接收发起工单请求的数据结构

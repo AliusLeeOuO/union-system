@@ -37,9 +37,5 @@ func ReplyAssistance(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.OperationFailedErrorCode, err.Error())
 	}
 
-	response := dto.ReplyAssistanceResponse{
-		Success: true,
-		Message: "Assistance replied successfully",
-	}
-	return model.SendSuccessResponse(c, response)
+	return model.SendSuccessResponse(c, nil)
 }

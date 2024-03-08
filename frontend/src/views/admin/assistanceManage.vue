@@ -34,6 +34,7 @@
     :data="tableData"
     size="large"
     @page-change="changePage"
+    :loading="tableLoading"
     :pagination="{
       total: pageData.total,
       pageSize: pageData.pageSize,
@@ -47,13 +48,15 @@
       <a-tag color="gray" v-else-if="record.status === 4">已关闭</a-tag>
     </template>
     <template #create_time="{ record }">
-      {{ dayjs(record.create_time).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.create_time).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
     <template #type="{ record }">
       {{ record.assistance_type.name }}
     </template>
     <template #action="{ record }">
-      <a-button type="primary">操作</a-button>
+      <router-link :to="`/admin/manageAssistanceDetail/${record.id}`" custom v-slot="{ navigate }">
+        <a-button type="primary" @click="navigate">操作</a-button>
+      </router-link>
     </template>
   </a-table>
 </template>
@@ -64,10 +67,18 @@ import dayjs from "dayjs"
 import useAdminApi, { type assistanceListItem } from "@/api/adminApi"
 import { type FormInstance, Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 
 const adminApi = useAdminApi()
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
+
 const searchFormRef = ref<FormInstance | null>(null)
+const tableLoading = ref(true)
+
 
 const columns = [
   {
@@ -136,6 +147,7 @@ const refreshList = async () => {
 }
 
 const fetchAssistanceList = async () => {
+  tableLoading.value = true
   // 构建基本的参数对象
   let params: {
     pageNum: number;
@@ -144,34 +156,35 @@ const fetchAssistanceList = async () => {
     id?: number;
   } = {
     pageNum: pageData.currentPage,
-    pageSize: pageData.pageSize,
-  };
+    pageSize: pageData.pageSize
+  }
 
   // 如果 id 不为空且可以转换为数字，则添加到参数对象中
   if (searchForm.id) {
-    const idNumber = Number(searchForm.id);
+    const idNumber = Number(searchForm.id)
     if (!isNaN(idNumber)) { // 确保转换后是有效数字
-      params.id = idNumber;
+      params.id = idNumber
     }
   }
 
   // 如果 type 不为空且可以转换为数字，则添加到参数对象中
   if (searchForm.type) {
-    const typeIdNumber = Number(searchForm.type);
+    const typeIdNumber = Number(searchForm.type)
     if (!isNaN(typeIdNumber)) { // 确保转换后是有效数字
-      params.assistance_type_id = typeIdNumber;
+      params.assistance_type_id = typeIdNumber
     }
   }
 
   // 调用 API，并传递构建好的参数对象
-  const { data } = await handleXhrResponse(() => adminApi.getAssistanceList(params.pageNum, params.pageSize, params.assistance_type_id, params.id), Message);
+  const { data } = await handleXhrResponse(() => adminApi.getAssistanceList(params.pageNum, params.pageSize, params.assistance_type_id, params.id), Message)
 
   // 更新表格数据和分页数据
-  tableData.splice(0, tableData.length);
-  pageData.total = data.data.total;
+  tableData.splice(0, tableData.length)
+  pageData.total = data.data.total
   if (data.data.data) {
-    tableData.push(...data.data.data);
+    tableData.push(...data.data.data)
   }
+  tableLoading.value = false
 }
 
 

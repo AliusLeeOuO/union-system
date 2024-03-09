@@ -10,7 +10,6 @@
   </div>
   <div class="assistance-status">
     <div class="description-title">援助状态</div>
-    <a-button @click="closeModal = true" v-if="state.status.id !== 4">关闭本援助</a-button>
   </div>
   <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
     <a-step description="This is a description">待审核</a-step>
@@ -37,7 +36,7 @@
         <div class="description-title">补充反馈</div>
         <a-form :model="submitAssistanceForm" @submit="handleSubmit">
           <a-form-item hide-label
-                       validate-trigger="input"
+                       validate-trigger="blur"
                        :rules="[{required:true,message:'请输入回复内容'}]"
                        field="response_text"
           >
@@ -48,42 +47,42 @@
             />
           </a-form-item>
           <div class="submit-button">
+            <span>新状态：</span>
+            <a-select :style="{width:'220px'}" placeholder="选择回复状态" v-model="submitAssistanceForm.new_status">
+              <a-option :value="1">待审核</a-option>
+              <a-option :value="2">处理中</a-option>
+              <a-option :value="3">已解决</a-option>
+              <a-option :value="4">已关闭</a-option>
+            </a-select>
             <a-button type="primary" html-type="submit">提交回复</a-button>
           </div>
         </a-form>
       </div>
     </div>
   </div>
-  <a-modal v-model:visible="closeModal" @ok="closeAssistance">
-    <template #title>
-      关闭援助
-    </template>
-    <div>
-      确定关闭本援助吗？关闭后将无法再次开启。
-    </div>
-  </a-modal>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router"
-import useMemberApi, { type assistanceDetailResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
 import { Message, type ValidatedError } from "@arco-design/web-vue"
 import { onMounted, reactive, ref } from "vue"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
+import useAdminApi, { type assistanceDetailResponse } from "@/api/adminApi"
+
+const adminApi = useAdminApi()
+const route = useRoute()
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Shanghai")
-const memberApi = useMemberApi()
-const route = useRoute()
 
 // 面包屑
 const routes = [
   {
-    path: "/member/assistance",
-    label: "帮助"
+    path: "/admin/manageAssistance",
+    label: "援助管理"
   },
   {
     path: route.path,
@@ -94,7 +93,7 @@ const routes = [
 
 const getAssistanceDetail = async () => {
   const assistantId = Number(route.params.id)
-  const { data } = await handleXhrResponse(() => memberApi.assistanceDetail(assistantId), Message)
+  const { data } = await handleXhrResponse(() => adminApi.assistanceDetail(assistantId), Message)
   state.assistance_type = data.data.assistance_type
   state.description = data.data.description
   state.id = data.data.id
@@ -149,33 +148,20 @@ const handleSubmit = async (form: {
   errors: Record<string, ValidatedError> | undefined
 }) => {
   if (!form.errors) {
-    try {
-      await handleXhrResponse(() => memberApi.assistanceReply(Number(route.params.id), form.values.response_text), Message)
-      Message.success("回复成功")
-      submitAssistanceForm.response_text = ""
-      await getAssistanceDetail()
-    } catch (error) {
-      console.log(error)
-    }
+    await handleXhrResponse(() => adminApi.assistanceReply(Number(route.params.id), submitAssistanceForm.response_text, submitAssistanceForm.new_status), Message)
+    Message.success("回复成功")
+    submitAssistanceForm.response_text = ""
+    submitAssistanceForm.new_status = 3
+    await getAssistanceDetail()
   }
 }
 
 const submitAssistanceForm = reactive({
-  response_text: ""
+  response_text: "",
+  new_status: 3
 })
 
 
-// 关闭援助
-const closeModal = ref(false)
-const closeAssistance = async () => {
-  try {
-    await handleXhrResponse(() => memberApi.assistanceClose(Number(route.params.id)), Message)
-    Message.success("关闭成功")
-    await getAssistanceDetail()
-  } catch (error) {
-    console.log(error)
-  }
-}
 
 </script>
 <style scoped lang="less">
@@ -211,6 +197,9 @@ const closeAssistance = async () => {
 
 .submit-button {
   display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
   justify-content: flex-end;
 }
 </style>

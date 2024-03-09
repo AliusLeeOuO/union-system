@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h1>添加新用户</h1>
-  </div>
+  <a-typography-title :heading="2">
+    添加新用户
+  </a-typography-title>
   <a-form
     :model="formItem"
     :rules="rules"

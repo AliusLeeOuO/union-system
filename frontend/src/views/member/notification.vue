@@ -1,35 +1,42 @@
 <template>
   <div class="notification-top">
-    <h1>我的通知</h1>
+    <a-typography-title :heading="2">
+      我的通知
+    </a-typography-title>
     <a-space>
+      <a-button @click="fetchReadAll" v-if="notificationList.length !== 0">一键已读</a-button>
       <a-button @click="refreshNotifications">
         <template #icon>
           <icon-refresh />
         </template>
         刷新
       </a-button>
-      <a-button @click="fetchReadAll">一键已读</a-button>
     </a-space>
   </div>
-  <div class="notification-items">
-    <notification-block
-      v-for="item in notificationList"
-      :key="item.notification_id"
-      :id="item.notification_id"
-      :title="item.title"
-      :create-time="item.created_at"
-      :read-status="item.read_status"
-      :sender-role="item.sender_role"
-      :sender-username="item.sender_name"
-      @update-list="fetchNotificationList"
-    >
-      <template v-slot:content>
-        {{ item.content }}
-      </template>
-    </notification-block>
+  <div v-if="notificationList.length === 0">
+    <a-empty />
   </div>
-  <div class="pagination">
-    <a-pagination :total="notificationPageData.total" @change="pageChange" />
+  <div v-else>
+    <div class="notification-items">
+      <notification-block
+        v-for="item in notificationList"
+        :key="item.notification_id"
+        :id="item.notification_id"
+        :title="item.title"
+        :create-time="item.created_at"
+        :read-status="item.read_status"
+        :sender-role="item.sender_role"
+        :sender-username="item.sender_name"
+        @update-list="fetchNotificationList"
+      >
+        <template v-slot:content>
+          {{ item.content }}
+        </template>
+      </notification-block>
+    </div>
+    <div class="pagination">
+      <a-pagination :total="notificationPageData.total" @change="pageChange" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">

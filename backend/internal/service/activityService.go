@@ -170,6 +170,27 @@ func (s *ActivityService) GetAllActivities(c *fiber.Ctx, pageSize uint, pageNum 
 	return activityResponses, total, nil
 }
 
+// GetActivityUserRegistrations 获取活动的报名用户
+func (s *ActivityService) GetActivityUserRegistrations(activityID uint) ([]dto.ActivityRegistrationResponse, error) {
+	// 查询报名用户
+	registrations, err := s.Repo.GetActivityUserRegistrations(activityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var registrationResponses []dto.ActivityRegistrationResponse
+	for _, registration := range registrations {
+		registrationResponses = append(registrationResponses, dto.ActivityRegistrationResponse{
+			UserId:   registration.UserID,
+			UserName: registration.Username,
+			Phone:    registration.PhoneNumber,
+			Email:    registration.Email,
+		})
+	}
+
+	return registrationResponses, nil
+}
+
 func (s *ActivityService) GetActivityDetails(c *fiber.Ctx, activityID uint) (dto.ActivityResponse, error) {
 	activityDetails, err := s.Repo.GetActivityDetails(activityID)
 	if err != nil {

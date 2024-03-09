@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h1>援助管理</h1>
-  </div>
+  <a-typography-title :heading="2">
+    援助管理
+  </a-typography-title>
   <div class="action-zone">
     <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
       <a-form-item label="ID">

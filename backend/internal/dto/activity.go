@@ -65,6 +65,18 @@ type ActivityResponse struct {
 	RegistrationCount uint   `json:"registrationCount"`
 }
 
+type ActivityRegistrationResponse struct {
+	UserId   uint   `json:"userId"`
+	UserName string `json:"userName"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+}
+
+type ActivityDetailManagementResponse struct {
+	ActivityResponse `json:"activity"`
+	Registrations    []ActivityRegistrationResponse `json:"registrations"`
+}
+
 type ActivityDetailResponse struct {
 	ActivityResponse `json:"activity"`
 	IsRegistered     bool `json:"isRegistered"`
@@ -79,4 +91,15 @@ type UserGetActivityListResponse struct {
 type UserGetRegisteredActivityListResponse struct {
 	PageResponse
 	Data []ActivityResponse `json:"data"`
+}
+
+// UnregisterUserRegisterRequest 用于取消用户报名活动的请求
+type UnregisterUserRegisterRequest struct {
+	ActivityID uint `json:"activityId" form:"activity_id"`
+	UserId     uint `json:"userId" form:"user_id"`
+}
+
+// DropActivityRequest 用于删除活动的请求
+type DropActivityRequest struct {
+	Password string `json:"password" form:"password"`
 }

@@ -117,7 +117,7 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/admin/manageAssistance",
             name: "manageAssistance",
-            component: () => import("@/views/admin/assistanceManage.vue"),
+            component: () => import("@/views/admin/assistance/assistanceManage.vue"),
             meta: {
               roles: roles.ADMIN
             }
@@ -125,27 +125,40 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/admin/manageAssistanceDetail/:id",
             name: "manageAssistanceDetail",
-            component: () => import("@/views/admin/assistanceDetail.vue"),
+            component: () => import("@/views/admin/assistance/assistanceDetail.vue"),
             meta: {
               roles: roles.ADMIN
             }
           },
           {
-            path: "/admin/logView",
-            name: "logView",
-            component: () => import("@/views/admin/logView/index.vue"),
+            path: "/admin/manageActivity",
+            name: "manageActivity",
+            component: () => import("@/views/admin/activity/manageActivity.vue"),
+            meta: {
+              roles: roles.ADMIN
+            }
+          },
+          {
+            path: "/admin/manageActivityDetail/:id",
+            name: "manageActivityDetail",
+            component: () => import("@/views/admin/activity/activityDetail.vue")
+          },
+          {
+            path: "/admin/log",
+            name: "log",
+            component: () => import("@/views/admin/log/index.vue"),
             meta: {
               roles: roles.ADMIN
             },
             children: [
               {
-                path: "/admin/logView",
-                redirect: "/admin/loginLogView"
+                path: "/admin/log",
+                redirect: "/admin/log/loginLog"
               },
               {
-                path: "/admin/loginLogView",
-                name: "loginLogView",
-                component: () => import("@/views/admin/logView/loginLogView.vue"),
+                path: "/admin/log/loginLog",
+                name: "loginLog",
+                component: () => import("@/views/admin/log/loginLogView.vue"),
                 meta: {
                   roles: roles.ADMIN
                 }
@@ -177,15 +190,31 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/member/activity",
             name: "memberActivity",
-            component: () => import("@/views/member/activity.vue"),
+            component: () => import("@/views/member/activity/index.vue"),
             meta: {
               roles: roles.USER
-            }
+            },
+            children: [
+              {
+                path: "/member/activity",
+                redirect: "/member/activity/plaza"
+              },
+              {
+                path: "/member/activity/plaza",
+                name: "activityPlaza",
+                component: () => import("@/views/member/activity/activityPlaza.vue")
+              },
+              {
+                path: "/member/activity/my",
+                name: "activityMy",
+                component: () => import("@/views/member/activity/myActivity.vue")
+              }
+            ]
           },
           {
             path: "/member/activityDetail/:id",
             name: "memberActivityDetail",
-            component: () => import("@/views/member/activityDetail.vue"),
+            component: () => import("@/views/member/activity/activityDetail.vue"),
             meta: {
               roles: roles.USER
             }
@@ -193,15 +222,34 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/member/assistance",
             name: "memberAssistance",
-            component: () => import("@/views/member/assistance.vue"),
+            component: () => import("@/views/member/assistance/index.vue"),
             meta: {
               roles: roles.USER
-            }
+            },
+            children: [
+              {
+                path: "/member/assistance",
+                redirect: "/member/assistance/myAssistance"
+              },
+              {
+                path: "/member/assistance/myAssistance",
+                name: "myAssistance",
+                component: () => import("@/views/member/assistance/myAssistance.vue"),
+                meta: {
+                  roles: roles.USER
+                }
+              },
+              {
+                path: "/member/assistance/newAssistance",
+                name: "newAssistance",
+                component: () => import("@/views/member/assistance/newAssistance.vue")
+              }
+            ]
           },
           {
-            path: "/member/assistanceDetail/:id",
+            path: "/member/assistance/assistanceDetail/:id",
             name: "memberAssistanceDetail",
-            component: () => import("@/views/member/assistanceDetail.vue"),
+            component: () => import("@/views/member/assistance/assistanceDetail.vue"),
             meta: {
               roles: roles.USER
             }

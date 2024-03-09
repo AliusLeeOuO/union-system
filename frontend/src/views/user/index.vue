@@ -31,7 +31,7 @@
             <a-form-item
               field="oldPassword"
               label="旧密码"
-              validate-trigger="input"
+              validate-trigger="blur"
               :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]"
             >
               <a-input-password v-model="changePasswordForm.oldPassword" />
@@ -39,7 +39,7 @@
             <a-form-item
               field="newPassword"
               label="新密码"
-              validate-trigger="input"
+              validate-trigger="blur"
               :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]"
             >
               <a-input-password v-model="changePasswordForm.newPassword" />
@@ -47,7 +47,7 @@
             <a-form-item
               field="confirmPassword"
               label="确认密码"
-              validate-trigger="input"
+              validate-trigger="blur"
               :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'},{validator: conformValidator}]"
             >
               <a-input-password v-model="changePasswordForm.confirmPassword" />

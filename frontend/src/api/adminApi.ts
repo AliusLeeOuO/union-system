@@ -95,6 +95,39 @@ export interface assistanceDetailResponseData {
   username: string
 }
 
+export interface activityListResponseData {
+  total: number
+  page_size: number
+  page_num: number
+  data: activityListResponse[] | null
+}
+
+export interface activityListResponse {
+  activityId: number
+  title: string
+  description: string
+  startTime: string
+  endTime: string
+  location: string
+  maxParticipants: number
+  activityTypeId: number
+  activityTypeName: string
+  isActive: boolean
+  registrationCount: number
+}
+
+export interface activityRegistrations {
+  userId: number
+  userName: string
+  phone: string
+  email: string
+}
+
+export interface activityManagementListResponse {
+  activity: activityListResponse
+  registrations: activityRegistrations[] | null
+}
+
 export default function useAdminApi() {
   return {
     getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = "", role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
@@ -169,6 +202,23 @@ export default function useAdminApi() {
       request_id: assistanceId,
       response_text: responseText,
       new_status_id: newStatusId
+    })),
+    activityList: (
+      pageSize: number,
+      pageNum: number
+    ): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/admin/activity/list", qs.stringify({
+        page_size: pageSize,
+        page_num: pageNum
+      })
+    ),
+    activityDetail: (activityId: number): Promise<AxiosApiResponse<activityManagementListResponse>> =>
+      axiosInstance.get(`/admin/activity/detail/${activityId}`),
+    cancelUserReg: (activityId: number, userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/cancelUserReg", qs.stringify({
+      activity_id: activityId,
+      user_id: userId
+    })),
+    dropActivity: (activityId: number, password: string): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/admin/activity/delete/${activityId}`, qs.stringify({
+      password
     }))
   }
 }

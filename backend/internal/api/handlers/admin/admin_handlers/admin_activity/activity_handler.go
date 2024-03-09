@@ -7,10 +7,12 @@ func Init(app fiber.Router) {
 
 	// 注册路由
 	activity.Post("/list", ListActivitiesHandler)
+	activity.Get("/detail/:activityId", GetActivityDetails)
 	activity.Get("/type", GetActivityType)
 	activity.Post("/create", CreateActivityHandler)
 	activity.Put("/edit/:activityId", ModifyActivityHandler)
-	activity.Delete("/delete/:activityId", DeleteActivityHandler)
+	activity.Post("/delete/:activityId", DeleteActivityHandler)
+	activity.Post("/cancelUserReg", UnregisterUserRegister)
 	//activity.Get("/registrations/:activityId")
 	//activity.Post("/notify/{activityId}")
 	//activity.Get("/history")

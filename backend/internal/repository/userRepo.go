@@ -121,3 +121,18 @@ func (repo *UserRepository) CreateUser(username string, password string, email s
 	}
 	return nil
 }
+
+// CheckPassword 检查用户的密码是否正确
+func (repo *UserRepository) CheckPassword(userID uint, password string) (bool, error) {
+	var user model.User
+	if err := repo.DB.First(&user, userID).Error; err != nil {
+		return false, err
+	}
+
+	// 验证密码，bcrypt.CompareHashAndPassword
+	if password_crypt.PasswordVerify(password, user.Password) {
+		return true, nil
+	}
+
+	return false, nil
+}

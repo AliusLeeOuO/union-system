@@ -16,15 +16,15 @@ div {
   flex: 1;
   justify-content: center;
   align-items: center;
+  color: var(--color-text-1);
   h1 {
     display: inline-block;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
-    margin: 0px 20px 0px 0px;
-    padding: 10px 23px 10px 0px;
+    margin: 0 20px 0 0;
+    padding: 10px 23px 10px 0;
     font-size: 24px;
     font-weight: 500;
     vertical-align: top;
-    // darkmode下媒体查询 arco-theme
     @media (prefers-color-scheme: dark) {
       border-right: 1px solid rgba(255, 255, 255, 0.3);
     }

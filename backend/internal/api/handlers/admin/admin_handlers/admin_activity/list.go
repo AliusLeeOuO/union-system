@@ -11,14 +11,15 @@ import (
 )
 
 func ListActivitiesHandler(c *fiber.Ctx) error {
-	var req dto.ActivityListRequest
-	if err := c.BodyParser(&req); err != nil {
+	// 获取表单数据
+	var from dto.ActivityListRequest
+	if err := c.BodyParser(&from); err != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 	// 验证字段
 	fieldsToCheck := map[string]interface{}{
-		"PageSize": req.Pagination.PageSize,
-		"PageNum":  req.Pagination.PageNum,
+		"PageSize": int(from.PageSize),
+		"PageNum":  int(from.PageNum),
 	}
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {
@@ -27,10 +28,17 @@ func ListActivitiesHandler(c *fiber.Ctx) error {
 	}
 
 	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
-	response, err := activityService.ListActivities(req.Pagination)
+	activities, total, err := activityService.GetAllActivities(c, from.PageSize, from.PageNum)
 	if err != nil {
-		return model.SendFailureResponse(c, model.InvalidFileTypeErrorCode, err.Error())
+		return model.SendFailureResponse(c, model.InternalServerErrorCode, err.Error())
 	}
 
-	return model.SendSuccessResponse(c, response)
+	return model.SendSuccessResponse(c, dto.UserGetActivityListResponse{
+		Data: activities,
+		PageResponse: dto.PageResponse{
+			PageSize: from.PageSize,
+			PageNum:  from.PageNum,
+			Total:    total,
+		},
+	})
 }

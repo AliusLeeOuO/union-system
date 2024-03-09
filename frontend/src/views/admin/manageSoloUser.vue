@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h1>修改用户</h1>
-  </div>
+  <a-typography-title :heading="2">
+    修改用户
+  </a-typography-title>
   <a-descriptions style="margin-top: 20px" :data="descInfo" size="large" title="用户信息" :column="1" />
   <a-form
     :model="formItem"

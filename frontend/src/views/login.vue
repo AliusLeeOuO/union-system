@@ -4,15 +4,15 @@
     <div class="login-form-container">
       <div>
         <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
-          <a-form-item field="username" label="用户名" validate-trigger="input"
+          <a-form-item field="username" label="用户名" validate-trigger="blur"
                        :rules="[{required:true,message:'请输入用户名'}]">
             <a-input v-model="form.username" />
           </a-form-item>
-          <a-form-item field="password" label="密码" validate-trigger="input"
+          <a-form-item field="password" label="密码" validate-trigger="blur"
                        :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]">
             <a-input-password v-model="form.password" />
           </a-form-item>
-          <a-form-item field="captchaVal" label="验证码" validate-trigger="input"
+          <a-form-item field="captchaVal" label="验证码" validate-trigger="blur"
                        :rules="[{required:true,message:'请输入验证码'},{minLength:4,message:'请输入完整的验证码'}]">
             <a-input v-model="form.captchaVal" :max-length="4" />
           </a-form-item>

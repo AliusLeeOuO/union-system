@@ -21,7 +21,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 func (s *UserService) Login(username, password, captchaID, captchaVal string) (*dto.LoginResponse, error) {
 	// 验证验证码
 	if !captcha.VerifyCode(captchaID, captchaVal) {
-		return nil, errors.New("invalid captcha")
+		return nil, errors.New("验证码错误")
 	}
 
 	// 验证用户凭据
@@ -32,12 +32,12 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 
 	// 账户状态验证
 	if !user.IsActive {
-		return nil, errors.New("account is not active")
+		return nil, errors.New("账号已被禁用")
 	}
 
 	// 密码验证逻辑
 	if !password_crypt.PasswordVerify(password, user.Password) {
-		return nil, errors.New("invalid credentials")
+		return nil, errors.New("账号或密码错误")
 	}
 
 	// 创建 Token 信息
@@ -80,7 +80,7 @@ func (s *UserService) GetUserList(page int, pageSize int, username string, userI
 func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPassword string) error {
 	// 验证旧密码
 	if !s.Repo.CheckUserPassword(userId, oldPassword) {
-		return errors.New("密码验证错误")
+		return errors.New("账号或密码错误")
 	}
 
 	// 修改密码
@@ -108,4 +108,9 @@ func (s *UserService) CreateUser(username, password, email string, role uint, ph
 		return err
 	}
 	return nil
+}
+
+// VerifyPassword 验证用户密码
+func (s *UserService) VerifyPassword(userID uint, password string) (bool, error) {
+	return s.Repo.CheckPassword(userID, password)
 }

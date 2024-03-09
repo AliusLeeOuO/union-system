@@ -217,3 +217,19 @@ func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum u
 
 	return activities, uint(total), nil
 }
+
+func (r *ActivityRepository) GetActivityUserRegistrations(activityID uint) ([]model.User, error) {
+	var users []model.User
+
+	// 获取分页的报名用户列表
+	result := r.DB.Model(&model.User{}).
+		Select("tb_user.*").
+		Joins("LEFT JOIN tb_user_activity ON tb_user_activity.user_id = tb_user.user_id").
+		Where("tb_user_activity.activity_id = ?", activityID).
+		Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
+}

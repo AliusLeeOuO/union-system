@@ -24,7 +24,7 @@
       <div class="user-info" @click="openPersonInfo = !openPersonInfo" v-if="userStore.isUserLoggedIn"
            v-click-outside:[dropdownRef]="handleClickOutside">
         {{ userStore.userInfo.userName }}
-        [ {{ userStore.getUserRoleName }} ]
+        <a-tag>{{ userStore.getUserRoleName }}</a-tag>
       </div>
       <div class="user-info" v-else>
         <a-button @click="toLogin">登录</a-button>
@@ -185,8 +185,12 @@ const adminNavList = reactive<navList[]>([
     path: "/admin/manageAssistance"
   },
   {
+    title: "活动管理",
+    path: "/admin/manageActivity"
+  },
+  {
     title: "日志审计",
-    path: "/admin/logView"
+    path: "/admin/log"
   }
 ])
 
@@ -361,7 +365,7 @@ const toIndex = async () => {
     display: flex;
     justify-content: center;
     align-items: center;
-
+    gap: 5px;
   }
 }
 

@@ -11,6 +11,7 @@
 </script>
 <style scoped lang="less">
 main {
+  min-height: 70vh;
   max-width: 1400px;
   margin: 20px auto;
   padding: 0 20px;

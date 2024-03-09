@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h1>用户管理</h1>
-  </div>
+  <a-typography-title :heading="2">
+    用户管理
+  </a-typography-title>
   <div class="prime-actions">
     <a-space>
       <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">

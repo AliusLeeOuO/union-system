@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h1>活动详情</h1>
-  </div>
+  <a-typography-title :heading="2">
+    活动详情
+  </a-typography-title>
   <div class="activity-detail-content">
     <div class="activity-detail-item">
       <div class="description-title">活动名称</div>

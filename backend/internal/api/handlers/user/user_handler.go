@@ -11,6 +11,7 @@ func Init(app *fiber.App) {
 
 	user.Get("/getCaptcha", user_handlers.GetCaptchaHandler)
 	user.Post("/login", user_handlers.LoginHandler)
+	user.Post("/register", user_handlers.RegisterUserHandler)
 
 	// 注册验证中间件
 	user.Use(middlewares.TokenAuth)

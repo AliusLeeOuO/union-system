@@ -10,7 +10,8 @@ export enum roles {
 
 type routeRecordWithRole = RouteRecordRaw & {
   meta: {
-    roles: roles
+    roles: roles,
+    title?: string
   }
 }
 
@@ -19,7 +20,8 @@ const routes: Array<routeRecordWithRole> = [
     path: "/",
     redirect: "/index",
     meta: {
-      roles: roles.PUBLIC
+      roles: roles.PUBLIC,
+      title: "首页"
     }
   },
   {
@@ -27,7 +29,17 @@ const routes: Array<routeRecordWithRole> = [
     name: "login",
     component: () => import("@/views/login.vue"),
     meta: {
-      roles: roles.PUBLIC
+      roles: roles.PUBLIC,
+      title: "登录"
+    }
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("@/views/register.vue"),
+    meta: {
+      roles: roles.PUBLIC,
+      title: "注册"
     }
   },
   {
@@ -43,7 +55,8 @@ const routes: Array<routeRecordWithRole> = [
         name: "index",
         component: () => import("@/views/index.vue"),
         meta: {
-          roles: roles.PUBLIC
+          roles: roles.PUBLIC,
+          title: "首页"
         }
       },
       {
@@ -51,7 +64,8 @@ const routes: Array<routeRecordWithRole> = [
         name: "user",
         component: () => import("@/views/user/index.vue"),
         meta: {
-          roles: roles.LOGIN
+          roles: roles.LOGIN,
+          title: "用户中心"
         }
       },
       {
@@ -59,7 +73,8 @@ const routes: Array<routeRecordWithRole> = [
         name: "noAuth",
         component: () => import("@/views/noAuth.vue"),
         meta: {
-          roles: roles.PUBLIC
+          roles: roles.PUBLIC,
+          title: "没有权限"
         }
       },
       {
@@ -67,7 +82,8 @@ const routes: Array<routeRecordWithRole> = [
         name: "openSourceLicense",
         component: () => import("@/views/openSourceLicense.vue"),
         meta: {
-          roles: roles.PUBLIC
+          roles: roles.PUBLIC,
+          title: "开源软件许可协议"
         }
       },
       // 管理员路由
@@ -87,23 +103,46 @@ const routes: Array<routeRecordWithRole> = [
             name: "adminIndex",
             component: () => import("@/views/admin/index.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "首页"
             }
           },
           {
-            path: "/admin/manageUser",
+            path: "/admin/user",
             name: "manageUser",
-            component: () => import("@/views/admin/manageUser.vue"),
+            component: () => import("@/views/admin/user/index.vue"),
             meta: {
-              roles: roles.ADMIN
-            }
+              roles: roles.ADMIN,
+              title: "用户管理"
+            },
+            children: [
+              {
+                path: "/admin/user",
+                redirect: "/admin/user/manage"
+              },
+              {
+                path: "/admin/user/manage",
+                name: "userManage",
+                component: () => import("@/views/admin/user/userManage.vue"),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: "用户管理"
+                }
+              },
+              {
+                path: "/admin/user/invitationCode",
+                name: "invitationCodeManage",
+                component: () => import("@/views/admin/user/invitationCodeManage.vue")
+              }
+            ]
           },
           {
             path: "/admin/addNewUser",
             name: "addNewUser",
             component: () => import("@/views/admin/addNewUser.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "添加用户"
             }
           },
           {
@@ -111,7 +150,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "manageSoloUser",
             component: () => import("@/views/admin/manageSoloUser.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "管理用户"
             }
           },
           {
@@ -119,7 +159,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "manageAssistance",
             component: () => import("@/views/admin/assistance/assistanceManage.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "援助管理"
             }
           },
           {
@@ -127,7 +168,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "manageAssistanceDetail",
             component: () => import("@/views/admin/assistance/assistanceDetail.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "援助详情"
             }
           },
           {
@@ -135,20 +177,26 @@ const routes: Array<routeRecordWithRole> = [
             name: "manageActivity",
             component: () => import("@/views/admin/activity/manageActivity.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "活动管理"
             }
           },
           {
             path: "/admin/manageActivityDetail/:id",
             name: "manageActivityDetail",
-            component: () => import("@/views/admin/activity/activityDetail.vue")
+            component: () => import("@/views/admin/activity/activityDetail.vue"),
+            meta: {
+              roles: roles.ADMIN,
+              title: "活动详情"
+            }
           },
           {
             path: "/admin/log",
             name: "log",
             component: () => import("@/views/admin/log/index.vue"),
             meta: {
-              roles: roles.ADMIN
+              roles: roles.ADMIN,
+              title: "日志"
             },
             children: [
               {
@@ -160,7 +208,8 @@ const routes: Array<routeRecordWithRole> = [
                 name: "loginLog",
                 component: () => import("@/views/admin/log/loginLogView.vue"),
                 meta: {
-                  roles: roles.ADMIN
+                  roles: roles.ADMIN,
+                  title: "登录日志"
                 }
               }
             ]
@@ -184,7 +233,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberIndex",
             component: () => import("@/views/member/index.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "首页"
             }
           },
           {
@@ -192,7 +242,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberActivity",
             component: () => import("@/views/member/activity/index.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "活动"
             },
             children: [
               {
@@ -202,12 +253,20 @@ const routes: Array<routeRecordWithRole> = [
               {
                 path: "/member/activity/plaza",
                 name: "activityPlaza",
-                component: () => import("@/views/member/activity/activityPlaza.vue")
+                component: () => import("@/views/member/activity/activityPlaza.vue"),
+                meta: {
+                  roles: roles.USER,
+                  title: "活动广场"
+                }
               },
               {
                 path: "/member/activity/my",
                 name: "activityMy",
-                component: () => import("@/views/member/activity/myActivity.vue")
+                component: () => import("@/views/member/activity/myActivity.vue"),
+                meta: {
+                  roles: roles.USER,
+                  title: "我的活动"
+                }
               }
             ]
           },
@@ -216,7 +275,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberActivityDetail",
             component: () => import("@/views/member/activity/activityDetail.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "活动详情"
             }
           },
           {
@@ -224,7 +284,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberAssistance",
             component: () => import("@/views/member/assistance/index.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "援助"
             },
             children: [
               {
@@ -236,13 +297,18 @@ const routes: Array<routeRecordWithRole> = [
                 name: "myAssistance",
                 component: () => import("@/views/member/assistance/myAssistance.vue"),
                 meta: {
-                  roles: roles.USER
+                  roles: roles.USER,
+                  title: "我的援助"
                 }
               },
               {
                 path: "/member/assistance/newAssistance",
                 name: "newAssistance",
-                component: () => import("@/views/member/assistance/newAssistance.vue")
+                component: () => import("@/views/member/assistance/newAssistance.vue"),
+                meta: {
+                  roles: roles.USER,
+                  title: "新援助"
+                }
               }
             ]
           },
@@ -251,7 +317,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberAssistanceDetail",
             component: () => import("@/views/member/assistance/assistanceDetail.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "援助详情"
             }
           },
           {
@@ -259,7 +326,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberFee",
             component: () => import("@/views/member/fee.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "会费"
             }
           },
           {
@@ -267,7 +335,8 @@ const routes: Array<routeRecordWithRole> = [
             name: "memberNotification",
             component: () => import("@/views/member/notification.vue"),
             meta: {
-              roles: roles.USER
+              roles: roles.USER,
+              title: "通知"
             }
           }
         ]
@@ -295,6 +364,12 @@ router.beforeEach((to, form, next) => {
       next({ path: `/noAuth` })
       return
     }
+  }
+  // 更改标题
+  if (to.meta.title !== undefined) {
+    document.title = to.meta.title + " - 工会管理系统"
+  } else {
+    document.title = "工会管理系统"
   }
   next()
 })

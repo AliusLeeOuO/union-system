@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"time"
 	"union-system/global"
 	"union-system/internal/model"
 	"union-system/utils/password_crypt"
@@ -16,11 +17,11 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (repo *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
+func (r *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
 	var users []model.User
 	offset := (page - 1) * pageSize
 
-	query := repo.DB.Model(&model.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
+	query := r.DB.Model(&model.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
 	if username != "" {
 		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
@@ -37,9 +38,9 @@ func (repo *UserRepository) GetUsers(page int, pageSize int, username string, us
 	return users, nil
 }
 
-func (repo *UserRepository) CountAdminUsers(username string, userId uint, userRole uint) (int64, error) {
+func (r *UserRepository) CountAdminUsers(username string, userId uint, userRole uint) (int64, error) {
 	var count int64
-	query := repo.DB.Model(&model.User{})
+	query := r.DB.Model(&model.User{})
 	if username != "" {
 		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
@@ -56,27 +57,27 @@ func (repo *UserRepository) CountAdminUsers(username string, userId uint, userRo
 	return count, nil
 }
 
-func (repo *UserRepository) GetUserByUsername(username string) (*model.User, error) {
+func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
 	var user model.User
-	result := repo.DB.Where("username = ?", username).First(&user)
+	result := r.DB.Where("username = ?", username).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &user, nil
 }
 
-func (repo *UserRepository) GetUserByID(userID uint) (*model.User, error) {
+func (r *UserRepository) GetUserByID(userID uint) (*model.User, error) {
 	var user model.User
-	result := repo.DB.First(&user, userID)
+	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &user, nil
 }
 
-func (repo *UserRepository) CheckUserPassword(userID uint, password string) bool {
+func (r *UserRepository) CheckUserPassword(userID uint, password string) bool {
 	var user model.User
-	result := repo.DB.First(&user, userID)
+	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return false
 	}
@@ -84,9 +85,9 @@ func (repo *UserRepository) CheckUserPassword(userID uint, password string) bool
 	return password_crypt.PasswordVerify(password, user.Password)
 }
 
-func (repo *UserRepository) ChangePasswordByID(userID uint, newPassword string) error {
+func (r *UserRepository) ChangePasswordByID(userID uint, newPassword string) error {
 	var user model.User
-	result := repo.DB.First(&user, userID)
+	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -106,7 +107,7 @@ func (repo *UserRepository) ChangePasswordByID(userID uint, newPassword string) 
 	return nil
 }
 
-func (repo *UserRepository) CreateUser(username string, password string, email string, role uint, phone string) error {
+func (r *UserRepository) CreateUser(username string, password string, email string, role uint, phone string) (uint, error) {
 	user := model.User{
 		Username:    username,
 		Password:    password,
@@ -115,17 +116,17 @@ func (repo *UserRepository) CreateUser(username string, password string, email s
 		PhoneNumber: phone,
 	}
 
-	result := repo.DB.Omit("registration_date", "is_active").Create(&user)
+	result := r.DB.Omit("registration_date", "is_active").Create(&user)
 	if result.Error != nil {
-		return result.Error
+		return 0, result.Error
 	}
-	return nil
+	return user.UserID, nil
 }
 
 // CheckPassword 检查用户的密码是否正确
-func (repo *UserRepository) CheckPassword(userID uint, password string) (bool, error) {
+func (r *UserRepository) CheckPassword(userID uint, password string) (bool, error) {
 	var user model.User
-	if err := repo.DB.First(&user, userID).Error; err != nil {
+	if err := r.DB.First(&user, userID).Error; err != nil {
 		return false, err
 	}
 
@@ -135,4 +136,47 @@ func (repo *UserRepository) CheckPassword(userID uint, password string) (bool, e
 	}
 
 	return false, nil
+}
+
+// VerifyInvitationCode 验证邀请码验证
+func (r *UserRepository) VerifyInvitationCode(code string) (*model.InvitationCodes, error) {
+	var invitationCode model.InvitationCodes
+	now := time.Now()
+
+	err := r.DB.Where("code = ? AND expires_at > ? AND is_used = false", code, now).First(&invitationCode).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &invitationCode, nil
+}
+
+// MarkInvitationCodeAsUsed 标记邀请码为已使用
+func (r *UserRepository) MarkInvitationCodeAsUsed(codeID uint, userID uint) error {
+	return r.DB.Model(&model.InvitationCodes{}).Where("code_id = ?", codeID).Updates(map[string]interface{}{"is_used": true, "used_by_user_id": userID}).Error
+}
+
+func (r *UserRepository) GetInvitationCodes(pageNum, pageSize uint) ([]model.InvitationCodes, uint, error) {
+	var codes []model.InvitationCodes
+	var total int64
+
+	offset := (pageNum - 1) * pageSize
+
+	// 先计算总数
+	result := r.DB.Model(&model.InvitationCodes{}).Count(&total)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	// 分页查询
+	result = r.DB.Offset(int(offset)).Limit(int(pageSize)).Find(&codes)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return codes, uint(total), nil
+}
+
+func (r *UserRepository) CreateInvitationCode(invitationCode *model.InvitationCodes) error {
+	return r.DB.Create(invitationCode).Error
 }

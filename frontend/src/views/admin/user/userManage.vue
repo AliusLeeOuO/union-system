@@ -1,11 +1,8 @@
 <template>
-  <a-typography-title :heading="2">
-    用户管理
-  </a-typography-title>
   <div class="prime-actions">
     <a-space>
       <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
-        <a-button type="primary" @click="navigate">添加新用户</a-button>
+        <a-button status="success" @click="navigate">添加新用户</a-button>
       </router-link>
     </a-space>
     <a-space>
@@ -76,18 +73,17 @@
   </a-table>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, reactive } from "vue"
 import { roles } from "@/router"
 import { getRoleName } from "@/utils/roleHelper"
-import { handleXhrResponse } from "@/api"
-import useAdminApi, { type userListItem } from "@/api/adminApi"
-import { Message } from "@arco-design/web-vue"
-import type { FormInstance } from "@arco-design/web-vue"
-import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
 import dayjs from "dayjs"
+import { IconRefresh } from "@arco-design/web-vue/es/icon"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
+import useAdminApi, { type userListItem } from "@/api/adminApi"
+import { onMounted, reactive, ref } from "vue"
+import { type FormInstance, Message } from "@arco-design/web-vue"
+import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
+import { handleXhrResponse } from "@/api"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -174,8 +170,6 @@ const fetchUserList = async () => {
 onMounted(async () => {
   await fetchUserList()
 })
-
-
 </script>
 <style scoped lang="less">
 .prime-actions {

@@ -2,10 +2,13 @@ package service
 
 import (
 	"errors"
+	"strconv"
+	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/utils/captcha"
+	"union-system/utils/generateRandomCode"
 	"union-system/utils/jwt"
 	"union-system/utils/password_crypt"
 )
@@ -103,7 +106,7 @@ func (s *UserService) CreateUser(username, password, email string, role uint, ph
 	}
 
 	// 创建用户
-	err = s.Repo.CreateUser(username, passwordHash, email, role, phone)
+	_, err = s.Repo.CreateUser(username, passwordHash, email, role, phone)
 	if err != nil {
 		return err
 	}
@@ -113,4 +116,82 @@ func (s *UserService) CreateUser(username, password, email string, role uint, ph
 // VerifyPassword 验证用户密码
 func (s *UserService) VerifyPassword(userID uint, password string) (bool, error) {
 	return s.Repo.CheckPassword(userID, password)
+}
+
+func (s *UserService) RegisterUser(username, password, email, phoneNumber, invitationCodeStr string) error {
+	// 验证邀请码
+	invitationCode, err := s.Repo.VerifyInvitationCode(invitationCodeStr)
+	if err != nil {
+		return errors.New("邀请码无效")
+	}
+
+	encPassword, err := password_crypt.PasswordHash(password)
+	if err != nil {
+		return err
+	}
+
+	userID, err := s.Repo.CreateUser(username, encPassword, email, 2, phoneNumber)
+	if err != nil {
+		return err
+	}
+
+	// 将邀请码标记为已使用
+	err = s.Repo.MarkInvitationCodeAsUsed(invitationCode.CodeID, userID)
+	if err != nil {
+		// 可能需要回滚创建用户的操作
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) GetInvitationCodes(pageNum, pageSize uint) ([]dto.InvitationCodeResponse, uint, error) {
+	codes, total, err := s.Repo.GetInvitationCodes(pageNum, pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+	var result []dto.InvitationCodeResponse
+	for _, code := range codes {
+		result = append(result, dto.InvitationCodeResponse{
+			CodeID:          code.CodeID,
+			Code:            code.Code,
+			CreatedByUserID: code.CreatedByUserID,
+			IsUsed:          code.IsUsed,
+			CreatedAt:       code.CreatedAt,
+			ExpiresAt:       code.ExpiresAt,
+		})
+		if code.UsedByUserID != nil {
+			result[len(result)-1].UsedByUserID = strconv.Itoa(int(*code.UsedByUserID))
+		}
+	}
+	return result, total, nil
+}
+
+// GenerateInvitationCode 生成邀请码
+func (s *UserService) GenerateInvitationCode(userID uint) (dto.NewInvitationCodeResponse, error) {
+	// 生成8位随机字符串作为邀请码
+	code := generateRandomCode.GenerateRandomCode(8)
+
+	// 准备邀请码记录
+	invitationCode := model.InvitationCodes{
+		Code:            code,
+		CreatedByUserID: userID,
+		IsUsed:          false,
+		ExpiresAt:       time.Now().Add(time.Hour * 24 * 7),
+	}
+
+	// 保存到数据库
+	err := s.Repo.CreateInvitationCode(&invitationCode)
+	if err != nil {
+		return dto.NewInvitationCodeResponse{}, err
+	}
+
+	var result = dto.NewInvitationCodeResponse{
+		CodeID:    invitationCode.CodeID,
+		Code:      invitationCode.Code,
+		CreatedAt: invitationCode.CreatedAt.Format(time.RFC3339),
+		ExpiresAt: invitationCode.ExpiresAt.Format(time.RFC3339),
+	}
+
+	return result, nil
 }

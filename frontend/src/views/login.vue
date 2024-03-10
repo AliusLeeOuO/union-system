@@ -2,7 +2,10 @@
   <div class="login-container">
     <div class="login-header">登录</div>
     <div class="login-form-container">
-      <div>
+      <div v-if="loginSuccessfully">
+        <a-result status="success" title="登录成功" />
+      </div>
+      <div v-else>
         <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
           <a-form-item field="username" label="用户名" validate-trigger="blur"
                        :rules="[{required:true,message:'请输入用户名'}]">
@@ -27,6 +30,11 @@
         </a-form>
       </div>
     </div>
+    <a-space class="prime-action">
+      <router-link to="/register" custom v-slot="{ navigate }">
+        <a-link @click="navigate">注册用户</a-link>
+      </router-link>
+    </a-space>
   </div>
 </template>
 <script setup lang="ts">
@@ -70,6 +78,7 @@ const handleSubmit = async (form: {
         () => userApi.login(form.values.username, form.values.password, form.values.captchaID, form.values.captchaVal),
         Message
       )
+      loginSuccessfully.value = true
       // 保存数据到pinia
       userStore.userInfo.token = data.data.token
       userStore.userInfo.userName = data.data.username
@@ -77,19 +86,23 @@ const handleSubmit = async (form: {
       userStore.userInfo.userRole = data.data.role
       userStore.userInfo.phone = data.data.phone
       userStore.userInfo.email = data.data.email
-      if (userStore.userInfo.userRole === roles.ADMIN) {
-        // 跳转到管理员页面
-        await router.push("/admin/index")
-      } else if (userStore.userInfo.userRole === roles.USER) {
-        // 跳转到用户页面
-        await router.push("/member/index")
-      }
+      setTimeout(async () => {
+        if (userStore.userInfo.userRole === roles.ADMIN) {
+          // 跳转到管理员页面
+          await router.push("/admin/index")
+        } else if (userStore.userInfo.userRole === roles.USER) {
+          // 跳转到用户页面
+          await router.push("/member/index")
+        }
+      }, 3000)
     } finally {
       handleButtonLoading.value = false
       await addCaptcha()
     }
   }
 }
+
+const loginSuccessfully = ref(false)
 
 onMounted(async () => {
   await addCaptcha()
@@ -118,11 +131,14 @@ onMounted(async () => {
 
   .login-form-container {
     background-color: rgba(255, 255, 255, 0.8);
-    padding: 40px;
+    padding: 40px 40px 20px 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     // dark mode
     @media (prefers-color-scheme: dark) {
       background-color: rgba(0, 0, 0, 0.8);
@@ -148,5 +164,11 @@ onMounted(async () => {
   }
 }
 
+.prime-action {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 </style>

@@ -1,7 +1,10 @@
 <template>
   <header class="header-pc">
     <div class="header-left">
-      <div @click="toIndex" class="logo">工会管理系统</div>
+      <div @click="toIndex" class="logo">
+        <img src="@/assets/images/logo.png" alt="logo">
+        <span>工会管理系统</span>
+      </div>
     </div>
     <nav>
       <router-link :to="item.path" v-for="item in navIndex" :key="item.title"
@@ -178,7 +181,7 @@ const adminNavList = reactive<navList[]>([
   },
   {
     title: "用户管理",
-    path: "/admin/manageUser"
+    path: "/admin/user"
   },
   {
     title: "援助管理",
@@ -237,6 +240,14 @@ const toIndex = async () => {
 
     .logo {
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+
+      img {
+        height: 35px;
+      }
     }
   }
 
@@ -271,7 +282,6 @@ const toIndex = async () => {
           transition: all 0.3s;
           margin: auto;
         }
-
       }
 
       &:hover > div {

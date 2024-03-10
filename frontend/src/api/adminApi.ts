@@ -128,6 +128,31 @@ export interface activityManagementListResponse {
   registrations: activityRegistrations[] | null
 }
 
+export interface invitationCodeListResponse {
+  page_size: number
+  page_num: number
+  total: number
+  data: invitationCodeListItem[] | null
+}
+
+export interface invitationCodeListItem {
+  code_id: number
+  code: string
+  created_by_user_id: number
+  used_by_user_id: string
+  is_used: boolean
+  created_at: string
+  expires_at: string
+}
+
+export interface generateInvitationCodeResponse {
+  code_id: number
+  code: string
+  created_at: string
+  expires_at: string
+}
+
+
 export default function useAdminApi() {
   return {
     getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = "", role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
@@ -219,6 +244,11 @@ export default function useAdminApi() {
     })),
     dropActivity: (activityId: number, password: string): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/admin/activity/delete/${activityId}`, qs.stringify({
       password
-    }))
+    })),
+    getInvitationCodeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<invitationCodeListResponse>> => axiosInstance.post("/admin/management/getInvitationCodeList", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    })),
+    generateInvitationCode: (): Promise<AxiosApiResponse<generateInvitationCodeResponse>> => axiosInstance.post("/admin/management/generateInvitationCode")
   }
 }

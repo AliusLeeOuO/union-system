@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AAlert: typeof import('@arco-design/web-vue')['Alert']
     ABadge: typeof import('@arco-design/web-vue')['Badge']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
     AButton: typeof import('@arco-design/web-vue')['Button']
@@ -29,6 +30,7 @@ declare module 'vue' {
     AProgress: typeof import('@arco-design/web-vue')['Progress']
     ARadio: typeof import('@arco-design/web-vue')['Radio']
     ARadioGroup: typeof import('@arco-design/web-vue')['RadioGroup']
+    AResult: typeof import('@arco-design/web-vue')['Result']
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ASelectOption: typeof import('@arco-design/web-vue')['SelectOption']
     ASpace: typeof import('@arco-design/web-vue')['Space']

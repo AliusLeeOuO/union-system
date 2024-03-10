@@ -5,7 +5,7 @@
   <div class="prime-actions">
     <a-space>
       <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
-        <a-button type="primary" @click="navigate">添加新活动</a-button>
+        <a-button status="success" @click="navigate">添加新活动</a-button>
       </router-link>
     </a-space>
     <a-space>

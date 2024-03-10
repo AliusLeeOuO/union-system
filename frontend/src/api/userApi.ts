@@ -46,6 +46,19 @@ export default function useUserApi() {
     changePassword: (oldPassword: string, newPassword: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/changePassword", qs.stringify({
       old_password: oldPassword,
       new_password: newPassword
-    }))
+    })),
+    register: (
+      username: string,
+      password: string,
+      phoneNumber: string,
+      email: string,
+      invitationCode: string
+    ): Promise<AxiosApiResponse<null>> => axiosInstance.post("/user/register", qs.stringify({
+      username,
+      password,
+      phone_number: phoneNumber,
+      email,
+      invitation_code: invitationCode
+    })),
   }
 }

@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type CaptchaResponse struct {
 	CaptchaID string `json:"captchaID"`
 	ImagePath string `json:"imagePath"`
@@ -44,4 +46,34 @@ type UserInfoResponse struct {
 }
 type UserQueryRequest struct {
 	UserID uint `form:"user_id"`
+}
+
+type UserRegisterRequest struct {
+	Username       string `json:"username" form:"username"`
+	Password       string `json:"password" form:"password"`
+	Email          string `json:"email" form:"email"`
+	PhoneNumber    uint   `json:"phone_number" form:"phone_number"`
+	InvitationCode string `json:"invitation_code" form:"invitation_code"`
+}
+
+type InvitationCodeListResponse struct {
+	PageResponse
+	Data []InvitationCodeResponse `json:"data"`
+}
+
+type InvitationCodeResponse struct {
+	CodeID          uint      `json:"code_id"`
+	Code            string    `json:"code"`
+	CreatedByUserID uint      `json:"created_by_user_id"`
+	UsedByUserID    string    `json:"used_by_user_id"`
+	IsUsed          bool      `json:"is_used"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExpiresAt       time.Time `json:"expires_at"`
+}
+
+type NewInvitationCodeResponse struct {
+	CodeID    uint   `json:"code_id"`
+	Code      string `json:"code"`
+	CreatedAt string `json:"created_at"`
+	ExpiresAt string `json:"expires_at"`
 }

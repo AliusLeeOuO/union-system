@@ -4,30 +4,94 @@
   </a-typography-title>
   <div class="activity-detail-content">
     <div class="activity-detail-item">
-      <div class="description-title">活动名称</div>
-      <div class="activity-detail-item-content">{{ activityDetail.title }}</div>
+      <div class="description-title">
+        <span>活动名称</span>
+        <a-button @click="changeActivityTitleCallback" v-if="!changeActivityTitle">修改</a-button>
+        <a-button v-else @click="changeActivityTitle = false">取消</a-button>
+      </div>
+      <div class="activity-detail-item-content" v-if="!changeActivityTitle">{{ activityDetail.title }}</div>
+      <div class="activity-detail-item-content" v-else>
+        <a-form :model="changeActivityTitleForm" :label-col-props="{
+        span: 2
+      }" :wrapper-col-props="{
+        span: 22
+      }" @submit="submitChangeActivityTitle">
+          <a-form-item field="title" label="活动名称" :rules="[{ required: true, message: '请输入活动名称' }]">
+            <a-textarea v-model="changeActivityTitleForm.title" placeholder="输入新活动名称" auto-size allow-clear />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" html-type="submit">确认修改</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动描述</div>
-      <div class="activity-detail-item-content">{{ activityDetail.description }}</div>
+      <div class="description-title">
+        <span>活动描述</span>
+        <a-button v-if="!changeActivityDescription" @click="changeActivityDescriptionCallback">修改</a-button>
+        <a-button v-else @click="changeActivityDescription = false">取消</a-button>
+      </div>
+      <div class="activity-detail-item-content" v-if="!changeActivityDescription">{{ activityDetail.description }}</div>
+      <div class="activity-detail-item-content" v-else>
+        <a-form :model="changeActivityDescriptionForm" :label-col-props="{
+        span: 2
+      }" :wrapper-col-props="{
+        span: 22
+      }" @submit="submitChangeActivityDescription">
+          <a-form-item field="description" label="活动描述" :rules="[{ required: true, message: '请输入活动描述' }]">
+            <a-textarea v-model="changeActivityDescriptionForm.description" placeholder="输入新活动描述" auto-size
+                        allow-clear />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" html-type="submit">确认修改</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动类型</div>
+      <div class="description-title">
+        <span>活动类型</span>
+        <a-button disabled>修改</a-button>
+      </div>
       <div class="activity-detail-item-content">{{ activityDetail.activityTypeName }}</div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">报名人数</div>
+      <div class="description-title">
+        <span>报名人数</span>
+        <a-button disabled>修改</a-button>
+      </div>
       <div class="activity-detail-item-content activity-detail-flex">
         {{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants }}
         <a-progress :percent="activityDetail.registrationCount / activityDetail.maxParticipants" :show-text="false" />
       </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动地址</div>
-      <div class="activity-detail-item-content">{{ activityDetail.location }}</div>
+      <div class="description-title">
+        <span>活动地址</span>
+        <a-button v-if="!changeActivityLocation" @click="changeActivityLocationCallback">修改</a-button>
+        <a-button v-else @click="changeActivityLocation = false">取消</a-button>
+      </div>
+      <div class="activity-detail-item-content" v-if="!changeActivityLocation">{{ activityDetail.location }}</div>
+      <div class="activity-detail-item-content" v-else>
+        <a-form :model="changeActivityLocationForm" :label-col-props="{
+            span: 2
+          }" :wrapper-col-props="{
+            span: 22
+          }" @submit="submitChangeActivityLocation">
+          <a-form-item field="location" label="活动地址" :rules="[{ required: true, message: '请输入活动地址' }]">
+            <a-input v-model="changeActivityLocationForm.location" placeholder="输入新活动地址" allow-clear />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" html-type="submit">确认修改</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">活动时间</div>
+      <div class="description-title">
+        <span>活动时间</span>
+        <a-button disabled>修改</a-button>
+      </div>
       <div class="activity-detail-item-content">
         {{ dayjs.tz(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }}
         -
@@ -35,7 +99,10 @@
       </div>
     </div>
     <div class="activity-detail-item">
-      <div class="description-title">报名用户</div>
+      <div class="description-title">
+        <span>报名用户</span>
+        <a-button disabled>导出报名用户</a-button>
+      </div>
       <div class="activity-detail-item-content">
         <a-list>
           <a-list-item v-for="item in regUserList">
@@ -59,19 +126,21 @@
     <div class="activity-detail-item">
       <div class="description-title">操作</div>
       <div class="activity-detail-item-content activity-detail-flex">
-        <a-button status="warning" long>关闭活动</a-button>
+        <a-button status="warning" long disabled>关闭活动</a-button>
         <a-button status="danger" long @click="visibleWarning = true">删除活动</a-button>
       </div>
     </div>
   </div>
-  <a-modal v-model:visible="visibleWarning" title="危险！" simple class="drop-activity-modal" @before-ok="handleWarningDropActivity">
+  <a-modal v-model:visible="visibleWarning" title="危险！" simple class="drop-activity-modal"
+           @before-ok="handleWarningDropActivity">
     <p>删除活动是不可逆的操作，请谨慎操作！</p>
     <a-form ref="dropActivityFormRef" :model="dropActivityForm" :label-col-props="{
         span: 6
       }" :wrapper-col-props="{
         span: 18
       }">
-      <a-form-item field="password" label="您的密码" :rules="[{required:true,message:'请输入密码'}]" validate-trigger="blur">
+      <a-form-item field="password" label="您的密码" :rules="[{required:true,message:'请输入密码'}]"
+                   validate-trigger="blur">
         <a-input-password v-model="dropActivityForm.password" />
       </a-form-item>
     </a-form>
@@ -157,6 +226,84 @@ onMounted(async () => {
   const activityId = Number(route.params.id)
   await getActivityDetail(activityId)
 })
+
+// 修改活动名称
+const changeActivityTitle = ref(false)
+const changeActivityTitleForm = reactive({
+  title: ""
+})
+const changeActivityTitleCallback = async () => {
+  changeActivityTitleForm.title = activityDetail.title
+  changeActivityTitle.value = true
+}
+
+const submitChangeActivityTitle = async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    // 提交修改活动
+    await handleXhrResponse(() => adminApi.modifyActivityTitle(activityId, changeActivityTitleForm.title), Message)
+    Message.success("修改活动名称成功")
+    changeActivityTitleForm.title = ""
+    changeActivityTitle.value = false
+    changeActivityDescription.value = false
+    changeActivityLocation.value = false
+    await getActivityDetail(activityId)
+  }
+}
+
+// 修改活动详情
+const changeActivityDescription = ref(false)
+const changeActivityDescriptionForm = reactive({
+  description: ""
+})
+const changeActivityDescriptionCallback = async () => {
+  changeActivityDescriptionForm.description = activityDetail.description
+  changeActivityDescription.value = true
+}
+const submitChangeActivityDescription = async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    // 提交修改活动
+    await handleXhrResponse(() => adminApi.modifyActivityDescription(activityId, changeActivityDescriptionForm.description), Message)
+    Message.success("修改活动描述成功")
+    changeActivityDescriptionForm.description = ""
+    changeActivityTitle.value = false
+    changeActivityDescription.value = false
+    changeActivityLocation.value = false
+    await getActivityDetail(activityId)
+  }
+}
+
+// 修改活动地址
+const changeActivityLocation = ref(false)
+const changeActivityLocationForm = reactive({
+  location: ""
+})
+const changeActivityLocationCallback = async () => {
+  changeActivityLocationForm.location = activityDetail.location
+  changeActivityLocation.value = true
+}
+
+const submitChangeActivityLocation =  async (form: {
+  values: Record<string, any>;
+  errors: Record<string, ValidatedError> | undefined
+}) => {
+  if (!form.errors) {
+    // 提交修改活动
+    await handleXhrResponse(() => adminApi.modifyActivityLocation(activityId, changeActivityLocationForm.location), Message)
+    Message.success("修改活动地址成功")
+    changeActivityLocationForm.location = ""
+    changeActivityTitle.value = false
+    changeActivityDescription.value = false
+    changeActivityLocation.value = false
+    await getActivityDetail(activityId)
+  }
+}
+
 </script>
 <style scoped lang="less">
 .activity-detail-content {
@@ -175,6 +322,9 @@ onMounted(async () => {
   margin-top: 10px;
   font-size: 16px;
   padding-bottom: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
 
   &::before {
     content: "";

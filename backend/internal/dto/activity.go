@@ -103,3 +103,21 @@ type UnregisterUserRegisterRequest struct {
 type DropActivityRequest struct {
 	Password string `json:"password" form:"password"`
 }
+
+// ChangeActivityTitleRequest 用于修改活动标题的请求
+type ChangeActivityTitleRequest struct {
+	ActivityID uint   `json:"activityId" form:"activity_id"`
+	Title      string `json:"title" form:"title"`
+}
+
+// ChangeActivityDescriptionRequest 用于修改活动描述的请求
+type ChangeActivityDescriptionRequest struct {
+	ActivityID  uint   `json:"activityId" form:"activity_id"`
+	Description string `json:"description" form:"description"`
+}
+
+// ChangeActivityLocationRequest 用于修改活动地点的请求
+type ChangeActivityLocationRequest struct {
+	ActivityID uint   `json:"activityId" form:"activity_id"`
+	Location   string `json:"location" form:"location"`
+}

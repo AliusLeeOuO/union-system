@@ -238,6 +238,19 @@ export default function useAdminApi() {
     ),
     activityDetail: (activityId: number): Promise<AxiosApiResponse<activityManagementListResponse>> =>
       axiosInstance.get(`/admin/activity/detail/${activityId}`),
+    modifyActivityTitle: (activityId: number, title: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyTitle", qs.stringify({
+      activity_id: activityId,
+      title
+    })),
+    modifyActivityDescription: (activityId: number, description: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyDescription", qs.stringify({
+        activity_id: activityId,
+        description
+      })
+    ),
+    modifyActivityLocation: (activityId: number, location: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyLocation", qs.stringify({
+      activity_id: activityId,
+      location
+    })),
     cancelUserReg: (activityId: number, userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/cancelUserReg", qs.stringify({
       activity_id: activityId,
       user_id: userId

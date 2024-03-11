@@ -295,3 +295,18 @@ func (s *ActivityService) GetRegisteredActivities(c *fiber.Ctx, userID, pageSize
 
 	return activityResponses, total, nil
 }
+
+// ModifyActivityTitle 修改活动标题
+func (s *ActivityService) ModifyActivityTitle(activityID uint, title string) error {
+	return s.Repo.ChangeActivityTitle(activityID, title)
+}
+
+// ModifyActivityDescription 修改活动描述
+func (s *ActivityService) ModifyActivityDescription(activityID uint, description string) error {
+	return s.Repo.ChangeActivityDescription(activityID, description)
+}
+
+// ModifyActivityLocation 修改活动地点
+func (s *ActivityService) ModifyActivityLocation(activityID uint, location string) error {
+	return s.Repo.ChangeActivityLocation(activityID, location)
+}

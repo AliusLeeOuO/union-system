@@ -44,7 +44,7 @@
     }"
   >
     <template #status="{ record }">
-      <a-tag color="cyan" v-if="record.status">已使用</a-tag>
+      <a-tag color="cyan" v-if="record.is_used">已使用</a-tag>
       <a-tag color="gray" v-else-if="dayjs.tz(record.expires_at).isBefore(dayjs.tz())">已过期</a-tag>
       <a-tag color="green" v-else>未使用</a-tag>
     </template>

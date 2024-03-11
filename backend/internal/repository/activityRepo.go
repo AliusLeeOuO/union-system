@@ -233,3 +233,18 @@ func (r *ActivityRepository) GetActivityUserRegistrations(activityID uint) ([]mo
 
 	return users, nil
 }
+
+// ChangeActivityTitle 修改活动标题
+func (r *ActivityRepository) ChangeActivityTitle(activityID uint, newTitle string) error {
+	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("activity_name", newTitle).Error
+}
+
+// ChangeActivityDescription 修改活动描述
+func (r *ActivityRepository) ChangeActivityDescription(activityID uint, newDescription string) error {
+	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("description", newDescription).Error
+}
+
+// ChangeActivityLocation 修改活动地点
+func (r *ActivityRepository) ChangeActivityLocation(activityID uint, newLocation string) error {
+	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("location", newLocation).Error
+}

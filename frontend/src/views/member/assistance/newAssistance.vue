@@ -1,10 +1,5 @@
 <template>
-  <a-form :model="newFormItem" @submit="submitRequest" :label-col-props="{
-        span: 2
-      }" :wrapper-col-props="{
-        span: 22
-      }">
-    <!--  TODO 这里验证逻辑不对  -->
+  <a-form :model="newFormItem" @submit="submitRequest" layout="vertical" :rules="rules">
     <a-form-item field="type_id" label="请求类型" required>
       <a-radio-group v-model="newFormItem.type_id" type="button">
         <a-radio :value="item.assistance_type_id" v-for="item in assistanceType" :key="item.assistance_type_id">
@@ -12,22 +7,16 @@
         </a-radio>
       </a-radio-group>
     </a-form-item>
-    <a-form-item field="title" label="请求标题"
-                 :rules="[{required:true,message:'请输入标题'},{minLength:5,message:'最少需要5个字符'}]"
-                 :validate-trigger="['change','input']"
-    >
+    <a-form-item field="title" label="请求标题" :validate-trigger="['blur']">
       <a-input v-model="newFormItem.title" placeholder="输入请求标题" />
     </a-form-item>
     <a-form-item label="详细信息"
                  validate-trigger="blur"
-                 :rules="[{required:true,message:'请输入详细信息'}]"
                  field="description"
     >
       <a-textarea
         placeholder="在这里输入详细信息"
-        :auto-size="{
-              minRows: 3
-            }"
+        :auto-size="{ minRows: 3 }"
         v-model="newFormItem.description"
       />
     </a-form-item>
@@ -40,17 +29,34 @@
 import { reactive, onMounted } from "vue"
 import type { assistanceTypeResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message, type ValidatedError } from "@arco-design/web-vue"
+import { type FieldRule, Message, type ValidatedError } from "@arco-design/web-vue"
 import useMemberApi from "@/api/memberApi"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
 const memberApi = useMemberApi()
 
+const rules: Record<string, FieldRule | FieldRule[]> = {
+  type_id: [{
+    required: true,
+    message: "请选择请求类型",
+    validator: (value, callback) => {
+      return new Promise((resolve) => {
+        if (value === -1) {
+          callback("请选择请求类型")
+        }
+        resolve(void 0)
+      })
+    }
+  }],
+  title: [{ required: true, message: "请输入标题" }, { minLength: 5, message: "最少需要5个字符" }],
+  description: [{ required: true, message: "请输入详细信息" }, { minLength: 10, message: "最少需要10个字符" }]
+}
+
 // 新建请求
 const newFormItem = reactive({
   title: "",
-  type_id: 0,
+  type_id: -1,
   description: ""
 })
 const assistanceType = reactive<assistanceTypeResponse[]>([])

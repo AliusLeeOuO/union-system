@@ -120,6 +120,18 @@ const handleSubmit = async (form: {
 
 </script>
 <style scoped lang="less">
+body[arco-theme="dark"] {
+  .login-container {
+    .login-header {
+      color: rgba(0, 0, 0, 0.8);
+    }
+    .login-form-container {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  }
+}
+
+
 .login-container {
   display: flex;
   flex-direction: column;
@@ -134,10 +146,6 @@ const handleSubmit = async (form: {
     font-size: 24px;
     color: #333;
     margin-bottom: 20px;
-    // dark mode
-    @media (prefers-color-scheme: dark) {
-      color: rgba(0, 0, 0, 0.8);
-    }
   }
 
   .login-form-container {
@@ -150,10 +158,6 @@ const handleSubmit = async (form: {
     display: flex;
     justify-content: center;
     align-items: center;
-    // dark mode
-    @media (prefers-color-scheme: dark) {
-      background-color: rgba(0, 0, 0, 0.8);
-    }
 
     .captcha-block {
       .captcha {

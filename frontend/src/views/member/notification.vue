@@ -106,6 +106,9 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  :deep(.arco-typography) {
+    margin: 0;
+  }
 
   h1 {
     font-size: 20px;

@@ -1,6 +1,7 @@
 package admin_assistance
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
 	"union-system/internal/dto"
@@ -8,6 +9,7 @@ import (
 	"union-system/internal/repository"
 	"union-system/internal/service"
 	"union-system/utils/check_fields"
+	"union-system/utils/logModelEnum"
 )
 
 func ReplyAssistance(c *fiber.Ctx) error {
@@ -36,6 +38,11 @@ func ReplyAssistance(c *fiber.Ctx) error {
 	if err := assistanceService.ReplyAssistance(form.RequestID, userID, form.ResponseText, form.NewStatusID); err != nil {
 		return model.SendFailureResponse(c, model.OperationFailedErrorCode, err.Error())
 	}
+
+	// 记录日志
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
+	logString := fmt.Sprintf("回复援助，援助ID: %d", form.RequestID)
+	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, logModelEnum.ASSISTANCE)
 
 	return model.SendSuccessResponse(c, nil)
 }

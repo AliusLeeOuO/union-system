@@ -34,12 +34,12 @@ func LoginHandler(c *fiber.Ctx) error {
 	}
 
 	// 初始化 service
-	adminService := service.NewAdminService(repository.NewAdminRepository(global.Database))
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
 	// 调用 service 登录方法
 	userInfo, err := userService.Login(request.Username, request.Password, request.CaptchaID, request.CaptchaVal)
 	if err != nil {
-		_ = adminService.AddLogLoginService(c.Get("User-Agent"), c.IP(), false, request.Username)
+		_ = logService.AddLoginLog(c.Get("User-Agent"), c.IP(), false, request.Username)
 		return model.SendFailureResponse(c, model.LoginAuthErrorCode, err.Error())
 	}
 
@@ -57,7 +57,7 @@ func LoginHandler(c *fiber.Ctx) error {
 		return model.SendFailureResponse(c, model.SystemErrorCode, "保存 Token 出错")
 	}
 
-	_ = adminService.AddLogLoginService(c.Get("User-Agent"), c.IP(), true, request.Username)
+	_ = logService.AddLoginLog(c.Get("User-Agent"), c.IP(), true, request.Username)
 
 	return model.SendSuccessResponse(c, userInfo)
 }

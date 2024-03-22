@@ -152,6 +152,17 @@ export interface generateInvitationCodeResponse {
   expires_at: string
 }
 
+export interface createActivityResponse {
+  success: boolean
+  id: number
+  message: string
+}
+
+export interface activityType {
+  activity_type_id: number
+  type_name: string
+}
+
 
 export default function useAdminApi() {
   return {
@@ -238,6 +249,26 @@ export default function useAdminApi() {
     ),
     activityDetail: (activityId: number): Promise<AxiosApiResponse<activityManagementListResponse>> =>
       axiosInstance.get(`/admin/activity/detail/${activityId}`),
+    addNewActivity: (
+      title: string,
+      description: string,
+      start_time: string,
+      end_time: string,
+      location: string,
+      type: number,
+      max_participants: number,
+      is_active: boolean
+    ): Promise<AxiosApiResponse<createActivityResponse>> => axiosInstance.post("/admin/activity/create", qs.stringify({
+      title,
+      description,
+      start_time,
+      end_time,
+      location,
+      type,
+      max_participants,
+      is_active
+    })),
+    getActivityTypes: (): Promise<AxiosApiResponse<activityType[]>> => axiosInstance.get("/admin/activity/type"),
     modifyActivityTitle: (activityId: number, title: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyTitle", qs.stringify({
       activity_id: activityId,
       title

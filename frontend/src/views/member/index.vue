@@ -1,11 +1,11 @@
+<template>
+  <a-typography-title :heading="2">
+    会员主页
+  </a-typography-title>
+</template>
 <script setup lang="ts">
 
 </script>
-
-<template>
-  会员主页
-</template>
-
 <style scoped lang="less">
 
 </style>

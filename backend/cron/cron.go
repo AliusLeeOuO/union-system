@@ -11,7 +11,6 @@ func InitCron() {
 	c := cron.New()
 
 	// 添加定时任务
-	// 这里的"0 0 1 * *"表示每月1号的00:00执行
 	c.AddFunc("0 0 1 * *", cronFunc.GetNewBills)
 
 	c.Start()

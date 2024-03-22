@@ -1,6 +1,7 @@
 package admin_activity
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
@@ -9,6 +10,7 @@ import (
 	"union-system/internal/repository"
 	"union-system/internal/service"
 	"union-system/utils/check_fields"
+	"union-system/utils/logModelEnum"
 )
 
 func DeleteActivityHandler(c *fiber.Ctx) error {
@@ -51,6 +53,11 @@ func DeleteActivityHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode, err.Error())
 	}
+
+	// 记录日志
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
+	logString := fmt.Sprintf("活动ID: %v, 删除活动。", activityID)
+	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, logModelEnum.ACTIVITY)
 
 	return model.SendSuccessResponse(c, nil)
 }

@@ -6,18 +6,17 @@ import (
 
 // Activity tb_activity
 type Activity struct {
-	ActivityID        uint      `gorm:"primary_key;column:activity_id"`
-	ActivityName      string    `gorm:"column:activity_name"`
-	Description       string    `gorm:"column:description"`
-	StartTime         time.Time `gorm:"column:start_time"`
-	EndTime           time.Time `gorm:"column:end_time"`
-	Location          string    `gorm:"column:location"`
-	ParticipantLimit  uint      `gorm:"column:participant_limit"`
-	ActivityTypeID    uint      `gorm:"column:activity_type_id"`
-	CreatorID         uint      `gorm:"column:creator_id"`
-	IsActive          bool      `gorm:"column:is_active"`
-	Removed           bool      `gorm:"column:removed"`
-	RegistrationCount uint      `gorm:"column:registration_count"`
+	ActivityID       uint      `gorm:"primary_key;column:activity_id"`
+	ActivityName     string    `gorm:"column:activity_name"`
+	Description      string    `gorm:"column:description"`
+	StartTime        time.Time `gorm:"column:start_time"`
+	EndTime          time.Time `gorm:"column:end_time"`
+	Location         string    `gorm:"column:location"`
+	ParticipantLimit uint      `gorm:"column:participant_limit"`
+	ActivityTypeID   uint      `gorm:"column:activity_type_id"`
+	CreatorID        uint      `gorm:"column:creator_id"`
+	IsActive         bool      `gorm:"column:is_active"`
+	Removed          bool      `gorm:"column:removed"`
 }
 
 // ActivityType tb_activity_type
@@ -204,4 +203,20 @@ type InvitationCodes struct {
 	IsUsed          bool      `gorm:"not null;column:is_used;default:false"`
 	CreatedAt       time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP"`
 	ExpiresAt       time.Time `gorm:"not null;column:expires_at"`
+}
+
+// LogModules 对应于数据库中的 tb_log_modules 表
+type LogModules struct {
+	ModuleID   uint   `gorm:"primary_key;autoIncrement;column:module_id"`
+	ModuleName string `gorm:"type:varchar(255);not null;unique;column:module_name"`
+}
+
+// LogAdmin 对应于数据库中的 tb_log_admin 表
+type LogAdmin struct {
+	LogID        uint      `gorm:"primary_key;autoIncrement;column:log_id"`
+	UserId       uint      `gorm:"not null;column:user_id"`
+	ModuleID     uint      `gorm:"not null;column:module_id"`
+	IP           string    `gorm:"type:varchar(39);not null;column:ip"`
+	ActionDetail string    `gorm:"type:text;not null;column:action_detail"`
+	ActionTime   time.Time `gorm:"default:CURRENT_TIMESTAMP;column:action_time"`
 }

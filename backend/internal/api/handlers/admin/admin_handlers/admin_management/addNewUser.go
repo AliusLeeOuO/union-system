@@ -1,6 +1,7 @@
 package admin_management
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
@@ -9,6 +10,7 @@ import (
 	"union-system/internal/repository"
 	"union-system/internal/service"
 	"union-system/utils/check_fields"
+	"union-system/utils/logModelEnum"
 )
 
 func AddNewUser(c *fiber.Ctx) error {
@@ -49,5 +51,11 @@ func AddNewUser(c *fiber.Ctx) error {
 	if err != nil {
 		return model.SendFailureResponse(c, model.SystemErrorCode, err.Error())
 	}
+
+	// 记录日志
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
+	logString := fmt.Sprintf("新建用户")
+	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, logModelEnum.MANAGEMENT)
+
 	return model.SendSuccessResponse(c, nil)
 }

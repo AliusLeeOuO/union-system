@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"union-system/global"
+	"union-system/internal/dto"
 	"union-system/internal/model"
 )
 
@@ -95,8 +96,7 @@ func (r *ActivityRepository) DeleteActivity(activityID uint) error {
 	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("removed", true).Error
 }
 
-func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]model.Activity, uint, error) {
-	var activities []model.Activity
+func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]dto.ActivityDetailWithRegistrationsResponse, uint, error) {
 	var totalInt int64 = 0
 
 	// 先获取总活动数
@@ -104,43 +104,34 @@ func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]mo
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
-
+	var activitiesWithCount []dto.ActivityDetailWithRegistrationsResponse
 	// 获取当前页的活动列表，并计算已报名人数
 	offset := (pageNum - 1) * pageSize
 	result = r.DB.Model(&model.Activity{}).
-		Select("tb_activity.*, COUNT(tb_user_activity.user_id) as registration_count").
+		Select("tb_activity.*, COUNT(tb_user_activity.user_id) AS registration_count").
 		Joins("LEFT JOIN tb_user_activity ON tb_user_activity.activity_id = tb_activity.activity_id").
 		Where("tb_activity.removed = ?", false).
 		Group("tb_activity.activity_id").
 		Offset(int(offset)).
 		Limit(int(pageSize)).
-		Find(&activities)
+		Find(&activitiesWithCount)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
 	// 将 model.Activity 转换为包含报名人数的 model.ActivityWithRegistrationCount
-	var activitiesWithCount []model.Activity
-	for _, activity := range activities {
-		activitiesWithCount = append(activitiesWithCount, model.Activity{
-			ActivityID:        activity.ActivityID,
-			ActivityName:      activity.ActivityName,
-			Description:       activity.Description,
-			StartTime:         activity.StartTime,
-			EndTime:           activity.EndTime,
-			Location:          activity.Location,
-			ParticipantLimit:  activity.ParticipantLimit,
-			ActivityTypeID:    activity.ActivityTypeID,
-			IsActive:          activity.IsActive,
-			RegistrationCount: activity.RegistrationCount,
+	var activitiesDetail []dto.ActivityDetailWithRegistrationsResponse
+	for _, item := range activitiesWithCount {
+		activitiesDetail = append(activitiesDetail, dto.ActivityDetailWithRegistrationsResponse{
+			Activity:          item.Activity, // 直接使用嵌入的Activity
+			RegistrationCount: item.RegistrationCount,
 		})
 	}
-
 	return activitiesWithCount, uint(totalInt), nil
 }
 
-func (r *ActivityRepository) GetActivityDetails(activityID uint) (model.Activity, error) {
-	var activityDetails model.Activity
+func (r *ActivityRepository) GetActivityDetails(activityID uint) (dto.ActivityDetailWithRegistrationsResponse, error) {
+	var activityDetails dto.ActivityDetailWithRegistrationsResponse
 
 	result := r.DB.Model(&model.Activity{}).
 		Select("tb_activity.*, COUNT(tb_user_activity.user_id) as registration_count").
@@ -150,7 +141,7 @@ func (r *ActivityRepository) GetActivityDetails(activityID uint) (model.Activity
 		First(&activityDetails)
 
 	if result.Error != nil {
-		return model.Activity{}, result.Error
+		return dto.ActivityDetailWithRegistrationsResponse{}, result.Error
 	}
 
 	return activityDetails, nil

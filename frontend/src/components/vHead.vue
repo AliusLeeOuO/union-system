@@ -225,6 +225,18 @@ const toIndex = async () => {
 </script>
 
 <style lang="less" scoped>
+body[arco-theme="dark"] {
+.header-pc {
+  .header-pc-person-info {
+    .header-pc-person-info-text {
+      background-color: #232323;
+    }
+    .header-pc-person-info-button {
+      background-color: #424242;
+    }
+  }
+}
+}
 .header-pc {
   padding: 0 10px;
   height: 60px;
@@ -319,9 +331,6 @@ const toIndex = async () => {
     .header-pc-person-info-text {
       padding: 10px;
       color: rgb(var(--color-text-1));
-      @media (prefers-color-scheme: dark) {
-        background-color: #232323;
-      }
     }
 
     .header-pc-person-info-button {
@@ -334,17 +343,11 @@ const toIndex = async () => {
       & > * {
         margin-left: 5px;
       }
-
-      // dark mode
-      @media (prefers-color-scheme: dark) {
-        background-color: #424242;
-      }
     }
   }
 }
 
 .header-right {
-  //min-width: 130px;
   height: 100%;
   display: flex;
   justify-content: flex-end;

@@ -10,6 +10,7 @@ import (
 	"union-system/internal/repository"
 	"union-system/internal/service"
 	"union-system/utils/check_fields"
+	"union-system/utils/logModelEnum"
 )
 
 func UpdateUserHandler(c *fiber.Ctx) error {
@@ -44,6 +45,11 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 	if err := adminService.UpdateUser(updateReq.UserId, updateReq); err != nil {
 		return model.SendFailureResponse(c, model.InternalServerErrorCode, err.Error())
 	}
+
+	// 记录日志
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
+	logString := fmt.Sprintf("修改用户信息: %v", updateReq.UserId)
+	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, logModelEnum.MANAGEMENT)
 
 	return model.SendSuccessResponse(c, nil)
 }

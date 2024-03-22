@@ -36,6 +36,12 @@ const props = defineProps<{
 
 </script>
 <style scoped lang="less">
+body[arco-theme="dark"] {
+  .activity-item {
+    background-color: #232324;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
 .activity-item {
   display: block;
   color: inherit;
@@ -47,11 +53,6 @@ const props = defineProps<{
   margin-bottom: 20px;
   cursor: pointer;
   transition: all 0.3s;
-  // dark mode
-  @media (prefers-color-scheme: dark) {
-    background-color: #232324;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
 
   .activity-item-title {
     font-size: 20px;

@@ -101,7 +101,7 @@
     <div class="activity-detail-item">
       <div class="description-title">
         <span>报名用户</span>
-        <a-button disabled>导出报名用户</a-button>
+        <a-button>导出报名用户</a-button>
       </div>
       <div class="activity-detail-item-content">
         <a-list>

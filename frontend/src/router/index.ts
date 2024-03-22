@@ -139,7 +139,7 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/admin/addNewUser",
             name: "addNewUser",
-            component: () => import("@/views/admin/addNewUser.vue"),
+            component: () => import("@/views/admin/user/addNewUser.vue"),
             meta: {
               roles: roles.ADMIN,
               title: "添加用户"
@@ -182,6 +182,15 @@ const routes: Array<routeRecordWithRole> = [
             }
           },
           {
+            path: "/admin/addNewActivity",
+            name: "addNewActivity",
+            component: () => import("@/views/admin/activity/addNewActivity.vue"),
+            meta: {
+              roles: roles.ADMIN,
+              title: "添加活动"
+            }
+          },
+          {
             path: "/admin/manageActivityDetail/:id",
             name: "manageActivityDetail",
             component: () => import("@/views/admin/activity/activityDetail.vue"),
@@ -211,6 +220,16 @@ const routes: Array<routeRecordWithRole> = [
                   roles: roles.ADMIN,
                   title: "登录日志"
                 }
+              },
+              {
+                path: "/admin/log/adminActionLog",
+                name: "adminActionLog",
+                component: () => import("@/views/admin/log/adminActionLog.vue")
+              },
+              {
+                path: "/admin/log/userActionLog",
+                name: "userActionLog",
+                component: () => import("@/views/admin/log/userActionLog.vue")
               }
             ]
           }

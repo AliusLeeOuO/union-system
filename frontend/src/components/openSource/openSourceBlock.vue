@@ -16,6 +16,15 @@ const props = defineProps<{
 }>()
 </script>
 <style lang="less" scoped>
+body[arco-theme="dark"] {
+  .header {
+    background-color: transparent;
+    border-bottom: 1px solid #fff;
+    border-radius: 0;
+  }
+}
+
+
 .header {
   padding: 5px 10px;
   background-color: #eee;
@@ -26,11 +35,6 @@ const props = defineProps<{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @media (prefers-color-scheme: dark) {
-    background-color: transparent;
-    border-bottom: 1px solid #fff;
-    border-radius: 0;
-  }
 
   .link {
     text-align: right;

@@ -2,7 +2,8 @@
   <div
     class="notification-block"
     :class="{
-      'notification-block-show': notificationContentShow
+      'notification-block-show': notificationContentShow,
+      'notification-block-read': props.readStatus
     }"
     @click="openNotificationContent"
   >
@@ -83,17 +84,31 @@ const fetchRead = async (notificationId: number) => {
     () => memberApi.notificationRead(notificationId),
     Message
   )
-
 }
 </script>
 
 <style scoped lang="less">
+body[arco-theme="dark"] {
+  .notification-block {
+    background-color: #232324;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    &.notification-block-read {
+      color: #8c8c8c;
+    }
+  }
+}
+
 .notification-block {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 10px;
+  background-color: #f5f5f5;
   padding: 20px;
-  border: 1px solid #ddd;
+  margin-top: 20px;
   margin-bottom: 20px;
-  border-radius: 5px;
   cursor: pointer;
+  transition: all 0.3s;
 
   .notification-top {
     display: flex;

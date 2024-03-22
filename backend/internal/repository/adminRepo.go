@@ -21,19 +21,6 @@ func (repo *AdminRepository) UpdateUser(userID uint, updateData map[string]inter
 	return nil
 }
 
-// AddLogLogin 方法现在接受单独的参数来插入记录
-func (repo *AdminRepository) AddLogLogin(ua string, ip string, loginStatus bool, username string) error {
-	i := model.LogLogin{
-		UA:          ua,
-		IP:          ip,
-		LoginStatus: loginStatus,
-		Username:    username,
-	}
-
-	result := repo.DB.Omit("login_time").Create(&i)
-	return result.Error
-}
-
 // FindLogLoginsByPage 分页查询登录日志，根据status筛选，并按login_time倒序
 func (repo *AdminRepository) FindLogLoginsByPage(pageSize, pageNum uint, status string) ([]model.LogLogin, uint, error) {
 	var logs []model.LogLogin

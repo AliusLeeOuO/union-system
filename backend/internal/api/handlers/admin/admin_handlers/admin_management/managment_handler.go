@@ -10,6 +10,7 @@ func Init(app fiber.Router) {
 	management.Post("/getUserInfo", GetUserInfoHandler)
 	management.Post("/updateUser", UpdateUserHandler)
 	management.Post("/getLoginList", GetLoginList)
+	management.Post("/getAdminLogList", GetAdminLogList)
 	management.Post("/getInvitationCodeList", GetInvitationCodesHandler)
 	management.Post("/generateInvitationCode", GenerateInvitationCodeHandler)
 }

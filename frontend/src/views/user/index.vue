@@ -157,6 +157,14 @@ const logout = async () => {
 }
 </script>
 <style scoped lang="less">
+body[arco-theme="dark"] {
+.user-center {
+    background-color: #333;
+    box-shadow: 0 0 10px 0 #000;
+  }
+}
+
+
 .user-info {
   text-align: center;
   font-size: 20px;
@@ -169,12 +177,6 @@ const logout = async () => {
   background-color: #f5f5f5;
   color: rgb(var(--color-text-1));
   border-radius: 10px;
-  // dark mode
-  @media (prefers-color-scheme: dark) {
-    background-color: #333;
-    // 阴影
-    box-shadow: 0 0 10px 0 #000;
-  }
 
   .user-center-title {
     font-size: 18px;

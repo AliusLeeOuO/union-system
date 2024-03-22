@@ -5,11 +5,7 @@
   <a-form
     :model="formItem"
     :rules="rules"
-    :label-col-props="{
-        span: 2
-      }" :wrapper-col-props="{
-        span: 22
-      }"
+    layout="vertical"
     @submit="handleSubmit"
   >
     <a-form-item field="username" label="用户名">

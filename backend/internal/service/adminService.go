@@ -37,11 +37,6 @@ func (s *AdminService) UpdateUser(userID uint, req dto.UpdateUserRequest) error 
 	return s.Repo.UpdateUser(userID, updateData)
 }
 
-// AddLogLoginService 现在接受单独的参数，并将它们传递到repository的AddLogLogin方法
-func (s *AdminService) AddLogLoginService(ua string, ip string, loginStatus bool, username string) error {
-	return s.Repo.AddLogLogin(ua, ip, loginStatus, username)
-}
-
 // GetLogLoginsByPage 获取登录日志的分页数据
 func (s *AdminService) GetLogLoginsByPage(pageSize, pageNum uint, status string) ([]dto.GetLoginLogResponse, uint, error) {
 	logs, total, err := s.Repo.FindLogLoginsByPage(pageSize, pageNum, status)

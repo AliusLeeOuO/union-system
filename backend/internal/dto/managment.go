@@ -16,3 +16,19 @@ type UpdateUserRequest struct {
 	Status   bool    `json:"is_active" form:"status"`
 	Password *string `json:"password,omitempty" form:"password"` // 使用指针以便区分未传递和空字符串
 }
+
+type CPUInfo struct {
+	Cores  uint    `json:"cores"`
+	Trends uint    `json:"trends"`
+	Model  string  `json:"model"`
+	Cache  uint    `json:"cache"`
+	Usage  float64 `json:"usage"`
+	Idle   float64 `json:"idle"`
+}
+
+type MemoryInfo struct {
+	Total uint    `json:"total`
+	Used  uint    `json:"used"`
+	Free  uint    `json:"free"`
+	Usage float64 `json:"usage"`
+}

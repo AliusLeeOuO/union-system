@@ -11,6 +11,7 @@ declare module 'vue' {
     ABadge: typeof import('@arco-design/web-vue')['Badge']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
     AButton: typeof import('@arco-design/web-vue')['Button']
+    ACard: typeof import('@arco-design/web-vue')['Card']
     AComment: typeof import('@arco-design/web-vue')['Comment']
     ActivityBlock: typeof import('./src/components/activityBlock.vue')['default']
     ADescriptions: typeof import('@arco-design/web-vue')['Descriptions']

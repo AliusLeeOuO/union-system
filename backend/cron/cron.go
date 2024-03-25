@@ -1,9 +1,10 @@
 package cron
 
 import (
-	"github.com/robfig/cron/v3"
 	"union-system/cron/cronFunc"
 	"union-system/global"
+
+	"github.com/robfig/cron/v3"
 )
 
 func InitCron() {
@@ -12,6 +13,8 @@ func InitCron() {
 
 	// 添加定时任务
 	c.AddFunc("0 0 1 * *", cronFunc.GetNewBills)
+	c.AddFunc("@every 1s", cronFunc.SetCPUInfo)
+	c.AddFunc("@every 1s", cronFunc.SetMemoryInfo)
 
 	c.Start()
 	global.Logger.Info("Cron started")

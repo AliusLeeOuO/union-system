@@ -230,6 +230,11 @@ const routes: Array<routeRecordWithRole> = [
                 path: "/admin/log/userActionLog",
                 name: "userActionLog",
                 component: () => import("@/views/admin/log/userActionLog.vue")
+              },
+              {
+                path: "/admin/log/systemInfo",
+                name: "systemInfo",
+                component: () => import("@/views/admin/log/systemInfo.vue")
               }
             ]
           }

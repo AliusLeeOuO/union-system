@@ -12,6 +12,9 @@
     <router-link to="/admin/log/userActionLog" custom v-slot="{ navigate, isActive }">
       <a-button @click="navigate" :type="isActive? 'primary': 'text'">用户操作日志</a-button>
     </router-link>
+    <router-link to="/admin/log/systemInfo" custom v-slot="{ navigate, isActive }">
+      <a-button @click="navigate" :type="isActive? 'primary': 'text'">系统信息</a-button>
+    </router-link>
   </a-space>
   <div class="router-container">
     <router-view />

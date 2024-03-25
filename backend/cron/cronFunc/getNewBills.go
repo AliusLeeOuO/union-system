@@ -10,7 +10,7 @@ import (
 
 func GetNewBills() {
 
-	feeService := service.NewFeeService(repository.NewFeeRepository(global.Database)) // 假设你已经实现了NewFeeService函数
+	feeService := service.NewFeeService(repository.NewFeeRepository(global.Database))
 
 	if err := feeService.GenerateMonthlyFeeBills(time.Now().Format("200601")); err != nil {
 		// 记录错误

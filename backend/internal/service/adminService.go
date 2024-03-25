@@ -58,8 +58,8 @@ func (s *AdminService) GetLogLoginsByPage(pageSize, pageNum uint, status string)
 	return logResponses, total, err
 }
 
-// 从Redis获取CPU信息
-func GetCPUInfo() (*dto.CPUInfo, error) {
+// GetCPUInfo 从Redis获取CPU信息
+func (s *AdminService) GetCPUInfo() (*dto.CPUInfo, error) {
 	ctx := context.Background()
 	result, err := global.RedisClient.HGetAll(ctx, "cpu_info").Result()
 	if err != nil {
@@ -67,11 +67,15 @@ func GetCPUInfo() (*dto.CPUInfo, error) {
 	}
 
 	// 解析字段到CPUInfo结构体
-	cores, err := strconv.Atoi(result["cores"])
+	cores, err := strconv.ParseUint(result["cores"], 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse cpu cores: %v", err)
 	}
-	cache, err := strconv.Atoi(result["cache"])
+	trends, err := strconv.ParseUint(result["trends"], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse trends: %v", err)
+	}
+	cache, err := strconv.ParseUint(result["cache"], 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse cache: %v", err)
 	}
@@ -84,31 +88,32 @@ func GetCPUInfo() (*dto.CPUInfo, error) {
 		return nil, fmt.Errorf("failed to parse idle: %v", err)
 	}
 	cpuInfo := &dto.CPUInfo{
-		Model: result["model"],
-		Cores: uint(cores),
-		Cache: uint(cache),
-		Usage: usage,
-		Idle:  idle,
+		Model:  result["model"],
+		Cores:  uint(cores),
+		Trends: uint(trends),
+		Cache:  uint(cache),
+		Usage:  usage,
+		Idle:   idle,
 	}
 
 	return cpuInfo, nil
 }
 
-// 从Redis获取内存信息
-func GetMemoryInfo() (*dto.MemoryInfo, error) {
+// GetMemoryInfo 从Redis获取内存信息
+func (s *AdminService) GetMemoryInfo() (*dto.MemoryInfo, error) {
 	ctx := context.Background()
 	result, err := global.RedisClient.HGetAll(ctx, "memory_info").Result()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get memory_info: %v", err)
 	}
 
-	total, err := strconv.ParseUint(result["cores"], 10, 64)
+	total, err := strconv.ParseUint(result["total"], 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mem total: %v", err)
 	}
-	used, err := strconv.ParseUint(result["cores"], 10, 64)
+	used, err := strconv.ParseUint(result["used"], 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse mem total: %v", err)
+		return nil, fmt.Errorf("failed to parse mem used: %v", err)
 	}
 	free, err := strconv.ParseUint(result["free"], 10, 64)
 	if err != nil {

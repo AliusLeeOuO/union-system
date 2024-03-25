@@ -1,6 +1,9 @@
 package admin_management
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
+)
 
 func Init(app fiber.Router) {
 	management := app.Group("/management")
@@ -13,4 +16,7 @@ func Init(app fiber.Router) {
 	management.Post("/getAdminLogList", GetAdminLogList)
 	management.Post("/getInvitationCodeList", GetInvitationCodesHandler)
 	management.Post("/generateInvitationCode", GenerateInvitationCodeHandler)
+
+	// 添加 WebSocket 路由
+	management.Get("/deviceInfo", websocket.New(handleWebSocket))
 }

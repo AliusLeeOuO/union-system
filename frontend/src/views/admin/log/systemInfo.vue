@@ -4,7 +4,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from "vue"
+import { onMounted, onUnmounted, reactive } from "vue"
+import dayjs from "dayjs"
+import { useUserStore } from "@/stores/user"
 
 const data = reactive([
   {
@@ -28,4 +30,69 @@ const data = reactive([
     value: "Yingdu Building, Zhichun Road, Beijing"
   }
 ])
+
+let ws: WebSocket
+const userStore = useUserStore()
+
+function connect() {
+  ws = new WebSocket(`ws://localhost:9999/admin/management/deviceInfo?AuthorizationQuery=Bearer%20${userStore.userInfo.token}`)
+  let wsPingTime = dayjs().unix()
+  // let wsPingInterval: number
+  let wsConnectCheck: number
+
+
+  ws.onopen = () => {
+    console.log("WebSocket connected")
+
+    clearInterval(wsConnectCheck)
+
+    ws.send("subscribe:ping")
+    setTimeout(() => {
+      ws.send("subscribe:cpuInfo")
+    },500)
+    setTimeout(() => {
+      ws.send("subscribe:memInfo")
+    },100)
+
+
+    wsConnectCheck = setInterval(() => {
+      // 10秒内未收到pong消息，重连
+      if (dayjs().unix() - wsPingTime > 10) {
+        console.log("WebSocket reconnecting")
+        ws.close()
+        setTimeout(function() {
+          connect()
+        }, 1000)
+      }
+    }, 1000)
+  }
+
+  ws.onmessage = (e: MessageEvent) => {
+    console.log(e)
+    const data = JSON.parse(e.data)
+    switch (data.channel) {
+      case "ping":
+        wsPingTime = dayjs().unix()
+        break
+      default:
+        console.log(data)
+        break
+    }
+  }
+  ws.onclose = () => {
+    console.log("连接关闭")
+    // clearInterval(wsPingInterval)
+    clearInterval(wsConnectCheck)
+  }
+  ws.onerror = () => {
+    console.log("连接错误")
+  }
+}
+
+onMounted(() => {
+  connect()
+})
+onUnmounted(() => {
+  ws.close()
+})
 </script>

@@ -10,11 +10,17 @@ import (
 )
 
 func TokenAuth(c *fiber.Ctx) error {
+	fmt.Println(c.Method())
 	// 从请求中获取 Token
 	authorizationString := c.Get("Authorization")
-	// 检查 Token 是否存在
+
+	// 如果请求头中没有 Token，尝试从请求参数中获取
 	if authorizationString == "" {
-		global.Logger.Info("Token 不存在1")
+		authorizationString = c.Query("AuthorizationQuery")
+	}
+	// 如果 Token 不存在，返回错误
+	if authorizationString == "" {
+		global.Logger.Info("Token 不存在")
 		return model.SendFailureResponse(c, model.AuthFailedCode)
 	}
 	// 检查 Token 是否以 Bearer 开头

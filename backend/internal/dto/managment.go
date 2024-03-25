@@ -27,8 +27,26 @@ type CPUInfo struct {
 }
 
 type MemoryInfo struct {
-	Total uint    `json:"total`
+	Total uint    `json:"total"`
 	Used  uint    `json:"used"`
 	Free  uint    `json:"free"`
 	Usage float64 `json:"usage"`
+}
+
+type WebsocketPingResponse struct {
+	Code    int    `json:"code"`
+	Channel string `json:"channel"`
+	Msg     string `json:"message"`
+}
+
+type WebsocketCpuInfoResponse struct {
+	Code    int     `json:"code"`
+	Channel string  `json:"channel"`
+	Msg     CPUInfo `json:"message"`
+}
+
+type WebsocketMemInfoResponse struct {
+	Code    int        `json:"code"`
+	Channel string     `json:"channel"`
+	Msg     MemoryInfo `json:"message"`
 }

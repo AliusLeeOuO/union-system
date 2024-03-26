@@ -1,138 +1,200 @@
 package admin_management
 
 import (
-	"encoding/json"
-	"github.com/gofiber/websocket/v2"
 	"log"
-	"sync"
 	"time"
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/repository"
 	"union-system/internal/service"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 )
 
-// todo 未完成
-
-type SubscriptionManager struct {
-	subscriptions map[*websocket.Conn]map[string]bool
-	lock          sync.RWMutex
+type Subscription struct {
+	conn  *websocket.Conn
+	topic string
 }
 
-func NewSubscriptionManager() *SubscriptionManager {
-	return &SubscriptionManager{
-		subscriptions: make(map[*websocket.Conn]map[string]bool),
+type Message struct {
+	Topic   string      `json:"topic"`
+	Content interface{} `json:"content"`
+}
+
+type PubSub struct {
+	clients     map[*websocket.Conn]map[string]bool // 客户端订阅的主题映射
+	subscribe   chan Subscription
+	unsubscribe chan Subscription
+	broadcast   chan Message
+	disconnect  chan *websocket.Conn // 新增：处理断开连接
+}
+
+func NewPubSub() *PubSub {
+	return &PubSub{
+		clients:     make(map[*websocket.Conn]map[string]bool),
+		subscribe:   make(chan Subscription),
+		unsubscribe: make(chan Subscription),
+		broadcast:   make(chan Message),
+		disconnect:  make(chan *websocket.Conn), // 初始化disconnect通道
 	}
 }
 
-func (m *SubscriptionManager) Subscribe(conn *websocket.Conn, topic string) {
-	m.lock.Lock()
-	defer m.lock.Unlock()
-	if _, ok := m.subscriptions[conn]; !ok {
-		m.subscriptions[conn] = make(map[string]bool)
-	}
-	m.subscriptions[conn][topic] = true
-}
-
-func (m *SubscriptionManager) Unsubscribe(conn *websocket.Conn, topic string) {
-	m.lock.Lock()
-	defer m.lock.Unlock()
-	if subscriptions, ok := m.subscriptions[conn]; ok {
-		delete(subscriptions, topic)
-	}
-}
-
-func (m *SubscriptionManager) Publish(topic string, message string) {
-	m.lock.RLock()
-	defer m.lock.RUnlock()
-	for conn, topics := range m.subscriptions {
-		if topics[topic] {
-			if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-				log.Printf("error broadcasting: %v", err)
-			}
-		}
-	}
-}
-
-// handleWebSocket 处理WebSocket请求
-func handleWebSocket(c *websocket.Conn) {
-	c.EnableWriteCompression(true)
-	// 订阅管理器实例
-	manager := NewSubscriptionManager()
-
-	defer func() {
-		// 清理操作
-		for topic := range manager.subscriptions[c] {
-			manager.Unsubscribe(c, topic)
-		}
-	}()
+func (ps *PubSub) run() {
+	ticker := time.NewTicker(5 * time.Second) // 创建一个定时器，5秒触发一次
+	defer ticker.Stop()
 
 	for {
-		_, msg, err := c.ReadMessage()
-		if err != nil {
-			log.Printf("read error: %v", err)
-			break
-		}
-
-		message := string(msg)
-		switch message {
-		case "subscribe:ping":
-			manager.Subscribe(c, "ping")
-		case "unsubscribe:ping":
-			manager.Unsubscribe(c, "ping")
-		case "subscribe:cpuInfo":
-			manager.Subscribe(c, "cpuInfo")
-		case "unsubscribe:cpuInfo":
-			manager.Unsubscribe(c, "cpuInfo")
-		case "subscribe:memInfo":
-			manager.Subscribe(c, "memInfo")
-		case "unsubscribe:memInfo":
-			manager.Unsubscribe(c, "memInfo")
-		default:
-			log.Printf("unsupported message: %s", message)
-		}
-
-		// 可以在这里启动定时器发送消息，或者在其他地方全局控制
-		go func() {
-			for {
-				manager.Publish("ping", func() string {
-					websocketPingMessage, _ := json.Marshal(dto.WebsocketPingResponse{
-						Code:    0,
-						Channel: "ping",
-						Msg:     "pong",
-					})
-					return string(websocketPingMessage)
-				}())
-				manager.Publish("cpuInfo", func() string {
+		select {
+		case conn := <-ps.disconnect:
+			// 从clients中移除断开的连接
+			delete(ps.clients, conn)
+		case <-ticker.C: // 定时触发
+			// 遍历所有订阅了"ping"的客户端并发送"pong"
+			for conn, topics := range ps.clients {
+				if topics["ping"] { // 如果订阅了"ping"
+					err := conn.WriteJSON(Message{Topic: "pong", Content: "PONG"})
+					if err != nil {
+						log.Printf("Error sending pong: %v", err)
+						conn.Close()             // 发生错误时关闭连接
+						delete(ps.clients, conn) // 从订阅者列表中移除
+					}
+				}
+				if topics["cpuInfo"] {
 					adminService := service.NewAdminService(repository.NewAdminRepository(global.Database))
 					cpuInfo, getCpuInfoError := adminService.GetCPUInfo()
 					if getCpuInfoError != nil {
-						log.Printf("failed to get cpu info: %v", err)
-						return ""
+						log.Printf("failed to get cpu info: %v", getCpuInfoError)
+						conn.Close()             // 发生错误时关闭连接
+						delete(ps.clients, conn) // 从订阅者列表中移除
 					}
-					websocketCpuInfoMessage, _ := json.Marshal(dto.WebsocketCpuInfoResponse{
-						Code:    0,
-						Channel: "cpuInfo",
-						Msg:     *cpuInfo,
+					// websocketCpuInfoMessage, _ := json.Marshal(dto.WebsocketCpuInfoResponse{
+					// 	Code:    0,
+					// 	Channel: "cpuInfo",
+					// 	Msg:     *cpuInfo,
+					// })
+					err := conn.WriteJSON(Message{
+						Topic: "cpuInfo",
+						Content: dto.WebsocketCpuInfoResponse{
+							Code:    0,
+							Channel: "cpuInfo",
+							Msg:     *cpuInfo,
+						},
 					})
-					return string(websocketCpuInfoMessage)
-				}())
-				manager.Publish("memInfo", func() string {
+					if err != nil {
+						log.Printf("Error sending cpuInfo: %v", err)
+						conn.Close()             // 发生错误时关闭连接
+						delete(ps.clients, conn) // 从订阅者列表中移除
+					}
+				}
+				if topics["memInfo"] {
 					adminService := service.NewAdminService(repository.NewAdminRepository(global.Database))
 					memInfo, getMemInfoError := adminService.GetMemoryInfo()
 					if getMemInfoError != nil {
-						log.Printf("failed to get memory info: %v", err)
-						return ""
+						log.Printf("failed to get memory info: %v", getMemInfoError)
+						conn.Close()             // 发生错误时关闭连接
+						delete(ps.clients, conn) // 从订阅者列表中移除
 					}
-					websocketMemInfoMessage, _ := json.Marshal(dto.WebsocketMemInfoResponse{
-						Code:    0,
-						Channel: "memInfo",
-						Msg:     *memInfo,
+					err := conn.WriteJSON(Message{
+						Topic: "memInfo",
+						Content: dto.WebsocketMemInfoResponse{
+							Code:    0,
+							Channel: "memInfo",
+							Msg:     *memInfo,
+						},
 					})
-					return string(websocketMemInfoMessage)
-				}())
-				time.Sleep(5 * time.Second)
+					if err != nil {
+						log.Printf("Error sending memInfo: %v", err)
+						conn.Close()             // 发生错误时关闭连接
+						delete(ps.clients, conn) // 从订阅者列表中移除
+					}
+				}
 			}
-		}()
+		case sub := <-ps.subscribe:
+			// 检查这个连接是否已经订阅了该主题
+			if topics, ok := ps.clients[sub.conn]; ok {
+				if _, subscribed := topics[sub.topic]; !subscribed {
+					topics[sub.topic] = true
+
+					// 发送确认消息
+					err := sub.conn.WriteJSON(Message{
+						Topic:   "subscribed",
+						Content: "Successfully subscribed to " + sub.topic,
+					})
+					if err != nil {
+						log.Printf("Error sending subscribe confirmation: %v", err)
+						return
+					}
+
+					// 特定主题订阅的额外处理逻辑...
+				} else {
+					sub.conn.WriteJSON(Message{
+						Topic:   "subscribed",
+						Content: "You are already to subscribe this topic",
+					})
+				}
+			} else {
+				// 这是该连接的第一次订阅
+				ps.clients[sub.conn] = map[string]bool{sub.topic: true}
+
+				// 发送确认消息
+				err := sub.conn.WriteJSON(Message{
+					Topic:   "subscribed",
+					Content: "Successfully subscribed to " + sub.topic,
+				})
+				if err != nil {
+					log.Printf("Error sending subscribe confirmation: %v", err)
+					return
+				}
+			}
+
+		case unsub := <-ps.unsubscribe:
+			if topics, ok := ps.clients[unsub.conn]; ok {
+				if _, subscribed := topics[unsub.topic]; subscribed {
+					delete(topics, unsub.topic)
+					// 当一个连接不再订阅任何主题时，可以选择从clients中移除该连接
+					if len(topics) == 0 {
+						delete(ps.clients, unsub.conn)
+					}
+				}
+			}
+
+		case msg := <-ps.broadcast:
+			for conn, topics := range ps.clients {
+				if topics[msg.Topic] {
+					err := conn.WriteJSON(msg)
+					if err != nil {
+						log.Printf("websocket write error: %v", err)
+						conn.Close()
+						delete(ps.clients, conn)
+					}
+				}
+			}
+		}
 	}
+}
+
+// 定义WebSocket处理函数
+func handleDeviceInfoWebSocket(pubsub *PubSub) fiber.Handler {
+	return websocket.New(func(c *websocket.Conn) {
+		// 确保在函数退出时通知PubSub系统连接已断开
+		defer func() {
+			pubsub.disconnect <- c
+		}()
+
+		for {
+			var msg Message
+			if err := c.ReadJSON(&msg); err != nil {
+				log.Println("WebSocket read error:", err)
+				break
+			}
+
+			switch msg.Topic {
+			case "subscribe":
+				pubsub.subscribe <- Subscription{conn: c, topic: msg.Content.(string)}
+			case "unsubscribe":
+				pubsub.unsubscribe <- Subscription{conn: c, topic: msg.Content.(string)}
+			}
+		}
+	})
 }

@@ -50,3 +50,9 @@ type WebsocketMemInfoResponse struct {
 	Channel string     `json:"channel"`
 	Msg     MemoryInfo `json:"message"`
 }
+
+// WebsocketMessageRequest 定义了WebSocket消息请求的结构体
+type WebsocketMessageRequest struct {
+	Action  string `json:"action"`  // 操作类型，例如 "subscribe" 或 "unsubscribe"
+	Channel string `json:"channel"` // 频道名称，例如 "cpuInfo" 等
+}

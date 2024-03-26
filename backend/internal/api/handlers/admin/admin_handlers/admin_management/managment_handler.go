@@ -2,7 +2,6 @@ package admin_management
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/websocket/v2"
 )
 
 func Init(app fiber.Router) {
@@ -18,5 +17,9 @@ func Init(app fiber.Router) {
 	management.Post("/generateInvitationCode", GenerateInvitationCodeHandler)
 
 	// 添加 WebSocket 路由
-	management.Get("/deviceInfo", websocket.New(handleWebSocket))
+	// 初始化PubSub实例
+	pubsub := NewPubSub()
+	go pubsub.run()
+	// 使用剥离的函数注册WebSocket路由
+	management.Get("/deviceInfo", handleDeviceInfoWebSocket(pubsub))
 }

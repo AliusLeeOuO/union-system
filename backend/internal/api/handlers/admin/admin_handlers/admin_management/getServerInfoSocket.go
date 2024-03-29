@@ -53,7 +53,7 @@ func (ps *PubSub) run() {
 			// 遍历所有订阅了"ping"的客户端并发送"pong"
 			for conn, topics := range ps.clients {
 				if topics["ping"] { // 如果订阅了"ping"
-					err := conn.WriteJSON(Message{Topic: "pong", Content: "PONG"})
+					err := conn.WriteJSON(Message{Topic: "ping", Content: "pong"})
 					if err != nil {
 						log.Printf("Error sending pong: %v", err)
 						conn.Close()             // 发生错误时关闭连接

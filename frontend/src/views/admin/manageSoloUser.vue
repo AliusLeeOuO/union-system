@@ -3,16 +3,11 @@
     修改用户
   </a-typography-title>
   <a-descriptions style="margin-top: 20px" :data="descInfo" size="large" title="用户信息" :column="1" />
-  <a-form
-    :model="formItem"
-    :rules="rules"
-    :label-col-props="{
-        span: 2
-      }" :wrapper-col-props="{
-        span: 22
-      }"
-    @submit="handleSubmit"
-  >
+  <a-form :model="formItem" :rules="rules" :label-col-props="{
+    span: 2
+  }" :wrapper-col-props="{
+    span: 22
+  }" @submit="handleSubmit">
     <a-form-item field="username" label="用户名">
       <a-input v-model="formItem.username" />
     </a-form-item>
@@ -37,11 +32,11 @@
   </a-form>
 </template>
 <script setup lang="ts">
-import { reactive, computed, onMounted } from "vue"
-import { roles, getRoleName } from "@/utils/roleHelper"
-import { type FieldRule, Message, type ValidatedError } from "@arco-design/web-vue"
+import { reactive, onMounted } from "vue"
+import { getRoleName } from "@/utils/roleHelper"
+import { type FieldRule, Message, type ValidatedError, type DescData } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import useAdminApi from "@/api/adminApi"
 
 const route = useRoute()
@@ -52,17 +47,16 @@ const solidInfo = reactive({
   role: -1
 })
 
-const descInfo = reactive([
+const descInfo = reactive<DescData[]>([
   {
     label: "用户ID",
-    value: solidInfo.id
+    value: () => solidInfo.id.toString(), // Assuming id is numeric and needs to be string
   },
   {
     label: "角色",
-    value: computed(() => getRoleName(solidInfo.role))
+    value: () => getRoleName(solidInfo.role), // Use a function to defer evaluation
   }
-])
-
+]);
 
 const formItem = reactive({
   username: "",
@@ -137,6 +131,4 @@ onMounted(async () => {
 })
 
 </script>
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

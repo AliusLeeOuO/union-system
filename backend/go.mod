@@ -3,7 +3,7 @@ module union-system
 go 1.21.4
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.3
+	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/mojocn/base64Captcha v1.3.6
@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.21.0
 	gorm.io/driver/postgres v1.5.7
-	gorm.io/gorm v1.25.8
+	gorm.io/gorm v1.25.9
 )
 
 require (

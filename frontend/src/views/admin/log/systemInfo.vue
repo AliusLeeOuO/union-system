@@ -46,13 +46,10 @@ function connect() {
 
     clearInterval(wsConnectCheck)
 
-    ws.send("subscribe:ping")
-    setTimeout(() => {
-      ws.send("subscribe:cpuInfo")
-    },500)
-    setTimeout(() => {
-      ws.send("subscribe:memInfo")
-    },100)
+    ws.send(JSON.stringify({
+      "topic": "subscribe",
+      "content": "ping"
+    }))
 
 
     wsConnectCheck = setInterval(() => {
@@ -60,7 +57,7 @@ function connect() {
       if (dayjs().unix() - wsPingTime > 10) {
         console.log("WebSocket reconnecting")
         ws.close()
-        setTimeout(function() {
+        setTimeout(function () {
           connect()
         }, 1000)
       }
@@ -70,7 +67,7 @@ function connect() {
   ws.onmessage = (e: MessageEvent) => {
     console.log(e)
     const data = JSON.parse(e.data)
-    switch (data.channel) {
+    switch (data.topic) {
       case "ping":
         wsPingTime = dayjs().unix()
         break

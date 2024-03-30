@@ -1,6 +1,6 @@
 <template>
   <div class="action-zone">
-    <a-form :model="searchForm" layout="inline">
+<!--    <a-form :model="searchForm" layout="inline">
       <a-form-item label="状态">
         <a-select :style="{width:'180px'}" v-model="searchForm.status">
           <a-option value="all">所有</a-option>
@@ -8,7 +8,7 @@
           <a-option value="false">失败</a-option>
         </a-select>
       </a-form-item>
-    </a-form>
+    </a-form>-->
     <a-button @click="refreshList">
       <template #icon>
         <icon-refresh />
@@ -27,18 +27,44 @@
       current: pageData.currentPage
     }"
   >
-    <template #status="{ record }">
-      <a-tag color="green" v-if="record.status">成功</a-tag>
-      <a-tag color="red" v-else>失败</a-tag>
+    <template #username="{ record }">
+      <a-popover>
+        <div>
+          {{ record.user.username }}
+        </div>
+        <template #content>
+          <p>用户ID：{{ record.user.id }}</p>
+        </template>
+      </a-popover>
     </template>
-    <template #login_time="{ record }">
-      {{ dayjs.tz(record.login_time).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #detail="{ record }">
+      <a-popover>
+        <div>
+          {{ record.detail }}
+        </div>
+        <template #content>
+          <p>{{ record.detail }}</p>
+        </template>
+      </a-popover>
+    </template>
+    <template #actionModule="{ record }">
+      <a-popover>
+        <div>
+          {{ record.action.name }}
+        </div>
+        <template #content>
+          <p>模块ID：{{ record.action.id }}</p>
+        </template>
+      </a-popover>
+    </template>
+    <template #time="{ record }">
+      {{ dayjs.tz(record.time).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
   </a-table>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, watch } from "vue"
-import useAdminApi, { type loginLogItem } from "@/api/adminApi"
+import useAdminApi, { type logAdminListItem } from "@/api/adminApi"
 import { handleXhrResponse } from "@/api"
 import { Message } from "@arco-design/web-vue"
 import dayjs from "dayjs"
@@ -61,11 +87,11 @@ const searchForm = reactive<{
 const columns = [
   {
     title: "操作用户名",
-    dataIndex: "username"
+    slotName: "username"
   },
   {
     title: "操作模块",
-    dataIndex: "actionModule"
+    slotName: "actionModule"
   },
   {
     title: "操作IP",
@@ -73,15 +99,18 @@ const columns = [
   },
   {
     title: "操作详情",
-    slotName: "actionDetail"
+    slotName: "detail",
+    ellipsis: true,
+    width: 500
   },
   {
     title: "操作时间",
-    slotName: "actionTime"
+    slotName: "time",
+    width: 200
   }
 ]
 
-const tableData = reactive<loginLogItem[]>([])
+const tableData = reactive<logAdminListItem[]>([])
 
 const pageData = reactive({
   total: 0,
@@ -90,7 +119,7 @@ const pageData = reactive({
 })
 
 const fetchLoginLog = async () => {
-  const { data } = await handleXhrResponse(() => adminApi.getLoginLog(pageData.currentPage, pageData.pageSize, searchForm.status), Message)
+  const { data } = await handleXhrResponse(() => adminApi.getLogAdminList(pageData.currentPage, pageData.pageSize), Message)
   tableData.splice(0, tableData.length)
   pageData.total = data.data.total
   if (data.data.data) {
@@ -123,5 +152,6 @@ onMounted(async () => {
 .action-zone {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 5px;
 }
 </style>

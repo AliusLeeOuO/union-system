@@ -82,3 +82,27 @@ type GetLoginLogResponse struct {
 	LoginTime string `json:"login_time"`
 	Username  string `json:"username"`
 }
+
+type GetAdminLogListRequest struct {
+	Pagination
+}
+
+type GetAdminLogListResponse struct {
+	PageResponse
+	Data []GetAdminLogResponse `json:"data"`
+}
+
+type GetAdminLogResponse struct {
+	LogId uint `json:"log_id"`
+	User  struct {
+		ID       uint   `json:"id"`
+		Username string `json:"username"`
+	} `json:"user"`
+	Action struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	} `json:"action"`
+	Detail string `json:"detail"`
+	IP     string `json:"ip"`
+	Time   string `json:"time"`
+}

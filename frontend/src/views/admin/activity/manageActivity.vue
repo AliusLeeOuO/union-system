@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     活动管理
   </a-typography-title>
@@ -52,11 +61,18 @@ import dayjs from "dayjs"
 import { reactive, onMounted } from "vue"
 import type { activityListResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
+import { Message, type BreadcrumbRoute } from "@arco-design/web-vue"
 import useAdminApi from "@/api/adminApi"
 import ActivityBlock from "@/components/activityBlock.vue"
 
 const adminApi = useAdminApi()
+
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/admin/manageActivity",
+    label: "活动管理"
+  }
+]
 
 const activityList = reactive<activityListResponse[]>([])
 const pagination = reactive({

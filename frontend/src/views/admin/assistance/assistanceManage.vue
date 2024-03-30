@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     援助管理
   </a-typography-title>
@@ -65,7 +74,7 @@ import { onMounted, reactive, ref } from "vue"
 import { IconRefresh } from "@arco-design/web-vue/es/icon"
 import dayjs from "dayjs"
 import useAdminApi, { type assistanceListItem } from "@/api/adminApi"
-import { type FormInstance, Message } from "@arco-design/web-vue"
+import { type FormInstance, Message, type BreadcrumbRoute } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
@@ -75,6 +84,14 @@ const adminApi = useAdminApi()
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Shanghai")
+
+// 面包屑
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/admin/manageAssistance",
+    label: "援助管理"
+  }
+]
 
 const searchFormRef = ref<FormInstance | null>(null)
 const tableLoading = ref(true)

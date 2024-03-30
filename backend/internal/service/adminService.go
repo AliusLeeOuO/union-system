@@ -134,3 +134,30 @@ func (s *AdminService) GetMemoryInfo() (*dto.MemoryInfo, error) {
 
 	return memoryInfo, nil
 }
+
+// GetLogAdminsByPage 获取管理员操作日志的分页数据
+func (s *AdminService) GetLogAdminsByPage(pageSize, pageNum uint) ([]dto.GetAdminLogResponse, uint, error) {
+	logs, total, err := s.Repo.GetLogAdminsByPage(pageSize, pageNum)
+	var logResponses []dto.GetAdminLogResponse
+	for _, log := range logs {
+		logResponses = append(logResponses, dto.GetAdminLogResponse{
+			LogId: log.LogID,
+			User: struct {
+				ID       uint   `json:"id"`
+				Username string `json:"username"`
+			}(struct {
+				ID       uint
+				Username string
+			}{ID: log.UserId, Username: log.Username}),
+			Action: struct {
+				ID   uint   `json:"id"`
+				Name string `json:"name"`
+			}{ID: log.ModuleID, Name: log.ActionName},
+			Detail: log.ActionDetail,
+			IP:     log.IP,
+			Time:   log.ActionTime.Format(time.RFC3339),
+		})
+	}
+
+	return logResponses, total, err
+}

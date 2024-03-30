@@ -68,11 +68,6 @@ func (ps *PubSub) run() {
 						conn.Close()             // 发生错误时关闭连接
 						delete(ps.clients, conn) // 从订阅者列表中移除
 					}
-					// websocketCpuInfoMessage, _ := json.Marshal(dto.WebsocketCpuInfoResponse{
-					// 	Code:    0,
-					// 	Channel: "cpuInfo",
-					// 	Msg:     *cpuInfo,
-					// })
 					err := conn.WriteJSON(Message{
 						Topic: "cpuInfo",
 						Content: dto.WebsocketCpuInfoResponse{

@@ -1,6 +1,15 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
-    日志审计
+    系统管理
   </a-typography-title>
   <a-space>
     <router-link to="/admin/log/loginLog" custom v-slot="{ navigate, isActive }">
@@ -21,7 +30,15 @@
   </div>
 </template>
 <script setup lang="ts">
+import { type BreadcrumbRoute } from "@arco-design/web-vue"
 
+// 面包屑
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/admin/log",
+    label: "系统管理"
+  }
+]
 </script>
 <style scoped lang="less">
 .router-container {

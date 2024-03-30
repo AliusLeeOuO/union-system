@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     活动详情
   </a-typography-title>
@@ -149,7 +158,7 @@
 <script setup lang="ts">
 import dayjs from "dayjs"
 import { reactive, onMounted, ref } from "vue"
-import { type FormInstance, Message, Modal, type ValidatedError } from "@arco-design/web-vue"
+import { type FormInstance, Message, type ValidatedError, type BreadcrumbRoute } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import { useRoute, useRouter } from "vue-router"
 import utc from "dayjs/plugin/utc"
@@ -165,6 +174,17 @@ dayjs.tz.setDefault("Asia/Shanghai")
 const adminApi = useAdminApi()
 const route = useRoute()
 const router = useRouter()
+
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/admin/manageActivity",
+    label: "活动管理"
+  },
+  {
+    path: route.path,
+    label: "活动详情"
+  }
+]
 
 
 const activityDetail = reactive({
@@ -288,7 +308,7 @@ const changeActivityLocationCallback = async () => {
   changeActivityLocation.value = true
 }
 
-const submitChangeActivityLocation =  async (form: {
+const submitChangeActivityLocation = async (form: {
   values: Record<string, any>;
   errors: Record<string, ValidatedError> | undefined
 }) => {

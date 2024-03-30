@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     用户管理
   </a-typography-title>
@@ -15,22 +24,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, reactive } from "vue"
-import { roles } from "@/router"
-import { getRoleName } from "@/utils/roleHelper"
-import { handleXhrResponse } from "@/api"
-import useAdminApi, { type userListItem } from "@/api/adminApi"
-import { Message } from "@arco-design/web-vue"
-import type { FormInstance } from "@arco-design/web-vue"
-import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { type BreadcrumbRoute } from "@arco-design/web-vue"
 
 
 
-
+// 面包屑
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/admin/user",
+    label: "用户管理"
+  }
+]
 
 
 

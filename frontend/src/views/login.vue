@@ -30,7 +30,7 @@
         </a-form>
       </div>
     </div>
-    <a-space class="prime-action">
+    <a-space class="prime-action" v-if="!loginSuccessfully">
       <router-link to="/register" custom v-slot="{ navigate }">
         <a-link @click="navigate">注册用户</a-link>
       </router-link>

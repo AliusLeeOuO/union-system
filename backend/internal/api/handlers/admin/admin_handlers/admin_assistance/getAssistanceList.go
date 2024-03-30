@@ -21,7 +21,7 @@ func GetAssistanceList(c *fiber.Ctx) error {
 	// 验证字段
 	fieldsToCheck := map[string]interface{}{
 		"PageSize": int(form.PageSize),
-		"PageNum":  int(form.PageSize),
+		"PageNum":  int(form.PageNum),
 	}
 	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
 	if !ok {

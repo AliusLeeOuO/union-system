@@ -48,3 +48,30 @@ func (repo *AdminRepository) FindLogLoginsByPage(pageSize, pageNum uint, status 
 
 	return logs, uint(total), nil
 }
+
+// AdminLogWithDetails 包含日志信息，用户名称和动作名称
+type AdminLogWithDetails struct {
+	model.LogAdmin        // 嵌入原始 LogAdmin 结构体
+	Username       string `gorm:"column:username"`    // 用户名
+	ActionName     string `gorm:"column:action_name"` // 动作名称
+}
+
+// GetLogAdminsByPage 分页查询管理员操作日志
+func (repo *AdminRepository) GetLogAdminsByPage(pageSize, pageNum uint) ([]AdminLogWithDetails, uint, error) {
+	var logs []AdminLogWithDetails
+	var total int64
+
+	offset := (pageNum - 1) * pageSize
+	result := repo.DB.Table("tb_log_admin").
+		Select("tb_log_admin.*, tb_user.username as username, tb_log_modules.module_name as action_name").
+		Joins("left join tb_user on tb_user.user_id = tb_log_admin.user_id").
+		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_admin.module_id").
+		Order("action_time DESC").Offset(int(offset)).Limit(int(pageSize)).
+		Count(&total).Find(&logs)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return logs, uint(total), nil
+}

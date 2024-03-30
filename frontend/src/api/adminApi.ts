@@ -163,6 +163,28 @@ export interface activityType {
   type_name: string
 }
 
+export interface getLogAdminListResponse {
+  page_size: number
+  page_num: number
+  total: number
+  data: logAdminListItem[] | null
+}
+
+export interface logAdminListItem {
+  log_id: number
+  user: {
+    id: number
+    username: string
+  }
+  action: {
+    id: number
+    name: string
+  }
+  detail: string
+  ip: string
+  time: string
+}
+
 
 export default function useAdminApi() {
   return {
@@ -293,6 +315,10 @@ export default function useAdminApi() {
       page_num: pageNum,
       page_size: pageSize
     })),
-    generateInvitationCode: (): Promise<AxiosApiResponse<generateInvitationCodeResponse>> => axiosInstance.post("/admin/management/generateInvitationCode")
+    generateInvitationCode: (): Promise<AxiosApiResponse<generateInvitationCodeResponse>> => axiosInstance.post("/admin/management/generateInvitationCode"),
+    getLogAdminList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogAdminListResponse>> => axiosInstance.post("/admin/management/getLogAdminList", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    }))
   }
 }

@@ -106,3 +106,30 @@ type GetAdminLogResponse struct {
 	IP     string `json:"ip"`
 	Time   string `json:"time"`
 }
+
+// GetMemberLogListRequest 定义了获取会员操作日志列表请求的数据结构
+type GetMemberLogListRequest struct {
+	Pagination
+}
+
+// GetMemberLogListResponse 定义了获取会员操作日志列表响应的数据结构
+type GetMemberLogListResponse struct {
+	PageResponse
+	Data []GetMemberLogResponse `json:"data"`
+}
+
+// GetMemberLogResponse 定义了获取会员操作日志响应的数据结构
+type GetMemberLogResponse struct {
+	LogId uint `json:"log_id"`
+	User  struct {
+		ID       uint   `json:"id"`
+		Username string `json:"username"`
+	} `json:"user"`
+	Action struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	} `json:"action"`
+	Detail string `json:"detail"`
+	IP     string `json:"ip"`
+	Time   string `json:"time"`
+}

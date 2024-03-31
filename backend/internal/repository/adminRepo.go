@@ -75,3 +75,29 @@ func (repo *AdminRepository) GetLogAdminsByPage(pageSize, pageNum uint) ([]Admin
 
 	return logs, uint(total), nil
 }
+
+type MemberLogWithDetails struct {
+	model.LogMember
+	Username   string `gorm:"column:username"`
+	ActionName string `gorm:"column:action_name"`
+}
+
+// GetLogMembersByPage 分页查询会员操作日志
+func (repo *AdminRepository) GetLogMembersByPage(pageSize, pageNum uint) ([]MemberLogWithDetails, uint, error) {
+	var logs []MemberLogWithDetails
+	var total int64
+
+	offset := (pageNum - 1) * pageSize
+	result := repo.DB.Table("tb_log_member").
+		Select("tb_log_member.*, tb_user.username as username, tb_log_modules.module_name as action_name").
+		Joins("left join tb_user on tb_user.user_id = tb_log_member.user_id").
+		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_member.module_id").
+		Order("action_time DESC").Offset(int(offset)).Limit(int(pageSize)).
+		Count(&total).Find(&logs)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return logs, uint(total), nil
+}

@@ -192,8 +192,8 @@ const adminNavList = reactive<navList[]>([
     path: "/admin/manageActivity"
   },
   {
-    title: "日志审计",
-    path: "/admin/log"
+    title: "系统管理",
+    path: "/admin/management"
   }
 ])
 

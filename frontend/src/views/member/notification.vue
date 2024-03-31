@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <div class="notification-top">
     <a-typography-title :heading="2">
       我的通知
@@ -44,11 +53,18 @@ import NotificationBlock from "@/components/notificationBlock.vue"
 import useMemberApi, { type notificationResponseObject } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
 import { useNotificationStore } from "@/stores/notification"
-import { Message } from "@arco-design/web-vue"
+import { type BreadcrumbRoute, Message } from "@arco-design/web-vue"
 import { IconRefresh } from "@arco-design/web-vue/es/icon"
 import { onMounted, reactive } from "vue"
 
 const memberApi = useMemberApi()
+
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/member/notification",
+    label: "通知"
+  }
+]
 
 const notificationPageData = reactive({
   total: 0,

@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     会费
   </a-typography-title>
@@ -60,7 +69,7 @@
 import { reactive, onMounted, computed } from "vue"
 import useMemberApi, { type feeHistoryResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
+import { type BreadcrumbRoute, Message } from "@arco-design/web-vue"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
@@ -70,6 +79,15 @@ const memberApi = useMemberApi()
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Shanghai")
+
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/member/fee",
+    label: "会费"
+  }
+]
+
+
 
 const currentFeeInfo = reactive({
   amount: 0,

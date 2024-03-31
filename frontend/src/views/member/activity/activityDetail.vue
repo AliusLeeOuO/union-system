@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     活动详情
   </a-typography-title>
@@ -43,7 +52,7 @@
 import dayjs from "dayjs"
 import useMemberApi from "@/api/memberApi"
 import { reactive, onMounted } from "vue"
-import { Message } from "@arco-design/web-vue"
+import { type BreadcrumbRoute, Message } from "@arco-design/web-vue"
 import { handleXhrResponse } from "@/api"
 import { useRoute } from "vue-router"
 import utc from "dayjs/plugin/utc"
@@ -51,12 +60,24 @@ import timezone from "dayjs/plugin/timezone"
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
-
 dayjs.tz.setDefault("Asia/Shanghai")
 
 
 const memberApi = useMemberApi()
 const route = useRoute()
+
+
+// 面包屑
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/member/activity",
+    label: "活动"
+  },
+  {
+    path: route.path,
+    label: "查看活动"
+  }
+]
 
 
 const activityDetail = reactive({

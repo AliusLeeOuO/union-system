@@ -67,7 +67,7 @@
 import { useRoute } from "vue-router"
 import useMemberApi, { type assistanceDetailResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message, type ValidatedError } from "@arco-design/web-vue"
+import { type BreadcrumbRoute, Message, type ValidatedError } from "@arco-design/web-vue"
 import { onMounted, reactive, ref } from "vue"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -80,7 +80,7 @@ const memberApi = useMemberApi()
 const route = useRoute()
 
 // 面包屑
-const routes = [
+const routes: BreadcrumbRoute[] = [
   {
     path: "/member/assistance",
     label: "帮助"

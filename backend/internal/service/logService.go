@@ -36,3 +36,15 @@ func (s *LogService) AddAdminLog(userId uint, ip, actionDetail string, moduleID 
 
 	return s.Repo.InsertAdminLog(log)
 }
+
+// AddMemberLog 添加新的会员操作日志
+func (s *LogService) AddMemberLog(userId uint, ip, actionDetail string, moduleID uint) error {
+	log := &model.LogMember{
+		UserID:       userId,
+		ModuleId:     moduleID,
+		Ip:           ip,
+		ActionDetail: actionDetail,
+	}
+
+	return s.Repo.InsertMemberLog(log)
+}

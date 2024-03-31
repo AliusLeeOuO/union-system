@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <a-breadcrumb :routes="routes">
+      <template #item-render="{route, paths}">
+        <router-link :to="route">
+          {{ route.label }}
+        </router-link>
+      </template>
+    </a-breadcrumb>
+  </div>
   <a-typography-title :heading="2">
     会员活动
   </a-typography-title>
@@ -15,7 +24,15 @@
   </div>
 </template>
 <script setup lang="ts">
+// 面包屑
+import type { BreadcrumbRoute } from "@arco-design/web-vue"
 
+const routes: BreadcrumbRoute[] = [
+  {
+    path: "/member/activity",
+    label: "活动"
+  }
+]
 </script>
 <style scoped lang="less">
 .router-container {

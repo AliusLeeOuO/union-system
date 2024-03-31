@@ -185,6 +185,28 @@ export interface logAdminListItem {
   time: string
 }
 
+export interface getLogMemberListResponse {
+  page_size: number
+  page_num: number
+  total: number
+  data: logMemberListItem[] | null
+}
+
+export interface logMemberListItem {
+  log_id: number
+  user: {
+    id: number
+    username: string
+  }
+  action: {
+    id: number
+    name: string
+  }
+  detail: string
+  ip: string
+  time: string
+}
+
 
 export default function useAdminApi() {
   return {
@@ -319,6 +341,12 @@ export default function useAdminApi() {
     getLogAdminList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogAdminListResponse>> => axiosInstance.post("/admin/management/getLogAdminList", qs.stringify({
       page_num: pageNum,
       page_size: pageSize
-    }))
+    })),
+    getLogMemberList(pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogMemberListResponse>> {
+      return axiosInstance.post("/admin/management/getLogMemberList", qs.stringify({
+        page_num: pageNum,
+        page_size: pageSize
+      }))
+    }
   }
 }

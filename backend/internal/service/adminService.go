@@ -161,3 +161,27 @@ func (s *AdminService) GetLogAdminsByPage(pageSize, pageNum uint) ([]dto.GetAdmi
 
 	return logResponses, total, err
 }
+
+// GetLogMembersByPage 获取会员操作日志的分页数据
+func (s *AdminService) GetLogMembersByPage(pageSize, pageNum uint) ([]dto.GetMemberLogResponse, uint, error) {
+	logs, total, err := s.Repo.GetLogMembersByPage(pageSize, pageNum)
+	var logResponses []dto.GetMemberLogResponse
+	for _, log := range logs {
+		logResponses = append(logResponses, dto.GetMemberLogResponse{
+			LogId: log.LogID,
+			User: struct {
+				ID       uint   `json:"id"`
+				Username string `json:"username"`
+			}{ID: log.UserID, Username: log.Username},
+			Action: struct {
+				ID   uint   `json:"id"`
+				Name string `json:"name"`
+			}{ID: log.ModuleId, Name: log.ActionName},
+			Detail: log.ActionDetail,
+			IP:     log.Ip,
+			Time:   log.ActionTime.Format(time.RFC3339),
+		})
+	}
+
+	return logResponses, total, err
+}

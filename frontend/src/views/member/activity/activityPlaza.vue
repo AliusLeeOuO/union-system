@@ -33,7 +33,7 @@ import ActivityBlock from "@/components/activityBlock.vue"
 import { onMounted, reactive } from "vue"
 import type { activityListResponse } from "@/api/memberApi"
 import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
+import { type BreadcrumbRoute, Message } from "@arco-design/web-vue"
 import useMemberApi from "@/api/memberApi"
 
 const memberApi = useMemberApi()

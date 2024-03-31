@@ -200,41 +200,41 @@ const routes: Array<routeRecordWithRole> = [
             }
           },
           {
-            path: "/admin/log",
+            path: "/admin/management",
             name: "log",
-            component: () => import("@/views/admin/log/index.vue"),
+            component: () => import("@/views/admin/management/index.vue"),
             meta: {
               roles: roles.ADMIN,
               title: "日志"
             },
             children: [
               {
-                path: "/admin/log",
-                redirect: "/admin/log/loginLog"
+                path: "/admin/management",
+                redirect: "/admin/management/loginLog"
               },
               {
-                path: "/admin/log/loginLog",
+                path: "/admin/management/loginLog",
                 name: "loginLog",
-                component: () => import("@/views/admin/log/loginLogView.vue"),
+                component: () => import("@/views/admin/management/loginLogView.vue"),
                 meta: {
                   roles: roles.ADMIN,
                   title: "登录日志"
                 }
               },
               {
-                path: "/admin/log/adminActionLog",
+                path: "/admin/management/adminActionLog",
                 name: "adminActionLog",
-                component: () => import("@/views/admin/log/adminActionLog.vue")
+                component: () => import("@/views/admin/management/adminActionLog.vue")
               },
               {
-                path: "/admin/log/userActionLog",
+                path: "/admin/management/userActionLog",
                 name: "userActionLog",
-                component: () => import("@/views/admin/log/userActionLog.vue")
+                component: () => import("@/views/admin/management/memberActionLog.vue")
               },
               {
-                path: "/admin/log/systemInfo",
+                path: "/admin/management/systemInfo",
                 name: "systemInfo",
-                component: () => import("@/views/admin/log/systemInfo.vue")
+                component: () => import("@/views/admin/management/systemInfo.vue")
               }
             ]
           }

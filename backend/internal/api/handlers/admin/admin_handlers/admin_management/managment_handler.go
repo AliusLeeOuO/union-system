@@ -16,6 +16,7 @@ func Init(app fiber.Router) {
 	management.Post("/getInvitationCodeList", GetInvitationCodesHandler)
 	management.Post("/generateInvitationCode", GenerateInvitationCodeHandler)
 	management.Post("/getLogAdminList", GetLogAdmin)
+	management.Post("/getLogMemberList", GetLogMember)
 
 	// 添加 WebSocket 路由
 	// 初始化PubSub实例

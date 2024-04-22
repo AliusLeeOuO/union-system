@@ -23,8 +23,9 @@ func GetMyFeeStandard(c *fiber.Ctx) error {
 
 	// 转换为DTO并返回
 	return model.SendSuccessResponse(c, dto.FeeStandardResponse{
-		StandardID: feeStandard.StandardID,
-		CategoryID: feeStandard.CategoryID,
-		Amount:     feeStandard.Amount,
+		SetStandard: err != nil,
+		StandardID:  feeStandard.StandardID,
+		CategoryID:  feeStandard.CategoryID,
+		Amount:      feeStandard.Amount,
 	})
 }

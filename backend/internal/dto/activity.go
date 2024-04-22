@@ -27,14 +27,14 @@ type GetActivityTypeRequest struct {
 }
 
 type CreateOrModifyActivityRequest struct {
-	Title           string `json:"title" form:"title"`
-	Description     string `json:"description" form:"description"`
-	StartTime       string `json:"startTime" form:"start_time"`
-	EndTime         string `json:"endTime" form:"end_time"`
-	Location        string `json:"location" form:"location"`
-	Type            uint   `json:"type" form:"type"`
-	MaxParticipants uint   `json:"maxParticipants" form:"max_participants"`
-	IsActive        bool   `json:"isActive" form:"is_active"`
+	Title           string `json:"title" form:"title" validate:"required"`
+	Description     string `json:"description" form:"description" validate:"required"`
+	StartTime       string `json:"startTime" form:"start_time" validate:"required"`
+	EndTime         string `json:"endTime" form:"end_time" validate:"required"`
+	Location        string `json:"location" form:"location" validate:"required"`
+	Type            uint   `json:"type" form:"type" validate:"required"`
+	MaxParticipants uint   `json:"maxParticipants" form:"max_participants" validate:"required"`
+	IsActive        bool   `json:"isActive" form:"is_active" validate:"required"`
 }
 
 type CreateActivityResponse struct {
@@ -97,8 +97,8 @@ type UserGetRegisteredActivityListResponse struct {
 
 // UnregisterUserRegisterRequest 用于取消用户报名活动的请求
 type UnregisterUserRegisterRequest struct {
-	ActivityID uint `json:"activityId" form:"activity_id"`
-	UserId     uint `json:"userId" form:"user_id"`
+	ActivityID uint `json:"activityId" form:"activity_id" validate:"required"`
+	UserId     uint `json:"userId" form:"user_id" validate:"required"`
 }
 
 // DropActivityRequest 用于删除活动的请求
@@ -114,14 +114,14 @@ type ChangeActivityTitleRequest struct {
 
 // ChangeActivityDescriptionRequest 用于修改活动描述的请求
 type ChangeActivityDescriptionRequest struct {
-	ActivityID  uint   `json:"activityId" form:"activity_id"`
-	Description string `json:"description" form:"description"`
+	ActivityID  uint   `json:"activityId" form:"activity_id" validate:"required"`
+	Description string `json:"description" form:"description" validate:"required"`
 }
 
 // ChangeActivityLocationRequest 用于修改活动地点的请求
 type ChangeActivityLocationRequest struct {
-	ActivityID uint   `json:"activityId" form:"activity_id"`
-	Location   string `json:"location" form:"location"`
+	ActivityID uint   `json:"activityId" form:"activity_id" validate:"required"`
+	Location   string `json:"location" form:"location" validate:"required"`
 }
 
 type ActivityDetailWithRegistrationsResponse struct {

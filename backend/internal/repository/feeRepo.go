@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"union-system/internal/dto"
 	"union-system/internal/model"
 )
 
@@ -93,3 +94,58 @@ func (r *FeeRepository) MarkFeeAsPaid(billID uint) error {
 	result := r.DB.Model(&model.FeeBill{}).Where("bill_id = ?", billID).Update("paid", true)
 	return result.Error
 }
+
+func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint) ([]dto.UserWithFee, uint, error) {
+	var usersWithFees []dto.UserWithFee
+	err := r.DB.
+		Table("tb_user").
+		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount").
+		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
+		Where("tb_user.is_active = ?", true).
+		Offset(int(pageNum)).
+		Limit(int(pageSize)).
+		Find(&usersWithFees).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 计算符合条件的总记录数
+	var total int64
+	err = r.DB.
+		Table("tb_user").
+		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
+		Where("tb_user.is_active = ?", true).
+		Count(&total).Error
+
+	return usersWithFees, uint(total), nil
+}
+
+//func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint) (dto.UserWithFee, error) {
+//	var usersWithFees []dto.UserWithFee
+//	var total int64
+//
+//	// 计算符合条件的总记录数
+//	err := r.DB.
+//		Table("tb_user").
+//		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
+//		Where("tb_user.is_active = ?", true).
+//		Count(&total).Error
+//	if err != nil {
+//		return dto.UserWithFee{}, err
+//	}
+//
+//	// 分页查询数据
+//	err = r.DB.
+//		Table("tb_user").
+//		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount").
+//		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
+//		Where("tb_user.is_active = ?", true).
+//		Offset(int(pageNum - 1) * int(pageSize)).
+//		Limit(int(pageSize)).
+//		Find(&usersWithFees).Error
+//	if err != nil {
+//		return dto.UserWithFee{}, err
+//	}
+//
+//	return dto.PaginatedUsersWithFees{Users: usersWithFees, Total: total}, nil
+//}

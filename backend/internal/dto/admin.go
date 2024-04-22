@@ -66,7 +66,7 @@ type GetAdminUserResponse struct {
 
 type LoginLogListRequest struct {
 	Pagination
-	Status string `json:"status" form:"status"`
+	Status string `json:"status" form:"status" validate:"required"`
 }
 
 type GetLoginLogListResponse struct {

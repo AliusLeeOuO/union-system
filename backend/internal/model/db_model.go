@@ -96,6 +96,12 @@ type User struct {
 	RegistrationDate time.Time `gorm:"column:registration_date"`
 	UserTypeID       uint      `gorm:"column:user_type_id"`
 	IsActive         bool      `gorm:"column:is_active"`
+	FeeStandard      int       `gorm:"column:fee_standard"`
+}
+
+type FeeStandardNew struct {
+	StandardId     uint   `gorm:"primary_key;column:standard_id"`
+	StandardAmount string `gorm:"column:standard_amount"`
 }
 
 // MemberFeeInfo tb_member_fee_info

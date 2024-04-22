@@ -17,12 +17,12 @@ func NewFeeService(repo *repository.FeeRepository) *FeeService {
 	return &FeeService{Repo: repo}
 }
 
-// GetFeeStandardByCategory 根据会员类别获取会费标准
+// Deprecated: 请使用新方法
 func (s *FeeService) GetFeeStandardByCategory(categoryID uint) (model.FeeStandard, error) {
 	return s.Repo.GetFeeStandardByCategory(categoryID)
 }
 
-// GetWaitingFeeBillsByUserID 返回用户待缴费账单
+// Deprecated: 请使用新方法
 func (s *FeeService) GetWaitingFeeBillsByUserID(userID int) ([]dto.FeeBillResponse, error) {
 	bills, err := s.Repo.GetWaitingFeeBillsByUserID(userID)
 	if err != nil {
@@ -44,6 +44,7 @@ func (s *FeeService) GetWaitingFeeBillsByUserID(userID int) ([]dto.FeeBillRespon
 	return responses, nil
 }
 
+// Deprecated: 请使用新方法
 func (s *FeeService) GenerateMonthlyFeeBills(billingPeriod string) error {
 	// 获取所有激活了会费的会员
 	memberDetails, err := s.Repo.GetActiveFeeMembers()
@@ -84,7 +85,7 @@ func (s *FeeService) GenerateMonthlyFeeBills(billingPeriod string) error {
 	return nil
 }
 
-// GetFeeHistory 获取用户的会费历史记录
+// Deprecated: 请使用新方法
 func (s *FeeService) GetFeeHistory(userID uint, pageSize, pageNum uint) (dto.FeeHistoryResponse, error) {
 	bills, total, err := s.Repo.GetFeeHistoryByUserID(userID, int(pageSize), int(pageNum))
 	if err != nil {
@@ -111,7 +112,7 @@ func (s *FeeService) GetFeeHistory(userID uint, pageSize, pageNum uint) (dto.Fee
 	return responses, nil
 }
 
-// PayFee 处理会费支付
+// Deprecated: 请使用新方法
 func (s *FeeService) PayFee(billID uint) error {
 	// 首先检查账单是否已支付
 	paid, err := s.Repo.CheckFeePaid(billID)
@@ -123,4 +124,13 @@ func (s *FeeService) PayFee(billID uint) error {
 	}
 	// 标记账单为已支付
 	return s.Repo.MarkFeeAsPaid(billID)
+}
+
+func (s *FeeService) GetRegisteredFeeList(pageSize, pageNum uint) ([]dto.UserWithFee, uint, error) {
+	offset := (pageNum - 1) * pageSize
+	usersWithFees, total, err := s.Repo.GetRegisteredUsersWithFeeStandard(pageSize, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	return usersWithFees, total, nil
 }

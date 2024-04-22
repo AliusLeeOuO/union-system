@@ -1,33 +1,20 @@
 package admin_management
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/internal/service"
-	"union-system/utils/check_fields"
 )
 
 func GetAdminLogList(c *fiber.Ctx) error {
+	var validate = validator.New()
 	var req dto.LoginLogListRequest
-	if err := c.BodyParser(&req); err != nil {
-		// 解析错误处理
-		// 使用 BaseResponse 发送错误响应
+	if err := c.BodyParser(&req); err != nil || validate.Struct(req) != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
-	}
-
-	// 验证字段
-	fieldsToCheck := map[string]interface{}{
-		"page_size": req.PageSize,
-		"page_num":  req.PageNum,
-		"status":    req.Status,
-	}
-	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
-	if !ok {
-		errorMessage := "缺少必要字段: " + missingField
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
 	if req.Status != "all" && req.Status != "true" && req.Status != "false" {

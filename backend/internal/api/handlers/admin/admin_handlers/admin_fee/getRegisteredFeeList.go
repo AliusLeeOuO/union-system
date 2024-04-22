@@ -1,4 +1,4 @@
-package admin_management
+package admin_fee
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -10,26 +10,32 @@ import (
 	"union-system/internal/service"
 )
 
-func GetLogMember(c *fiber.Ctx) error {
-	// 获取表单数据
+type Pagination struct {
+	PageSize uint `form:"page_size" validate:"required"`
+	PageNum  uint `form:"page_num" validate:"required"`
+}
+
+func GetRegisteredFeeList(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var form dto.Pagination
+	var form Pagination
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 
-	adminService := service.NewAdminService(repository.NewAdminRepository(global.Database))
-	logs, total, err := adminService.GetLogMembersByPage(form.PageSize, form.PageNum)
+	feeService := service.NewFeeService(repository.NewFeeRepository(global.Database))
+	feeList, total, err := feeService.GetRegisteredFeeList(form.PageSize, form.PageNum)
 	if err != nil {
-		return model.SendFailureResponse(c, model.SystemErrorCode)
+		return model.SendFailureResponse(c, model.InternalServerErrorCode, err.Error())
 	}
-	var res = dto.GetMemberLogListResponse{
+
+	res := &dto.UserWithFeeResponse{
 		PageResponse: dto.PageResponse{
+			Total:    total,
 			PageSize: form.PageSize,
 			PageNum:  form.PageNum,
-			Total:    total,
 		},
-		Data: logs,
+		Users: feeList,
 	}
+
 	return model.SendSuccessResponse(c, res)
 }

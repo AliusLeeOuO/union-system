@@ -24,13 +24,13 @@ axiosInstance.interceptors.request.use(
   }
 )
 
-// 拦截响应，在http code = 400时如果token无效（code=1000）则跳转到登录页
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     // 正常响应处理
     return response
   },
   (error: AxiosError) => {
+    // 在http code = 400时如果token无效（code=1000）则跳转到登录页
     const userStore = useUserStore()
     // 使用类型断言来指定error.response.data的类型
     const responseData = error.response?.data as ApiResponse<any>

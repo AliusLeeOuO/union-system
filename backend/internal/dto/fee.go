@@ -1,9 +1,12 @@
 package dto
 
+import "time"
+
 type FeeStandardResponse struct {
-	StandardID uint    `json:"standard_id"`
-	Amount     float64 `json:"amount"`
-	CategoryID uint    `json:"category_id"`
+	SetStandard bool    `json:"set_standard"`
+	StandardID  uint    `json:"standard_id"`
+	Amount      float64 `json:"amount"`
+	CategoryID  uint    `json:"category_id"`
 }
 
 // FeeBillResponse 用于返回给用户的等待缴费账单信息
@@ -33,4 +36,18 @@ type PayForFeeRequest struct {
 // WaitingFeeResponse 用于返回给用户的等待缴费账单信息
 type WaitingFeeResponse struct {
 	Bills []FeeBillResponse `json:"bills"`
+}
+
+type UserWithFee struct {
+	UserID           uint      `json:"user_id"`
+	Username         string    `json:"username"`
+	Email            string    `json:"email"`
+	PhoneNumber      string    `json:"phone_number"`
+	RegistrationDate time.Time `json:"registration_date"`
+	FeeAmount        string    `json:"fee_amount"` // 从 FeeStandardNew 表获取
+}
+
+type UserWithFeeResponse struct {
+	PageResponse
+	Users []UserWithFee `json:"users"`
 }

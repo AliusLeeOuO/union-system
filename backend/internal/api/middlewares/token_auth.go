@@ -10,7 +10,6 @@ import (
 )
 
 func TokenAuth(c *fiber.Ctx) error {
-	fmt.Println(c.Method())
 	// 从请求中获取 Token
 	authorizationString := c.Get("Authorization")
 

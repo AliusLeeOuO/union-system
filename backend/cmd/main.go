@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"runtime"
-	"union-system/config"
-	"union-system/cron"
-	"union-system/internal/pkg/database"
-	"union-system/internal/pkg/fiber"
-	"union-system/internal/pkg/logger"
-	"union-system/internal/pkg/redis"
+	"union-system/internal/cron"
+	"union-system/internal/infrastructure/config"
+	"union-system/internal/infrastructure/database"
+	"union-system/internal/infrastructure/redis"
+	"union-system/pkg/fiber"
+	"union-system/pkg/logger"
 )
 
 func main() {

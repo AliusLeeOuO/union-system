@@ -1,8 +1,8 @@
 <template>
   <div class="action-zone">
-    <!--    <a-form :model="searchForm" layout="inline">
+    <!--    <a-form :models="searchForm" layout="inline">
           <a-form-item label="状态">
-            <a-select :style="{width:'180px'}" v-model="searchForm.status">
+            <a-select :style="{width:'180px'}" v-models="searchForm.status">
               <a-option value="all">所有</a-option>
               <a-option value="true">成功</a-option>
               <a-option value="false">失败</a-option>

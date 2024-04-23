@@ -5,8 +5,7 @@
 .vscode
 
 # Local config files
-config.yaml
-config/config.yaml
+internal/infrastructure/config/config.yaml
 
 # Upload files
 upload/*

@@ -1,0 +1,41 @@
+package member_assistance
+
+import (
+	"fmt"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"union-system/global"
+	"union-system/internal/application/dto"
+	service2 "union-system/internal/application/service"
+	repository2 "union-system/internal/infrastructure/repository"
+	"union-system/internal/interfaces/models"
+	"union-system/utils/log_model_enum"
+)
+
+// NewAssistance 创建新的求助请求
+func NewAssistance(c *fiber.Ctx) error {
+	var validate = validator.New()
+	var form dto.NewAssistanceRequest
+	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
+		return models.SendFailureResponse(c, models.QueryParamErrorCode)
+	}
+
+	// 从 JWT 中获取 MemberID
+	memberID := c.Locals("userID").(uint)
+
+	assistanceService := service2.NewAssistanceService(repository2.NewAssistanceRepository(global.Database))
+
+	id, err := assistanceService.CreateNewAssistance(memberID, form)
+	if err != nil {
+		return models.SendFailureResponse(c, models.OperationFailedErrorCode, err.Error())
+	}
+
+	// 记录日志
+	logService := service2.NewLogService(repository2.NewLogRepository(global.Database))
+	logString := fmt.Sprintf("创建了新的求助请求 %d", id)
+	_ = logService.AddMemberLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.ASSISTANCE)
+
+	return models.SendSuccessResponse(c, fiber.Map{
+		"request_id": id,
+	})
+}

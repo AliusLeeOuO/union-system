@@ -3,7 +3,7 @@ package captcha
 import (
 	"github.com/mojocn/base64Captcha" // 导入 base64Captcha 包，用于生成和验证 base64 编码的图像验证码。
 	"strings"
-	"union-system/internal/dto" // 导入内部 dto 包，可能用于定义数据传输对象。
+	"union-system/internal/application/dto"
 )
 
 // store 是用于存储验证码信息的内存存储对象。

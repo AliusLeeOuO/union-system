@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -12,7 +12,7 @@ import (
 
 func GetActivitiesHandler(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var form dto2.ActivityListRequest
+	var form dto.ActivityListRequest
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -23,9 +23,9 @@ func GetActivitiesHandler(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode, err.Error())
 	}
 
-	return models.SendSuccessResponse(c, dto2.UserGetActivityListResponse{
+	return models.SendSuccessResponse(c, dto.UserGetActivityListResponse{
 		Data: activities,
-		PageResponse: dto2.PageResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: form.PageSize,
 			PageNum:  form.PageNum,
 			Total:    total,

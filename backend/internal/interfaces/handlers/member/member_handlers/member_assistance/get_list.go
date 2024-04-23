@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -12,7 +12,7 @@ import (
 
 func GetMyAssistances(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var form dto2.ActivityListRequest
+	var form dto.ActivityListRequest
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -29,19 +29,19 @@ func GetMyAssistances(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode, "无法获取工单状态")
 	}
 	// 整理成dto
-	assistanceStatusDTO := make([]dto2.AssistanceStatusDTO, 0)
+	assistanceStatusDTO := make([]dto.AssistanceStatusDTO, 0)
 	for _, status := range assistanceStatus {
-		assistanceStatusDTO = append(assistanceStatusDTO, dto2.AssistanceStatusDTO{
+		assistanceStatusDTO = append(assistanceStatusDTO, dto.AssistanceStatusDTO{
 			StatusID:   status.ID,
 			StatusName: status.Name,
 		})
 	}
 
-	return models.SendSuccessResponse(c, dto2.MyAssistancesListResponse{
+	return models.SendSuccessResponse(c, dto.MyAssistancesListResponse{
 		Assistances:        assistances,
 		AssistanceStatus:   assistanceStatusDTO,
 		ResolvedCount:      resolvedCount,
 		PendingReviewCount: pendingReviewCount,
-		PageResponse:       dto2.PageResponse{PageSize: form.PageSize, PageNum: form.PageNum, Total: total},
+		PageResponse:       dto.PageResponse{PageSize: form.PageSize, PageNum: form.PageNum, Total: total},
 	})
 }

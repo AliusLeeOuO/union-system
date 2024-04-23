@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"time"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/domain"
 	"union-system/internal/infrastructure/repository"
 )
@@ -21,7 +21,7 @@ func NewAssistanceService(repo *repository.AssistanceRepository) *AssistanceServ
 }
 
 // GetAssistanceList 用于获取工单列表
-func (s *AssistanceService) GetAssistanceList(form dto2.GetAssistanceListRequest) (dto2.GetAssistanceListResponse, error) {
+func (s *AssistanceService) GetAssistanceList(form dto.GetAssistanceListRequest) (dto.GetAssistanceListResponse, error) {
 	return s.Repo.GetAssistanceList(form)
 }
 
@@ -49,7 +49,7 @@ func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, respons
 }
 
 // CreateNewAssistance 用户创建新的工单
-func (s *AssistanceService) CreateNewAssistance(memberID uint, request dto2.NewAssistanceRequest) (uint, error) {
+func (s *AssistanceService) CreateNewAssistance(memberID uint, request dto.NewAssistanceRequest) (uint, error) {
 	newAssistance := domain.AssistanceRequest{
 		MemberID:    memberID,
 		TypeID:      request.TypeID,
@@ -64,19 +64,19 @@ func (s *AssistanceService) CreateNewAssistance(memberID uint, request dto2.NewA
 }
 
 // UserReplyAssistance 用户回复工单
-func (s *AssistanceService) UserReplyAssistance(request dto2.UserReplyAssistanceRequest, userID uint) error {
+func (s *AssistanceService) UserReplyAssistance(request dto.UserReplyAssistanceRequest, userID uint) error {
 	return s.Repo.ReplyToAssistance(request.RequestID, userID, request.ResponseText)
 }
 
 // CloseAssistance 关闭工单
-func (s *AssistanceService) CloseAssistance(request dto2.CloseAssistanceRequest, userID uint) error {
+func (s *AssistanceService) CloseAssistance(request dto.CloseAssistanceRequest, userID uint) error {
 	return s.Repo.CloseAssistanceRequest(request.RequestID, userID)
 }
 
 // GetAssistanceType 获取工单类型
-func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto2.GetAssistanceTypeRequest, error) {
+func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto.GetAssistanceTypeRequest, error) {
 	const cacheKey = "assistanceTypes"
-	var response []dto2.GetAssistanceTypeRequest
+	var response []dto.GetAssistanceTypeRequest
 
 	// 尝试从Redis缓存中获取数据
 	cachedData, err := global.RedisClient.Get(c.Context(), cacheKey).Result()
@@ -89,7 +89,7 @@ func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto2.GetAssistanc
 
 		// 将数据库查询结果转换为响应数据
 		for _, assistanceType := range assistanceTypes {
-			response = append(response, dto2.GetAssistanceTypeRequest{
+			response = append(response, dto.GetAssistanceTypeRequest{
 				AssistanceTypeId: assistanceType.AssistanceTypeID,
 				TypeName:         assistanceType.TypeName,
 			})
@@ -109,7 +109,7 @@ func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto2.GetAssistanc
 	return response, nil
 }
 
-func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]dto2.MyAssistanceResponse, uint, uint, uint, error) {
+func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]dto.MyAssistanceResponse, uint, uint, uint, error) {
 	assistances, total, err := s.Repo.GetMyAssistances(memberID, pageSize, pageNum)
 	if err != nil {
 		return nil, 0, 0, 0, err
@@ -125,9 +125,9 @@ func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageN
 		return nil, 0, 0, 0, err
 	}
 
-	var responses []dto2.MyAssistanceResponse
+	var responses []dto.MyAssistanceResponse
 	for _, a := range assistances {
-		responses = append(responses, dto2.MyAssistanceResponse{
+		responses = append(responses, dto.MyAssistanceResponse{
 			AssistanceID:     a.RequestID,
 			Description:      a.Description,
 			RequestDate:      a.CreatedAt.Format(time.RFC3339),
@@ -141,12 +141,12 @@ func (s *AssistanceService) GetMyAssistances(memberID uint, pageSize uint, pageN
 }
 
 // GetAssistanceStatus 获取工单状态
-func (s *AssistanceService) GetAssistanceStatus(c *fiber.Ctx) ([]dto2.AssistanceStatusResponse, error) {
+func (s *AssistanceService) GetAssistanceStatus(c *fiber.Ctx) ([]dto.AssistanceStatusResponse, error) {
 	const assistanceStatusCacheKey = "assistanceStatuses"
 	// 尝试从 Redis 缓存中读取
 	cachedStatuses, err := global.RedisClient.Get(c.Context(), assistanceStatusCacheKey).Result()
 	if err == nil && cachedStatuses != "" {
-		var cachedResponse []dto2.AssistanceStatusResponse
+		var cachedResponse []dto.AssistanceStatusResponse
 		if err := json.Unmarshal([]byte(cachedStatuses), &cachedResponse); err == nil {
 			return cachedResponse, nil // 返回缓存的数据
 		}
@@ -156,9 +156,9 @@ func (s *AssistanceService) GetAssistanceStatus(c *fiber.Ctx) ([]dto2.Assistance
 	if err != nil {
 		return nil, err
 	}
-	var response []dto2.AssistanceStatusResponse
+	var response []dto.AssistanceStatusResponse
 	for _, status := range statuses {
-		response = append(response, dto2.AssistanceStatusResponse{
+		response = append(response, dto.AssistanceStatusResponse{
 			ID:   status.StatusID,
 			Name: status.StatusName,
 		})

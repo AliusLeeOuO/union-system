@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	"union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -13,7 +13,7 @@ import (
 func GetAssistanceList(c *fiber.Ctx) error {
 	// 获取表单数据
 	var validate = validator.New()
-	var form dto2.GetAssistanceListRequest
+	var form dto.GetAssistanceListRequest
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -33,9 +33,9 @@ func GetAssistanceList(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode, "无法获取工单状态")
 	}
 	// 整理成dto
-	assistanceStatusDTO := make([]dto2.AssistanceStatusDTO, 0)
+	assistanceStatusDTO := make([]dto.AssistanceStatusDTO, 0)
 	for _, status := range assistanceStatus {
-		assistanceStatusDTO = append(assistanceStatusDTO, dto2.AssistanceStatusDTO{
+		assistanceStatusDTO = append(assistanceStatusDTO, dto.AssistanceStatusDTO{
 			StatusID:   status.ID,
 			StatusName: status.Name,
 		})

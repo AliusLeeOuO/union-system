@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/infrastructure/repository"
 	"union-system/utils/password_crypt"
 )
@@ -19,7 +19,7 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 	return &AdminService{Repo: repo}
 }
 
-func (s *AdminService) UpdateUser(userID uint, req dto2.UpdateUserRequest) error {
+func (s *AdminService) UpdateUser(userID uint, req dto.UpdateUserRequest) error {
 	// 准备更新数据
 	updateData := map[string]interface{}{
 		"username":     req.Username,
@@ -42,11 +42,11 @@ func (s *AdminService) UpdateUser(userID uint, req dto2.UpdateUserRequest) error
 }
 
 // GetLogLoginsByPage 获取登录日志的分页数据
-func (s *AdminService) GetLogLoginsByPage(pageSize, pageNum uint, status string) ([]dto2.GetLoginLogResponse, uint, error) {
+func (s *AdminService) GetLogLoginsByPage(pageSize, pageNum uint, status string) ([]dto.GetLoginLogResponse, uint, error) {
 	logs, total, err := s.Repo.FindLogLoginsByPage(pageSize, pageNum, status)
-	var logResponses []dto2.GetLoginLogResponse
+	var logResponses []dto.GetLoginLogResponse
 	for _, log := range logs {
-		logResponses = append(logResponses, dto2.GetLoginLogResponse{
+		logResponses = append(logResponses, dto.GetLoginLogResponse{
 			LogId:     log.LogID,
 			UA:        log.UA,
 			IP:        log.IP,
@@ -59,7 +59,7 @@ func (s *AdminService) GetLogLoginsByPage(pageSize, pageNum uint, status string)
 }
 
 // GetCPUInfo 从Redis获取CPU信息
-func (s *AdminService) GetCPUInfo() (*dto2.CPUInfo, error) {
+func (s *AdminService) GetCPUInfo() (*dto.CPUInfo, error) {
 	ctx := context.Background()
 	result, err := global.RedisClient.HGetAll(ctx, "cpu_info").Result()
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *AdminService) GetCPUInfo() (*dto2.CPUInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse idle: %v", err)
 	}
-	cpuInfo := &dto2.CPUInfo{
+	cpuInfo := &dto.CPUInfo{
 		Model:  result["models"],
 		Cores:  uint(cores),
 		Trends: uint(trends),
@@ -100,7 +100,7 @@ func (s *AdminService) GetCPUInfo() (*dto2.CPUInfo, error) {
 }
 
 // GetMemoryInfo 从Redis获取内存信息
-func (s *AdminService) GetMemoryInfo() (*dto2.MemoryInfo, error) {
+func (s *AdminService) GetMemoryInfo() (*dto.MemoryInfo, error) {
 	ctx := context.Background()
 	result, err := global.RedisClient.HGetAll(ctx, "memory_info").Result()
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *AdminService) GetMemoryInfo() (*dto2.MemoryInfo, error) {
 	}
 
 	// 直接将结果映射到MemoryInfo结构体
-	memoryInfo := &dto2.MemoryInfo{
+	memoryInfo := &dto.MemoryInfo{
 		Total: uint(total),
 		Used:  uint(used),
 		Free:  uint(free),
@@ -136,11 +136,11 @@ func (s *AdminService) GetMemoryInfo() (*dto2.MemoryInfo, error) {
 }
 
 // GetLogAdminsByPage 获取管理员操作日志的分页数据
-func (s *AdminService) GetLogAdminsByPage(pageSize, pageNum uint) ([]dto2.GetAdminLogResponse, uint, error) {
+func (s *AdminService) GetLogAdminsByPage(pageSize, pageNum uint) ([]dto.GetAdminLogResponse, uint, error) {
 	logs, total, err := s.Repo.GetLogAdminsByPage(pageSize, pageNum)
-	var logResponses []dto2.GetAdminLogResponse
+	var logResponses []dto.GetAdminLogResponse
 	for _, log := range logs {
-		logResponses = append(logResponses, dto2.GetAdminLogResponse{
+		logResponses = append(logResponses, dto.GetAdminLogResponse{
 			LogId: log.LogID,
 			User: struct {
 				ID       uint   `json:"id"`
@@ -163,11 +163,11 @@ func (s *AdminService) GetLogAdminsByPage(pageSize, pageNum uint) ([]dto2.GetAdm
 }
 
 // GetLogMembersByPage 获取会员操作日志的分页数据
-func (s *AdminService) GetLogMembersByPage(pageSize, pageNum uint) ([]dto2.GetMemberLogResponse, uint, error) {
+func (s *AdminService) GetLogMembersByPage(pageSize, pageNum uint) ([]dto.GetMemberLogResponse, uint, error) {
 	logs, total, err := s.Repo.GetLogMembersByPage(pageSize, pageNum)
-	var logResponses []dto2.GetMemberLogResponse
+	var logResponses []dto.GetMemberLogResponse
 	for _, log := range logs {
-		logResponses = append(logResponses, dto2.GetMemberLogResponse{
+		logResponses = append(logResponses, dto.GetMemberLogResponse{
 			LogId: log.LogID,
 			User: struct {
 				ID       uint   `json:"id"`

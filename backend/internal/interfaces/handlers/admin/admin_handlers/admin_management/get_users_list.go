@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -13,7 +13,7 @@ import (
 
 func GetUserList(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var request dto2.GetUserListRequest
+	var request dto.GetUserListRequest
 	if err := c.BodyParser(&request); err != nil || validate.Struct(request) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -24,9 +24,9 @@ func GetUserList(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode)
 	}
 
-	var adminUsersResponse []dto2.GetAdminUserResponse
+	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
-		adminUsersResponse = append(adminUsersResponse, dto2.GetAdminUserResponse{
+		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
 			ID:         user.UserID,
 			Username:   user.Username,
 			Role:       user.UserTypeID,
@@ -35,9 +35,9 @@ func GetUserList(c *fiber.Ctx) error {
 		})
 	}
 
-	return models.SendSuccessResponse(c, dto2.GetAdminUserListResponse{
+	return models.SendSuccessResponse(c, dto.GetAdminUserListResponse{
 		Data: adminUsersResponse,
-		PageResponse: dto2.PageResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: request.PageSize,
 			PageNum:  request.PageNum,
 			Total:    uint(total),

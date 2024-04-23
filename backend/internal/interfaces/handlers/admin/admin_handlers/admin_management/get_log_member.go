@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -13,7 +13,7 @@ import (
 func GetLogMember(c *fiber.Ctx) error {
 	// 获取表单数据
 	var validate = validator.New()
-	var form dto2.Pagination
+	var form dto.Pagination
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -23,8 +23,8 @@ func GetLogMember(c *fiber.Ctx) error {
 	if err != nil {
 		return models.SendFailureResponse(c, models.SystemErrorCode)
 	}
-	var res = dto2.GetMemberLogListResponse{
-		PageResponse: dto2.PageResponse{
+	var res = dto.GetMemberLogListResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: form.PageSize,
 			PageNum:  form.PageNum,
 			Total:    total,

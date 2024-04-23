@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -13,7 +13,7 @@ import (
 func GetInvitationCodesHandler(c *fiber.Ctx) error {
 	// 获取表单数据
 	var validate = validator.New()
-	var form dto2.Pagination
+	var form dto.Pagination
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -25,8 +25,8 @@ func GetInvitationCodesHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	response := dto2.InvitationCodeListResponse{
-		PageResponse: dto2.PageResponse{
+	response := dto.InvitationCodeListResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: form.PageSize,
 			PageNum:  form.PageNum,
 			Total:    total,

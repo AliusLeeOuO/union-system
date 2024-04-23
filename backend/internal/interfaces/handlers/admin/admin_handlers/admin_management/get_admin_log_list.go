@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	"union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -12,7 +12,7 @@ import (
 
 func GetAdminLogList(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var req dto2.LoginLogListRequest
+	var req dto.LoginLogListRequest
 	if err := c.BodyParser(&req); err != nil || validate.Struct(req) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -30,8 +30,8 @@ func GetAdminLogList(c *fiber.Ctx) error {
 	}
 
 	// 返回分页响应
-	return models.SendSuccessResponse(c, dto2.GetLoginLogListResponse{
-		PageResponse: dto2.PageResponse{
+	return models.SendSuccessResponse(c, dto.GetLoginLogListResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: req.PageSize,
 			PageNum:  req.PageNum,
 			Total:    total,

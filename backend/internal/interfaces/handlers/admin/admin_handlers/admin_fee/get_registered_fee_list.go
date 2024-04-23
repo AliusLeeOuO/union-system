@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
@@ -28,8 +28,8 @@ func GetRegisteredFeeList(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode, err.Error())
 	}
 
-	res := &dto2.UserWithFeeResponse{
-		PageResponse: dto2.PageResponse{
+	res := &dto.UserWithFeeResponse{
+		PageResponse: dto.PageResponse{
 			Total:    total,
 			PageSize: form.PageSize,
 			PageNum:  form.PageNum,

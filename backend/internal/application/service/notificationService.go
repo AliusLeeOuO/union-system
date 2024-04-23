@@ -1,7 +1,7 @@
 package service
 
 import (
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/infrastructure/repository"
 )
 
@@ -13,15 +13,15 @@ func NewNotificationService(repo *repository.NotificationRepository) *Notificati
 	return &NotificationService{Repo: repo}
 }
 
-func (service *NotificationService) GetNotificationsByRecipientID(recipientID uint, pageSize uint, pageNum uint) (dto2.NotificationPageResponse, error) {
+func (service *NotificationService) GetNotificationsByRecipientID(recipientID uint, pageSize uint, pageNum uint) (dto.NotificationPageResponse, error) {
 	notificationsWithStatus, total, err := service.Repo.FindNotificationsByRecipientID(recipientID, pageSize, pageNum)
 	if err != nil {
-		return dto2.NotificationPageResponse{}, err
+		return dto.NotificationPageResponse{}, err
 	}
 
-	var dtos []dto2.NotificationInstance
+	var dtos []dto.NotificationInstance
 	for _, n := range notificationsWithStatus {
-		buffer := dto2.NotificationInstance{
+		buffer := dto.NotificationInstance{
 			NotificationID: n.NotificationID,
 			Title:          n.Title,
 			Content:        n.Content,
@@ -33,8 +33,8 @@ func (service *NotificationService) GetNotificationsByRecipientID(recipientID ui
 		dtos = append(dtos, buffer)
 	}
 
-	return dto2.NotificationPageResponse{
-		PageResponse: dto2.PageResponse{
+	return dto.NotificationPageResponse{
+		PageResponse: dto.PageResponse{
 			PageSize: pageSize,
 			PageNum:  pageNum,
 			Total:    total,

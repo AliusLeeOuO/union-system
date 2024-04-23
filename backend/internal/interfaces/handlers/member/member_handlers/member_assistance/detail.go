@@ -4,14 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/global"
-	dto2 "union-system/internal/application/dto"
+	dto "union-system/internal/application/dto"
 	"union-system/internal/application/service"
 	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
 )
 
 func ViewAssistance(c *fiber.Ctx) error {
-	var form dto2.ViewAssistanceRequest
+	var form dto.ViewAssistanceRequest
 	if err := c.BodyParser(&form); err != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -21,27 +21,27 @@ func ViewAssistance(c *fiber.Ctx) error {
 	if err != nil {
 		return models.SendFailureResponse(c, models.NotFoundErrorCode)
 	}
-	response := dto2.ViewAssistanceResponse{
+	response := dto.ViewAssistanceResponse{
 		ID:             assistance.RequestID,
 		AssistanceType: assistance.AssistanceType.TypeName,
 		Title:          assistance.Title,
 		Description:    assistance.Description,
 		CreatedAt:      assistance.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:      assistance.UpdatedAt.Format(time.RFC3339),
-		Status: dto2.AssistanceStatusResponse{
+		Status: dto.AssistanceStatusResponse{
 			ID:   assistance.AssistanceStatus.StatusID,
 			Name: assistance.AssistanceStatus.StatusName,
 		},
-		Type: dto2.GetAssistanceTypeRequest{
+		Type: dto.GetAssistanceTypeRequest{
 			AssistanceTypeId: assistance.AssistanceType.AssistanceTypeID,
 			TypeName:         assistance.AssistanceType.TypeName,
 		},
-		Responses: []dto2.AssistanceResponse{}, // 初始化 Responses 列表
+		Responses: []dto.AssistanceResponse{}, // 初始化 Responses 列表
 	}
 
 	// 填充 Responses 列表
 	for _, resp := range responses {
-		response.Responses = append(response.Responses, dto2.AssistanceResponse{
+		response.Responses = append(response.Responses, dto.AssistanceResponse{
 			ResponseID:   resp.ResponseID,
 			ResponderID:  resp.ResponderID,
 			ResponseText: resp.ResponseText,

@@ -3,6 +3,7 @@ package repository
 import (
 	"gorm.io/gorm"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type LogRepository struct {
@@ -14,14 +15,13 @@ func NewLogRepository(db *gorm.DB) *LogRepository {
 }
 
 // InsertAdminLog 插入新的管理员操作日志
-func (r *LogRepository) InsertAdminLog(log *model.LogAdmin) error {
+func (r *LogRepository) InsertAdminLog(log *domain.LogAdmin) error {
 	return r.DB.Omit("action_time").Create(log).Error
 }
 
 // InsertMemberLog 插入新的会员操作日志
-func (r *LogRepository) InsertMemberLog(log *model.LogMember) error {
+func (r *LogRepository) InsertMemberLog(log *domain.LogMember) error {
 	return r.DB.Omit("action_time").Create(log).Error
-
 }
 
 // AddLoginLog 添加新的登录日志

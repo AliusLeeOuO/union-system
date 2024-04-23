@@ -2,43 +2,18 @@ package model
 
 import (
 	"time"
+	"union-system/internal/model/domain"
 )
-
-// Activity tb_activity
-type Activity struct {
-	ActivityID       uint      `gorm:"primary_key;column:activity_id"`
-	ActivityName     string    `gorm:"column:activity_name"`
-	Description      string    `gorm:"column:description"`
-	StartTime        time.Time `gorm:"column:start_time"`
-	EndTime          time.Time `gorm:"column:end_time"`
-	Location         string    `gorm:"column:location"`
-	ParticipantLimit uint      `gorm:"column:participant_limit"`
-	ActivityTypeID   uint      `gorm:"column:activity_type_id"`
-	CreatorID        uint      `gorm:"column:creator_id"`
-	IsActive         bool      `gorm:"column:is_active"`
-	Removed          bool      `gorm:"column:removed"`
-}
-
-// ActivityType tb_activity_type
-type ActivityType struct {
-	ActivityTypeID uint   `gorm:"primary_key;column:activity_type_id"`
-	TypeName       string `gorm:"column:type_name"`
-}
-
-// AssistanceType tb_assistance_type
-type AssistanceType struct {
-	AssistanceTypeID uint   `gorm:"primary_key;column:assistance_type_id"`
-	TypeName         string `gorm:"column:type_name"`
-}
 
 // Fee tb_fee
 type Fee struct {
-	FeeID         uint          `gorm:"primary_key;column:fee_id"`
-	UserID        int           `gorm:"column:user_id"`
-	Amount        float64       `gorm:"column:amount"`
-	PaymentDate   time.Time     `gorm:"column:payment_date"`
-	PeriodID      int           `gorm:"column:period_id"`
-	PaymentMethod PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
+	FeeID       uint      `gorm:"primary_key;column:fee_id"`
+	UserID      int       `gorm:"column:user_id"`
+	Amount      float64   `gorm:"column:amount"`
+	PaymentDate time.Time `gorm:"column:payment_date"`
+	PeriodID    int       `gorm:"column:period_id"`
+	// 辅助字段
+	PaymentMethod domain.PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
 }
 
 // FeePeriod tb_fee_period
@@ -58,12 +33,6 @@ type FeeStandard struct {
 type MemberCategory struct {
 	CategoryID uint   `gorm:"primaryKey;column:category_id;autoIncrement"`
 	Name       string `gorm:"column:name;size:255;not null"`
-}
-
-// PaymentMethod tb_payment_method
-type PaymentMethod struct {
-	MethodID uint   `gorm:"primaryKey;column:method_id;autoIncrement"`
-	Name     string `gorm:"column:name;size:255;not null"`
 }
 
 // FeeBill tb_fee_bill
@@ -86,37 +55,12 @@ type MemberInfo struct {
 	JoinDate time.Time `gorm:"column:join_date"`
 }
 
-// User tb_user
-type User struct {
-	UserID           uint      `gorm:"primary_key;column:user_id"`
-	Username         string    `gorm:"column:username"`
-	Password         string    `gorm:"column:password"`
-	Email            string    `gorm:"column:email"`
-	PhoneNumber      string    `gorm:"column:phone_number"`
-	RegistrationDate time.Time `gorm:"column:registration_date"`
-	UserTypeID       uint      `gorm:"column:user_type_id"`
-	IsActive         bool      `gorm:"column:is_active"`
-	FeeStandard      int       `gorm:"column:fee_standard"`
-}
-
-type FeeStandardNew struct {
-	StandardId     uint   `gorm:"primary_key;column:standard_id"`
-	StandardAmount string `gorm:"column:standard_amount"`
-}
-
 // MemberFeeInfo tb_member_fee_info
 type MemberFeeInfo struct {
 	InfoID        uint   `gorm:"primaryKey;column:info_id"`
 	UserID        uint   `gorm:"column:user_id"`
 	IsFeeActive   bool   `gorm:"column:is_fee_active"`
 	FeeStartMonth string `gorm:"column:fee_start_month"`
-}
-
-// MemberDetails 对应于 tb_member_details
-type MemberDetails struct {
-	UserID        uint      `gorm:"primaryKey;column:user_id"`
-	IsFeeActive   bool      `gorm:"column:is_fee_active;default:false"`
-	FeeStartMonth time.Time `gorm:"column:fee_start_month"`
 }
 
 // UserActivity tb_user_activity
@@ -148,9 +92,9 @@ type AssistanceRequest struct {
 	CreatedAt   time.Time `gorm:"column:created_at"`
 	UpdatedAt   time.Time `gorm:"column:updated_at"`
 	// 辅助字段
-	AssistanceStatus AssistanceStatus `gorm:"foreignKey:status_id"`
-	AssistanceType   AssistanceType   `gorm:"foreignKey:type_id"`
-	User             User             `gorm:"foreignKey:MemberID;references:UserID"`
+	AssistanceStatus AssistanceStatus      `gorm:"foreignKey:status_id"`
+	AssistanceType   domain.AssistanceType `gorm:"foreignKey:type_id"`
+	User             domain.User           `gorm:"foreignKey:MemberID;references:UserID"`
 }
 
 // AssistanceResponse 对应于 tb_assistance_response
@@ -161,7 +105,7 @@ type AssistanceResponse struct {
 	ResponseText string    `gorm:"column:response_text"`
 	CreatedAt    time.Time `gorm:"column:created_at"`
 	// 添加User字段以关联User模型
-	User User `gorm:"foreignKey:ResponderID;references:UserID"`
+	User domain.User `gorm:"foreignKey:ResponderID;references:UserID"`
 }
 
 // AssistanceFeedback 对应于 tb_assistance_feedback
@@ -215,24 +159,4 @@ type InvitationCodes struct {
 type LogModules struct {
 	ModuleID   uint   `gorm:"primary_key;autoIncrement;column:module_id"`
 	ModuleName string `gorm:"type:varchar(255);not null;unique;column:module_name"`
-}
-
-// LogAdmin 对应于数据库中的 tb_log_admin 表
-type LogAdmin struct {
-	LogID        uint      `gorm:"primary_key;autoIncrement;column:log_id"`
-	UserId       uint      `gorm:"not null;column:user_id"`
-	ModuleID     uint      `gorm:"not null;column:module_id"`
-	IP           string    `gorm:"type:varchar(39);not null;column:ip"`
-	ActionDetail string    `gorm:"type:text;not null;column:action_detail"`
-	ActionTime   time.Time `gorm:"default:CURRENT_TIMESTAMP;column:action_time"`
-}
-
-// LogMember 对应于数据库中的 tb_log_member 表
-type LogMember struct {
-	LogID        uint      `gorm:"primary_key;autoIncrement;column:log_id"`
-	ModuleId     uint      `gorm:"not null;column:module_id"`
-	Ip           string    `gorm:"type:varchar(39);not null;column:ip"`
-	ActionDetail string    `gorm:"type:text;not null;column:action_detail"`
-	ActionTime   time.Time `gorm:"not null;column:action_time"`
-	UserID       uint      `gorm:"not null;column:user_id"`
 }

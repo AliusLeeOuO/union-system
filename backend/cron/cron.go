@@ -17,5 +17,5 @@ func InitCron() {
 	c.AddFunc("@every 1s", cronFunc.SetMemoryInfo)
 
 	c.Start()
-	global.Logger.Info("Cron started")
+	global.Cron = c
 }

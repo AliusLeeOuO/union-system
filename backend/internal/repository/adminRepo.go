@@ -3,6 +3,7 @@ package repository
 import (
 	"gorm.io/gorm"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type AdminRepository struct {
@@ -15,7 +16,7 @@ func NewAdminRepository(db *gorm.DB) *AdminRepository {
 
 func (repo *AdminRepository) UpdateUser(userID uint, updateData map[string]interface{}) error {
 	// 执行更新操作
-	if err := repo.DB.Model(&model.User{}).Where("user_id = ?", userID).Updates(updateData).Error; err != nil {
+	if err := repo.DB.Model(&domain.User{}).Where("user_id = ?", userID).Updates(updateData).Error; err != nil {
 		return err
 	}
 	return nil
@@ -51,9 +52,9 @@ func (repo *AdminRepository) FindLogLoginsByPage(pageSize, pageNum uint, status 
 
 // AdminLogWithDetails 包含日志信息，用户名称和动作名称
 type AdminLogWithDetails struct {
-	model.LogAdmin        // 嵌入原始 LogAdmin 结构体
-	Username       string `gorm:"column:username"`    // 用户名
-	ActionName     string `gorm:"column:action_name"` // 动作名称
+	domain.LogAdmin        // 嵌入原始 LogAdmin 结构体
+	Username        string `gorm:"column:username"`    // 用户名
+	ActionName      string `gorm:"column:action_name"` // 动作名称
 }
 
 // GetLogAdminsByPage 分页查询管理员操作日志
@@ -77,7 +78,7 @@ func (repo *AdminRepository) GetLogAdminsByPage(pageSize, pageNum uint) ([]Admin
 }
 
 type MemberLogWithDetails struct {
-	model.LogMember
+	domain.LogMember
 	Username   string `gorm:"column:username"`
 	ActionName string `gorm:"column:action_name"`
 }

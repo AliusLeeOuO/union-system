@@ -1,6 +1,8 @@
 package dto
 
-import "union-system/internal/model"
+import (
+	"union-system/internal/model/domain"
+)
 
 type ActivityListRequest struct {
 	Pagination
@@ -125,6 +127,6 @@ type ChangeActivityLocationRequest struct {
 }
 
 type ActivityDetailWithRegistrationsResponse struct {
-	model.Activity
+	domain.Activity
 	RegistrationCount uint `json:"registration_count"`
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/internal/dto"
-	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 )
 
@@ -81,7 +81,7 @@ func (s *ActivityService) CreateActivity(req dto.CreateOrModifyActivityRequest, 
 		return 0, err
 	}
 
-	activity := model.Activity{
+	activity := domain.Activity{
 		ActivityName:     req.Title,
 		Description:      req.Description,
 		StartTime:        startTime,
@@ -107,7 +107,7 @@ func (s *ActivityService) EditActivity(activityID uint, req dto.CreateOrModifyAc
 	endTime, _ := time.Parse(time.RFC3339, req.EndTime)
 
 	// 构造一个活动对象
-	activity := model.Activity{
+	activity := domain.Activity{
 		ActivityID:       activityID,
 		ActivityName:     req.Title,
 		Description:      req.Description,
@@ -139,7 +139,7 @@ func (s *ActivityService) GetAllActivities(c *fiber.Ctx, pageSize uint, pageNum 
 	}
 
 	// 使用map来存储活动类型，避免重复查询
-	activityTypeMap := make(map[uint]model.ActivityType)
+	activityTypeMap := make(map[uint]domain.ActivityType)
 
 	var activityResponses []dto.ActivityResponse
 	for _, activity := range activities {
@@ -265,7 +265,7 @@ func (s *ActivityService) GetRegisteredActivities(c *fiber.Ctx, userID, pageSize
 	}
 
 	// 使用map来存储活动类型，避免重复查询
-	activityTypeMap := make(map[uint]model.ActivityType)
+	activityTypeMap := make(map[uint]domain.ActivityType)
 
 	var activityResponses []dto.ActivityResponse
 	for _, activity := range activities {

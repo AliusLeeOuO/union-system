@@ -6,6 +6,7 @@ import (
 	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type AssistanceRepository struct {
@@ -198,8 +199,8 @@ func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uin
 }
 
 // GetAssistanceType 获取工单类型
-func (r *AssistanceRepository) GetAssistanceType() ([]model.AssistanceType, error) {
-	var assistanceTypes []model.AssistanceType
+func (r *AssistanceRepository) GetAssistanceType() ([]domain.AssistanceType, error) {
+	var assistanceTypes []domain.AssistanceType
 	result := r.DB.Find(&assistanceTypes)
 	if result.Error != nil {
 		return nil, result.Error

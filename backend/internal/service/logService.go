@@ -2,6 +2,7 @@ package service
 
 import (
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 )
 
@@ -27,7 +28,7 @@ func (s *LogService) AddLoginLog(ua string, ip string, loginStatus bool, usernam
 
 // AddAdminLog 添加新的管理员操作日志
 func (s *LogService) AddAdminLog(userId uint, ip, actionDetail string, moduleID uint) error {
-	log := &model.LogAdmin{
+	log := &domain.LogAdmin{
 		UserId:       userId,
 		ModuleID:     moduleID,
 		IP:           ip,
@@ -39,7 +40,7 @@ func (s *LogService) AddAdminLog(userId uint, ip, actionDetail string, moduleID 
 
 // AddMemberLog 添加新的会员操作日志
 func (s *LogService) AddMemberLog(userId uint, ip, actionDetail string, moduleID uint) error {
-	log := &model.LogMember{
+	log := &domain.LogMember{
 		UserID:       userId,
 		ModuleId:     moduleID,
 		Ip:           ip,

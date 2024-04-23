@@ -5,6 +5,7 @@ import (
 	"time"
 	"union-system/global"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/utils/password_crypt"
 )
 
@@ -17,11 +18,11 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (r *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, error) {
-	var users []model.User
+func (r *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]domain.User, error) {
+	var users []domain.User
 	offset := (page - 1) * pageSize
 
-	query := r.DB.Model(&model.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
+	query := r.DB.Model(&domain.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
 	if username != "" {
 		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
@@ -40,7 +41,7 @@ func (r *UserRepository) GetUsers(page int, pageSize int, username string, userI
 
 func (r *UserRepository) CountAdminUsers(username string, userId uint, userRole uint) (int64, error) {
 	var count int64
-	query := r.DB.Model(&model.User{})
+	query := r.DB.Model(&domain.User{})
 	if username != "" {
 		query = query.Where("username LIKE ?", "%"+username+"%")
 	}
@@ -57,8 +58,8 @@ func (r *UserRepository) CountAdminUsers(username string, userId uint, userRole 
 	return count, nil
 }
 
-func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
-	var user model.User
+func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error) {
+	var user domain.User
 	result := r.DB.Where("username = ?", username).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
@@ -66,8 +67,8 @@ func (r *UserRepository) GetUserByUsername(username string) (*model.User, error)
 	return &user, nil
 }
 
-func (r *UserRepository) GetUserByID(userID uint) (*model.User, error) {
-	var user model.User
+func (r *UserRepository) GetUserByID(userID uint) (*domain.User, error) {
+	var user domain.User
 	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return nil, result.Error
@@ -76,7 +77,7 @@ func (r *UserRepository) GetUserByID(userID uint) (*model.User, error) {
 }
 
 func (r *UserRepository) CheckUserPassword(userID uint, password string) bool {
-	var user model.User
+	var user domain.User
 	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return false
@@ -86,7 +87,7 @@ func (r *UserRepository) CheckUserPassword(userID uint, password string) bool {
 }
 
 func (r *UserRepository) ChangePasswordByID(userID uint, newPassword string) error {
-	var user model.User
+	var user domain.User
 	result := r.DB.First(&user, userID)
 	if result.Error != nil {
 		return result.Error
@@ -108,7 +109,7 @@ func (r *UserRepository) ChangePasswordByID(userID uint, newPassword string) err
 }
 
 func (r *UserRepository) CreateUser(username string, password string, email string, role uint, phone string) (uint, error) {
-	user := model.User{
+	user := domain.User{
 		Username:    username,
 		Password:    password,
 		Email:       email,
@@ -125,7 +126,7 @@ func (r *UserRepository) CreateUser(username string, password string, email stri
 
 // CheckPassword 检查用户的密码是否正确
 func (r *UserRepository) CheckPassword(userID uint, password string) (bool, error) {
-	var user model.User
+	var user domain.User
 	if err := r.DB.First(&user, userID).Error; err != nil {
 		return false, err
 	}

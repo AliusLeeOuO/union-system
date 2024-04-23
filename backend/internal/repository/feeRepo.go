@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"union-system/internal/dto"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type FeeRepository struct {
@@ -31,8 +32,8 @@ func (r *FeeRepository) GetWaitingFeeBillsByUserID(userID int) ([]model.FeeBill,
 }
 
 // FetchActiveFeePayingMembers 检索所有需要缴纳会费的活跃会员。
-func (r *FeeRepository) FetchActiveFeePayingMembers() ([]model.User, error) {
-	var users []model.User
+func (r *FeeRepository) FetchActiveFeePayingMembers() ([]domain.User, error) {
+	var users []domain.User
 	err := r.DB.Where("user_type_id = ? AND is_fee_active = ?", 2, true).Find(&users).Error
 	fmt.Println("---------------------------------")
 	fmt.Println(users)

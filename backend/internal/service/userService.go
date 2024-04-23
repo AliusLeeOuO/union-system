@@ -6,6 +6,7 @@ import (
 	"time"
 	"union-system/internal/dto"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 	"union-system/utils/captcha"
 	"union-system/utils/generateRandomCode"
@@ -66,7 +67,7 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 	return &responseData, nil
 }
 
-func (s *UserService) GetUserList(page int, pageSize int, username string, userId uint, userRole uint) ([]model.User, int64, error) {
+func (s *UserService) GetUserList(page int, pageSize int, username string, userId uint, userRole uint) ([]domain.User, int64, error) {
 	users, err := s.Repo.GetUsers(page, pageSize, username, userId, userRole)
 	if err != nil {
 		return nil, 0, err
@@ -94,7 +95,7 @@ func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPas
 	return nil
 }
 
-func (s *UserService) GetUserById(userId uint) (*model.User, error) {
+func (s *UserService) GetUserById(userId uint) (*domain.User, error) {
 	return s.Repo.GetUserByID(userId)
 }
 

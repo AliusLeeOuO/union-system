@@ -11,6 +11,7 @@ import (
 	"union-system/global"
 	"union-system/internal/dto"
 	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type ActivityRepository struct {
@@ -21,25 +22,25 @@ func NewActivityRepository(db *gorm.DB) *ActivityRepository {
 	return &ActivityRepository{DB: db}
 }
 
-func (r *ActivityRepository) GetActivities(pageNum, pageSize uint) ([]model.Activity, int64, error) {
-	var activities []model.Activity
+func (r *ActivityRepository) GetActivities(pageNum, pageSize uint) ([]domain.Activity, int64, error) {
+	var activities []domain.Activity
 	var total int64
 
 	offset := (pageNum - 1) * pageSize
 	result := r.DB.Offset(int(offset)).Limit(int(pageSize)).Find(&activities)
-	r.DB.Model(&model.Activity{}).Count(&total)
+	r.DB.Model(&domain.Activity{}).Count(&total)
 
 	return activities, total, result.Error
 }
 
-func (r *ActivityRepository) GetActivityType() ([]model.ActivityType, error) {
-	var activityType []model.ActivityType
+func (r *ActivityRepository) GetActivityType() ([]domain.ActivityType, error) {
+	var activityType []domain.ActivityType
 	result := r.DB.Find(&activityType)
 	return activityType, result.Error
 }
 
-func (r *ActivityRepository) GetActivityTypeById(c *fiber.Ctx, activityId uint) (model.ActivityType, error) {
-	var activityType model.ActivityType
+func (r *ActivityRepository) GetActivityTypeById(c *fiber.Ctx, activityId uint) (domain.ActivityType, error) {
+	var activityType domain.ActivityType
 
 	// 构建用于该活动类型的缓存键
 	cacheKey := fmt.Sprintf("activityType:%d", activityId)
@@ -50,7 +51,7 @@ func (r *ActivityRepository) GetActivityTypeById(c *fiber.Ctx, activityId uint) 
 		// 缓存未命中，从数据库获取
 		result := r.DB.Where("activity_type_id = ?", activityId).First(&activityType)
 		if result.Error != nil {
-			return model.ActivityType{}, result.Error
+			return domain.ActivityType{}, result.Error
 		}
 
 		// 将查询结果序列化为 JSON 并存储到 Redis 缓存
@@ -63,20 +64,20 @@ func (r *ActivityRepository) GetActivityTypeById(c *fiber.Ctx, activityId uint) 
 		return activityType, nil
 	} else if err != nil {
 		// 处理可能的 Redis 错误
-		return model.ActivityType{}, err
+		return domain.ActivityType{}, err
 	}
 
 	// 如果缓存命中，反序列化缓存的 JSON 数据到 activityType 对象
 	err = json.Unmarshal([]byte(cachedData), &activityType)
 	if err != nil {
 		// 如果反序列化失败，返回错误
-		return model.ActivityType{}, err
+		return domain.ActivityType{}, err
 	}
 
 	return activityType, nil
 }
 
-func (r *ActivityRepository) CreateActivity(activity model.Activity) (uint, error) {
+func (r *ActivityRepository) CreateActivity(activity domain.Activity) (uint, error) {
 	result := r.DB.Create(&activity)
 	if result.Error != nil {
 		return 0, result.Error
@@ -85,29 +86,29 @@ func (r *ActivityRepository) CreateActivity(activity model.Activity) (uint, erro
 	return activity.ActivityID, nil
 }
 
-func (r *ActivityRepository) EditActivity(activity model.Activity) error {
-	return r.DB.Model(&model.Activity{}).
+func (r *ActivityRepository) EditActivity(activity domain.Activity) error {
+	return r.DB.Model(&domain.Activity{}).
 		Where("activity_id = ?", activity.ActivityID).
 		Select("ActivityName", "Description", "StartTime", "EndTime", "Location", "ParticipantLimit", "ActivityTypeID", "IsActive").
 		Updates(activity).Error
 }
 
 func (r *ActivityRepository) DeleteActivity(activityID uint) error {
-	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("removed", true).Error
+	return r.DB.Model(&domain.Activity{}).Where("activity_id = ?", activityID).Update("removed", true).Error
 }
 
 func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]dto.ActivityDetailWithRegistrationsResponse, uint, error) {
 	var totalInt int64 = 0
 
 	// 先获取总活动数
-	result := r.DB.Model(&model.Activity{}).Where("removed = ?", false).Count(&totalInt)
+	result := r.DB.Model(&domain.Activity{}).Where("removed = ?", false).Count(&totalInt)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 	var activitiesWithCount []dto.ActivityDetailWithRegistrationsResponse
 	// 获取当前页的活动列表，并计算已报名人数
 	offset := (pageNum - 1) * pageSize
-	result = r.DB.Model(&model.Activity{}).
+	result = r.DB.Model(&domain.Activity{}).
 		Select("tb_activity.*, COUNT(tb_user_activity.user_id) AS registration_count").
 		Joins("LEFT JOIN tb_user_activity ON tb_user_activity.activity_id = tb_activity.activity_id").
 		Where("tb_activity.removed = ?", false).
@@ -133,7 +134,7 @@ func (r *ActivityRepository) GetAllActivities(pageSize uint, pageNum uint) ([]dt
 func (r *ActivityRepository) GetActivityDetails(activityID uint) (dto.ActivityDetailWithRegistrationsResponse, error) {
 	var activityDetails dto.ActivityDetailWithRegistrationsResponse
 
-	result := r.DB.Model(&model.Activity{}).
+	result := r.DB.Model(&domain.Activity{}).
 		Select("tb_activity.*, COUNT(tb_user_activity.user_id) as registration_count").
 		Joins("LEFT JOIN tb_user_activity ON tb_user_activity.activity_id = tb_activity.activity_id").
 		Where("tb_activity.activity_id = ? AND tb_activity.removed = ?", activityID, false).
@@ -181,8 +182,8 @@ func (r *ActivityRepository) UnregisterFromActivity(userID, activityID uint) err
 	return nil
 }
 
-func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum uint) ([]model.Activity, uint, error) {
-	var activities []model.Activity
+func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum uint) ([]domain.Activity, uint, error) {
+	var activities []domain.Activity
 	var total int64
 
 	// 计算跳过的记录数
@@ -192,7 +193,7 @@ func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum u
 	subQuery := r.DB.Model(&model.UserActivity{}).Select("activity_id").Where("user_id = ?", userID)
 
 	// 获取已报名活动的总数
-	result := r.DB.Model(&model.Activity{}).Where("activity_id IN (?) AND removed = ?", subQuery, false).Count(&total)
+	result := r.DB.Model(&domain.Activity{}).Where("activity_id IN (?) AND removed = ?", subQuery, false).Count(&total)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
@@ -209,11 +210,11 @@ func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum u
 	return activities, uint(total), nil
 }
 
-func (r *ActivityRepository) GetActivityUserRegistrations(activityID uint) ([]model.User, error) {
-	var users []model.User
+func (r *ActivityRepository) GetActivityUserRegistrations(activityID uint) ([]domain.User, error) {
+	var users []domain.User
 
 	// 获取分页的报名用户列表
-	result := r.DB.Model(&model.User{}).
+	result := r.DB.Model(&domain.User{}).
 		Select("tb_user.*").
 		Joins("LEFT JOIN tb_user_activity ON tb_user_activity.user_id = tb_user.user_id").
 		Where("tb_user_activity.activity_id = ?", activityID).
@@ -227,15 +228,15 @@ func (r *ActivityRepository) GetActivityUserRegistrations(activityID uint) ([]mo
 
 // ChangeActivityTitle 修改活动标题
 func (r *ActivityRepository) ChangeActivityTitle(activityID uint, newTitle string) error {
-	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("activity_name", newTitle).Error
+	return r.DB.Model(&domain.Activity{}).Where("activity_id = ?", activityID).Update("activity_name", newTitle).Error
 }
 
 // ChangeActivityDescription 修改活动描述
 func (r *ActivityRepository) ChangeActivityDescription(activityID uint, newDescription string) error {
-	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("description", newDescription).Error
+	return r.DB.Model(&domain.Activity{}).Where("activity_id = ?", activityID).Update("description", newDescription).Error
 }
 
 // ChangeActivityLocation 修改活动地点
 func (r *ActivityRepository) ChangeActivityLocation(activityID uint, newLocation string) error {
-	return r.DB.Model(&model.Activity{}).Where("activity_id = ?", activityID).Update("location", newLocation).Error
+	return r.DB.Model(&domain.Activity{}).Where("activity_id = ?", activityID).Update("location", newLocation).Error
 }

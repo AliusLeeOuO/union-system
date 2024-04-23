@@ -3,7 +3,7 @@ package repository
 import (
 	"gorm.io/gorm"
 	"union-system/internal/dto"
-	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type NotificationRepository struct {
@@ -19,12 +19,12 @@ func (repo *NotificationRepository) FindNotificationsByRecipientID(recipientID u
 
 	offset := (pageNum - 1) * pageSize
 	subQuery := repo.DB.
-		Model(&model.NotificationRecipient{}).
+		Model(&domain.NotificationRecipient{}).
 		Where("recipient_id = ?", recipientID).
 		Select("notification_id, read_status")
 
 	result := repo.DB.
-		Model(&model.Notification{}).
+		Model(&domain.Notification{}).
 		Select("tb_notification.*, nr.read_status, u.username AS sender_name, u.user_type_id AS sender_role").
 		Joins("JOIN (?) AS nr ON tb_notification.notification_id = nr.notification_id", subQuery).
 		Joins("JOIN tb_user AS u ON tb_notification.sender_id = u.user_id"). // 修改这里
@@ -37,20 +37,20 @@ func (repo *NotificationRepository) FindNotificationsByRecipientID(recipientID u
 	}
 
 	var total int64
-	repo.DB.Model(&model.NotificationRecipient{}).Where("recipient_id = ?", recipientID).Count(&total)
+	repo.DB.Model(&domain.NotificationRecipient{}).Where("recipient_id = ?", recipientID).Count(&total)
 
 	return results, uint(total), nil
 }
 
 func (repo *NotificationRepository) MarkNotificationAsRead(notificationID uint, recipientID uint) error {
-	result := repo.DB.Model(&model.NotificationRecipient{}).
+	result := repo.DB.Model(&domain.NotificationRecipient{}).
 		Where("notification_id = ? AND recipient_id = ?", notificationID, recipientID).
 		Update("read_status", true)
 	return result.Error
 }
 
 func (repo *NotificationRepository) MarkAllNotificationsAsRead(recipientID uint) error {
-	result := repo.DB.Model(&model.NotificationRecipient{}).
+	result := repo.DB.Model(&domain.NotificationRecipient{}).
 		Where("recipient_id = ?", recipientID).
 		Update("read_status", true)
 	return result.Error
@@ -58,7 +58,7 @@ func (repo *NotificationRepository) MarkAllNotificationsAsRead(recipientID uint)
 
 func (repo *NotificationRepository) CountUnreadNotifications(recipientID uint) (uint, error) {
 	var count int64
-	result := repo.DB.Model(&model.NotificationRecipient{}).
+	result := repo.DB.Model(&domain.NotificationRecipient{}).
 		Where("recipient_id = ? AND read_status = ?", recipientID, false).
 		Count(&count)
 	if result.Error != nil {

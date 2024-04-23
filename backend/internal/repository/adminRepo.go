@@ -2,7 +2,6 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 )
 
@@ -23,12 +22,12 @@ func (repo *AdminRepository) UpdateUser(userID uint, updateData map[string]inter
 }
 
 // FindLogLoginsByPage 分页查询登录日志，根据status筛选，并按login_time倒序
-func (repo *AdminRepository) FindLogLoginsByPage(pageSize, pageNum uint, status string) ([]model.LogLogin, uint, error) {
-	var logs []model.LogLogin
+func (repo *AdminRepository) FindLogLoginsByPage(pageSize, pageNum uint, status string) ([]domain.LogLogin, uint, error) {
+	var logs []domain.LogLogin
 	var total int64
 
 	offset := (pageNum - 1) * pageSize
-	query := repo.DB.Model(&model.LogLogin{}) // 初始化查询
+	query := repo.DB.Model(&domain.LogLogin{}) // 初始化查询
 
 	// 根据status参数添加条件
 	if status == "true" || status == "false" {

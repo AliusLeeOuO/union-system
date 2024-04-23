@@ -1,7 +1,6 @@
 package service
 
 import (
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 )
@@ -16,7 +15,7 @@ func NewLogService(repo *repository.LogRepository) *LogService {
 
 // AddLoginLog 现在接受单独的参数，并将它们传递到repository的AddLogLogin方法
 func (s *LogService) AddLoginLog(ua string, ip string, loginStatus bool, username string) error {
-	log := &model.LogLogin{
+	log := &domain.LogLogin{
 		UA:          ua,
 		IP:          ip,
 		LoginStatus: loginStatus,

@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"union-system/internal/dto"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 )
 
@@ -18,11 +17,11 @@ func NewAssistanceRepository(db *gorm.DB) *AssistanceRepository {
 }
 
 func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListRequest) (dto.GetAssistanceListResponse, error) {
-	var assistances []model.AssistanceRequest
+	var assistances []domain.AssistanceRequest
 	var response dto.GetAssistanceListResponse
 
 	// 创建一个查询用于计算总数
-	countQuery := r.DB.Model(&model.AssistanceRequest{})
+	countQuery := r.DB.Model(&domain.AssistanceRequest{})
 	if form.ID != 0 {
 		countQuery = countQuery.Where("request_id = ?", form.ID)
 	}
@@ -35,7 +34,7 @@ func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListReque
 	countQuery.Count(&totalCount)
 
 	// 获取分页数据
-	dataQuery := r.DB.Model(&model.AssistanceRequest{}).Preload("AssistanceType").Preload("User")
+	dataQuery := r.DB.Model(&domain.AssistanceRequest{}).Preload("AssistanceType").Preload("User")
 	if form.ID != 0 {
 		dataQuery = dataQuery.Where("request_id = ?", form.ID)
 	}
@@ -77,9 +76,9 @@ func (r *AssistanceRepository) GetAssistanceList(form dto.GetAssistanceListReque
 	return response, nil
 }
 
-func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceRequest, []model.AssistanceResponse, error) {
-	var assistance model.AssistanceRequest
-	var responses []model.AssistanceResponse
+func (r *AssistanceRepository) ViewAssistance(requestID uint) (domain.AssistanceRequest, []domain.AssistanceResponse, error) {
+	var assistance domain.AssistanceRequest
+	var responses []domain.AssistanceResponse
 
 	// 获取工单信息
 	if err := r.DB.Preload("AssistanceType").First(&assistance, "request_id = ?", requestID).Error; err != nil {
@@ -87,7 +86,7 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	}
 
 	// 手动实现，根据assistanceRequest中的status_id查询AssistanceStatus
-	var assistanceStatus model.AssistanceStatus
+	var assistanceStatus domain.AssistanceStatus
 	if err := r.DB.First(&assistanceStatus, assistance.StatusID).Error; err != nil {
 		// 处理错误
 		return assistance, nil, err
@@ -102,7 +101,7 @@ func (r *AssistanceRepository) ViewAssistance(requestID uint) (model.AssistanceR
 	return assistance, responses, nil
 }
 
-func (r *AssistanceRepository) CreateNewAssistance(assistance *model.AssistanceRequest) (uint, error) {
+func (r *AssistanceRepository) CreateNewAssistance(assistance *domain.AssistanceRequest) (uint, error) {
 	// 使用指针传递模型，这样Gorm可以更新模型中的ID字段
 	if err := r.DB.Create(assistance).Error; err != nil {
 		return 0, err // 返回错误
@@ -114,7 +113,7 @@ func (r *AssistanceRepository) CreateNewAssistance(assistance *model.AssistanceR
 func (r *AssistanceRepository) AdminReplyToAssistance(requestID, responderID uint, responseText string, newStatusID uint) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		// 创建新的回复记录
-		response := model.AssistanceResponse{
+		response := domain.AssistanceResponse{
 			RequestID:    requestID,
 			ResponderID:  responderID,
 			ResponseText: responseText,
@@ -126,7 +125,7 @@ func (r *AssistanceRepository) AdminReplyToAssistance(requestID, responderID uin
 
 		// 更新工单状态
 		if newStatusID != 0 {
-			if err := tx.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", newStatusID).Error; err != nil {
+			if err := tx.Model(&domain.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", newStatusID).Error; err != nil {
 				return err
 			}
 		}
@@ -136,8 +135,8 @@ func (r *AssistanceRepository) AdminReplyToAssistance(requestID, responderID uin
 }
 
 // GetAssistanceRequest 获取工单信息
-func (r *AssistanceRepository) GetAssistanceRequest(requestID uint) (*model.AssistanceRequest, error) {
-	var request model.AssistanceRequest
+func (r *AssistanceRepository) GetAssistanceRequest(requestID uint) (*domain.AssistanceRequest, error) {
+	var request domain.AssistanceRequest
 	err := r.DB.Preload("AssistanceStatus").First(&request, requestID).Error
 	return &request, err
 }
@@ -146,7 +145,7 @@ func (r *AssistanceRepository) GetAssistanceRequest(requestID uint) (*model.Assi
 func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, responseText string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		// 验证工单发起人
-		var assistanceRequest model.AssistanceRequest
+		var assistanceRequest domain.AssistanceRequest
 		if err := tx.Where("request_id = ?", requestID).First(&assistanceRequest).Error; err != nil {
 			return err
 		}
@@ -162,7 +161,7 @@ func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, re
 		}
 
 		// 创建回复记录
-		response := model.AssistanceResponse{
+		response := domain.AssistanceResponse{
 			RequestID:    requestID,
 			ResponderID:  userID,
 			ResponseText: responseText,
@@ -174,7 +173,7 @@ func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, re
 		}
 
 		// 更新工单状态
-		if err := tx.Model(&model.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", 1).Error; err != nil {
+		if err := tx.Model(&domain.AssistanceRequest{}).Where("request_id = ?", requestID).Update("status_id", 1).Error; err != nil {
 			return err
 		}
 
@@ -184,7 +183,7 @@ func (r *AssistanceRepository) ReplyToAssistance(requestID uint, userID uint, re
 
 func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uint) error {
 	// 验证工单是否属于该用户
-	var assistanceRequest model.AssistanceRequest
+	var assistanceRequest domain.AssistanceRequest
 	err := r.DB.Where("request_id = ?", requestID).First(&assistanceRequest).Error
 	if err != nil {
 		return err
@@ -208,13 +207,13 @@ func (r *AssistanceRepository) GetAssistanceType() ([]domain.AssistanceType, err
 	return assistanceTypes, nil
 }
 
-func (r *AssistanceRepository) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]model.AssistanceRequest, uint, error) {
-	var assistances []model.AssistanceRequest
+func (r *AssistanceRepository) GetMyAssistances(memberID uint, pageSize uint, pageNum uint) ([]domain.AssistanceRequest, uint, error) {
+	var assistances []domain.AssistanceRequest
 	var total int64
 	offset := (pageNum - 1) * pageSize
 
 	// 计算总数
-	countResult := r.DB.Model(&model.AssistanceRequest{}).Where("member_id = ?", memberID).Count(&total)
+	countResult := r.DB.Model(&domain.AssistanceRequest{}).Where("member_id = ?", memberID).Count(&total)
 	if countResult.Error != nil {
 		return nil, 0, countResult.Error
 	}
@@ -229,8 +228,8 @@ func (r *AssistanceRepository) GetMyAssistances(memberID uint, pageSize uint, pa
 }
 
 // GetAssistanceStatus 获取工单状态
-func (r *AssistanceRepository) GetAssistanceStatus() ([]model.AssistanceStatus, error) {
-	var assistanceStatus []model.AssistanceStatus
+func (r *AssistanceRepository) GetAssistanceStatus() ([]domain.AssistanceStatus, error) {
+	var assistanceStatus []domain.AssistanceStatus
 	result := r.DB.Find(&assistanceStatus)
 	if result.Error != nil {
 		return nil, result.Error
@@ -240,7 +239,7 @@ func (r *AssistanceRepository) GetAssistanceStatus() ([]model.AssistanceStatus, 
 
 func (r *AssistanceRepository) GetAssistanceCountByStatus(memberID uint, statusID uint) (uint, error) {
 	var count int64
-	result := r.DB.Model(&model.AssistanceRequest{}).
+	result := r.DB.Model(&domain.AssistanceRequest{}).
 		Where("member_id = ? AND status_id = ?", memberID, statusID).
 		Count(&count)
 	return uint(count), result.Error

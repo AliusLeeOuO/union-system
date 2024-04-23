@@ -10,7 +10,6 @@ import (
 	"time"
 	"union-system/global"
 	"union-system/internal/dto"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 )
 
@@ -151,7 +150,7 @@ func (r *ActivityRepository) GetActivityDetails(activityID uint) (dto.ActivityDe
 func (r *ActivityRepository) CheckRegisterForActivity(userID, activityID uint) bool {
 	// 检查用户是否已经报名了该活动
 	var count int64
-	r.DB.Model(&model.UserActivity{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count)
+	r.DB.Model(&domain.UserActivity{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count)
 	if count > 0 {
 		return false
 	}
@@ -161,18 +160,18 @@ func (r *ActivityRepository) CheckRegisterForActivity(userID, activityID uint) b
 func (r *ActivityRepository) RegisterForActivity(userID, activityID uint) error {
 	// 检查用户是否已经报名了该活动
 	var count int64
-	r.DB.Model(&model.UserActivity{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count)
+	r.DB.Model(&domain.UserActivity{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count)
 	if count > 0 {
 		return errors.New("already registered for the activity")
 	}
 
 	// 添加用户到活动的报名表中
-	userActivity := model.UserActivity{UserID: userID, ActivityID: activityID}
+	userActivity := domain.UserActivity{UserID: userID, ActivityID: activityID}
 	return r.DB.Create(&userActivity).Error
 }
 
 func (r *ActivityRepository) UnregisterFromActivity(userID, activityID uint) error {
-	result := r.DB.Where("user_id = ? AND activity_id = ?", userID, activityID).Delete(&model.UserActivity{})
+	result := r.DB.Where("user_id = ? AND activity_id = ?", userID, activityID).Delete(&domain.UserActivity{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -190,7 +189,7 @@ func (r *ActivityRepository) GetRegisteredActivities(userID, pageSize, pageNum u
 	offset := (pageNum - 1) * pageSize
 
 	// 使用子查询找到用户已报名的活动ID
-	subQuery := r.DB.Model(&model.UserActivity{}).Select("activity_id").Where("user_id = ?", userID)
+	subQuery := r.DB.Model(&domain.UserActivity{}).Select("activity_id").Where("user_id = ?", userID)
 
 	// 获取已报名活动的总数
 	result := r.DB.Model(&domain.Activity{}).Where("activity_id IN (?) AND removed = ?", subQuery, false).Count(&total)

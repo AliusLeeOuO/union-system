@@ -8,7 +8,7 @@ import (
 	"time"
 	"union-system/global"
 	"union-system/internal/dto"
-	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 )
 
@@ -26,7 +26,7 @@ func (s *AssistanceService) GetAssistanceList(form dto.GetAssistanceListRequest)
 }
 
 // ViewAssistance 用于查看工单详情
-func (s *AssistanceService) ViewAssistance(requestID uint) (model.AssistanceRequest, []model.AssistanceResponse, error) {
+func (s *AssistanceService) ViewAssistance(requestID uint) (domain.AssistanceRequest, []domain.AssistanceResponse, error) {
 	return s.Repo.ViewAssistance(requestID)
 }
 
@@ -50,7 +50,7 @@ func (s *AssistanceService) ReplyAssistance(requestID, responderID uint, respons
 
 // CreateNewAssistance 用户创建新的工单
 func (s *AssistanceService) CreateNewAssistance(memberID uint, request dto.NewAssistanceRequest) (uint, error) {
-	newAssistance := model.AssistanceRequest{
+	newAssistance := domain.AssistanceRequest{
 		MemberID:    memberID,
 		TypeID:      request.TypeID,
 		Title:       request.Title,

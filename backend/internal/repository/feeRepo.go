@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"union-system/internal/dto"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 )
 
@@ -18,15 +17,15 @@ func NewFeeRepository(db *gorm.DB) *FeeRepository {
 }
 
 // GetFeeStandardByCategory 根据会员类别获取会费标准
-func (r *FeeRepository) GetFeeStandardByCategory(categoryID uint) (model.FeeStandard, error) {
-	var standards model.FeeStandard
+func (r *FeeRepository) GetFeeStandardByCategory(categoryID uint) (domain.FeeStandard, error) {
+	var standards domain.FeeStandard
 	err := r.DB.Where("category_id = ?", categoryID).First(&standards).Error
 	return standards, err
 }
 
 // GetWaitingFeeBillsByUserID 根据用户ID获取待缴费账单
-func (r *FeeRepository) GetWaitingFeeBillsByUserID(userID int) ([]model.FeeBill, error) {
-	var bills []model.FeeBill
+func (r *FeeRepository) GetWaitingFeeBillsByUserID(userID int) ([]domain.FeeBill, error) {
+	var bills []domain.FeeBill
 	err := r.DB.Where("user_id = ? AND paid = false", userID).Order("due_date ASC").Find(&bills).Error
 	return bills, err
 }
@@ -41,45 +40,45 @@ func (r *FeeRepository) FetchActiveFeePayingMembers() ([]domain.User, error) {
 }
 
 // InsertFeeBill 将新的会费账单插入数据库。
-func (r *FeeRepository) InsertFeeBill(bill model.FeeBill) error {
+func (r *FeeRepository) InsertFeeBill(bill domain.FeeBill) error {
 	return r.DB.Create(&bill).Error
 }
 
-func (r *FeeRepository) CreateNewBill(bill model.FeeBill) error {
+func (r *FeeRepository) CreateNewBill(bill domain.FeeBill) error {
 	return r.DB.Create(&bill).Error
 }
 
 func (r *FeeRepository) CheckBillExists(userID uint, billingPeriod string) (bool, error) {
 	var count int64
-	err := r.DB.Model(&model.FeeBill{}).Where("user_id = ? AND billing_period = ?", userID, billingPeriod).Count(&count).Error
+	err := r.DB.Model(&domain.FeeBill{}).Where("user_id = ? AND billing_period = ?", userID, billingPeriod).Count(&count).Error
 	return count > 0, err
 }
 
 // GetActiveFeeMembers 返回所有激活了会费的用户详细信息
-func (r *FeeRepository) GetActiveFeeMembers() ([]model.MemberFeeInfo, error) {
-	var memberFeeInfo []model.MemberFeeInfo
+func (r *FeeRepository) GetActiveFeeMembers() ([]domain.MemberFeeInfo, error) {
+	var memberFeeInfo []domain.MemberFeeInfo
 	err := r.DB.Where("is_fee_active = ?", true).Find(&memberFeeInfo).Error
 	return memberFeeInfo, err
 }
 
 // CreateFeeBill 为指定用户创建一个新的会费账单
-func (r *FeeRepository) CreateFeeBill(bill model.FeeBill) error {
+func (r *FeeRepository) CreateFeeBill(bill domain.FeeBill) error {
 	return r.DB.Create(&bill).Error
 }
 
 // GetFeeHistoryByUserID 根据用户ID获取会费历史记录
-func (r *FeeRepository) GetFeeHistoryByUserID(userID uint, pageSize, pageNum int) ([]model.FeeBill, uint, error) {
-	var bills []model.FeeBill
+func (r *FeeRepository) GetFeeHistoryByUserID(userID uint, pageSize, pageNum int) ([]domain.FeeBill, uint, error) {
+	var bills []domain.FeeBill
 	var total int64
 	query := r.DB.Where("user_id = ? AND paid = ?", userID, true)
 	err := query.Order("created_at DESC").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&bills).Error
-	query.Model(&model.FeeBill{}).Count(&total) // 确保这里使用相同的查询条件
+	query.Model(&domain.FeeBill{}).Count(&total) // 确保这里使用相同的查询条件
 	return bills, uint(total), err
 }
 
 // CheckFeePaid 检查用户指定账单是否已支付
 func (r *FeeRepository) CheckFeePaid(billID uint) (bool, error) {
-	var bill model.FeeBill
+	var bill domain.FeeBill
 	result := r.DB.Select("paid").Where("bill_id = ?", billID).First(&bill)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -92,7 +91,7 @@ func (r *FeeRepository) CheckFeePaid(billID uint) (bool, error) {
 
 // MarkFeeAsPaid 标记会费账单为已支付
 func (r *FeeRepository) MarkFeeAsPaid(billID uint) error {
-	result := r.DB.Model(&model.FeeBill{}).Where("bill_id = ?", billID).Update("paid", true)
+	result := r.DB.Model(&domain.FeeBill{}).Where("bill_id = ?", billID).Update("paid", true)
 	return result.Error
 }
 

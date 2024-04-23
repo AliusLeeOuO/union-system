@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 	"union-system/internal/dto"
-	"union-system/internal/model"
+	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 )
 
@@ -18,7 +18,7 @@ func NewFeeService(repo *repository.FeeRepository) *FeeService {
 }
 
 // Deprecated: 请使用新方法
-func (s *FeeService) GetFeeStandardByCategory(categoryID uint) (model.FeeStandard, error) {
+func (s *FeeService) GetFeeStandardByCategory(categoryID uint) (domain.FeeStandard, error) {
 	return s.Repo.GetFeeStandardByCategory(categoryID)
 }
 
@@ -67,7 +67,7 @@ func (s *FeeService) GenerateMonthlyFeeBills(billingPeriod string) error {
 		// 如果账单不存在，为用户创建新的账单
 		if !exists {
 
-			bill := model.FeeBill{
+			bill := domain.FeeBill{
 				UserID:        int(detail.UserID),
 				Amount:        feeStandard.Amount,
 				CreatedAt:     now,

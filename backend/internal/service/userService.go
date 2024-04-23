@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 	"union-system/internal/dto"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 	"union-system/internal/repository"
 	"union-system/utils/captcha"
@@ -174,7 +173,7 @@ func (s *UserService) GenerateInvitationCode(userID uint) (dto.NewInvitationCode
 	code := generateRandomCode.GenerateRandomCode(8)
 
 	// 准备邀请码记录
-	invitationCode := model.InvitationCodes{
+	invitationCode := domain.InvitationCodes{
 		Code:            code,
 		CreatedByUserID: userID,
 		IsUsed:          false,

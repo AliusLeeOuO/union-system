@@ -2,7 +2,6 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 )
 
@@ -25,6 +24,6 @@ func (r *LogRepository) InsertMemberLog(log *domain.LogMember) error {
 }
 
 // AddLoginLog 添加新的登录日志
-func (r *LogRepository) AddLoginLog(log *model.LogLogin) error {
+func (r *LogRepository) AddLoginLog(log *domain.LogLogin) error {
 	return r.DB.Omit("login_time").Create(&log).Error
 }

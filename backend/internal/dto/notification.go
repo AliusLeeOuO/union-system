@@ -2,7 +2,7 @@ package dto
 
 import (
 	"time"
-	"union-system/internal/model"
+	"union-system/internal/model/domain"
 )
 
 type NotificationInstance struct {
@@ -21,7 +21,7 @@ type NotificationPageResponse struct {
 }
 
 type NotificationWithReadStatus struct {
-	model.Notification
+	domain.Notification
 	ReadStatus bool
 	SenderName string `json:"sender_name"`
 	SenderRole uint   `json:"sender_role"`

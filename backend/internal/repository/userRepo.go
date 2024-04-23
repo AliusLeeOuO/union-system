@@ -4,7 +4,6 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"union-system/global"
-	"union-system/internal/model"
 	"union-system/internal/model/domain"
 	"union-system/utils/password_crypt"
 )
@@ -140,8 +139,8 @@ func (r *UserRepository) CheckPassword(userID uint, password string) (bool, erro
 }
 
 // VerifyInvitationCode 验证邀请码验证
-func (r *UserRepository) VerifyInvitationCode(code string) (*model.InvitationCodes, error) {
-	var invitationCode model.InvitationCodes
+func (r *UserRepository) VerifyInvitationCode(code string) (*domain.InvitationCodes, error) {
+	var invitationCode domain.InvitationCodes
 	now := time.Now()
 
 	err := r.DB.Where("code = ? AND expires_at > ? AND is_used = false", code, now).First(&invitationCode).Error
@@ -154,17 +153,17 @@ func (r *UserRepository) VerifyInvitationCode(code string) (*model.InvitationCod
 
 // MarkInvitationCodeAsUsed 标记邀请码为已使用
 func (r *UserRepository) MarkInvitationCodeAsUsed(codeID uint, userID uint) error {
-	return r.DB.Model(&model.InvitationCodes{}).Where("code_id = ?", codeID).Updates(map[string]interface{}{"is_used": true, "used_by_user_id": userID}).Error
+	return r.DB.Model(&domain.InvitationCodes{}).Where("code_id = ?", codeID).Updates(map[string]interface{}{"is_used": true, "used_by_user_id": userID}).Error
 }
 
-func (r *UserRepository) GetInvitationCodes(pageNum, pageSize uint) ([]model.InvitationCodes, uint, error) {
-	var codes []model.InvitationCodes
+func (r *UserRepository) GetInvitationCodes(pageNum, pageSize uint) ([]domain.InvitationCodes, uint, error) {
+	var codes []domain.InvitationCodes
 	var total int64
 
 	offset := (pageNum - 1) * pageSize
 
 	// 先计算总数
-	result := r.DB.Model(&model.InvitationCodes{}).Count(&total)
+	result := r.DB.Model(&domain.InvitationCodes{}).Count(&total)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
@@ -178,6 +177,6 @@ func (r *UserRepository) GetInvitationCodes(pageNum, pageSize uint) ([]model.Inv
 	return codes, uint(total), nil
 }
 
-func (r *UserRepository) CreateInvitationCode(invitationCode *model.InvitationCodes) error {
+func (r *UserRepository) CreateInvitationCode(invitationCode *domain.InvitationCodes) error {
 	return r.DB.Create(invitationCode).Error
 }

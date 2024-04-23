@@ -23,16 +23,16 @@ type UploadFileResponse struct {
 
 // LoginRequest 定义了登录请求的数据结构
 type LoginRequest struct {
-	Username   string `json:"username" form:"username"`
-	Password   string `json:"password" form:"password"`
-	CaptchaID  string `json:"captcha_id" form:"captcha_id"`
-	CaptchaVal string `json:"captcha_val" form:"captcha_val"`
+	Username   string `json:"username" form:"username" validate:"required"`
+	Password   string `json:"password" form:"password" validate:"required"`
+	CaptchaID  string `json:"captcha_id" form:"captcha_id" validate:"required"`
+	CaptchaVal string `json:"captcha_val" form:"captcha_val" validate:"required"`
 }
 
 // ChangePasswordRequest 定义了修改密码请求的数据结构
 type ChangePasswordRequest struct {
-	OldPassword string `json:"old_password" form:"old_password"`
-	NewPassword string `json:"new_password" form:"new_password"`
+	OldPassword string `json:"old_password" form:"old_password" validate:"required"`
+	NewPassword string `json:"new_password" form:"new_password" validate:"required"`
 }
 
 // UserInfoResponse 定义了获取用户信息响应的数据结构
@@ -45,15 +45,15 @@ type UserInfoResponse struct {
 	Email    string `json:"email"`
 }
 type UserQueryRequest struct {
-	UserID uint `form:"user_id"`
+	UserID uint `form:"user_id" validate:"required"`
 }
 
 type UserRegisterRequest struct {
-	Username       string `json:"username" form:"username"`
-	Password       string `json:"password" form:"password"`
-	Email          string `json:"email" form:"email"`
-	PhoneNumber    uint   `json:"phone_number" form:"phone_number"`
-	InvitationCode string `json:"invitation_code" form:"invitation_code"`
+	Username       string `json:"username" form:"username" validate:"required"`
+	Password       string `json:"password" form:"password" validate:"required"`
+	Email          string `json:"email" form:"email" validate:"required"`
+	PhoneNumber    uint   `json:"phone_number" form:"phone_number" validate:"required"`
+	InvitationCode string `json:"invitation_code" form:"invitation_code" validate:"required"`
 }
 
 type InvitationCodeListResponse struct {

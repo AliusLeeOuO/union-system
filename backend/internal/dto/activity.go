@@ -103,13 +103,13 @@ type UnregisterUserRegisterRequest struct {
 
 // DropActivityRequest 用于删除活动的请求
 type DropActivityRequest struct {
-	Password string `json:"password" form:"password"`
+	Password string `json:"password" form:"password" validate:"required"`
 }
 
 // ChangeActivityTitleRequest 用于修改活动标题的请求
 type ChangeActivityTitleRequest struct {
-	ActivityID uint   `json:"activityId" form:"activity_id"`
-	Title      string `json:"title" form:"title"`
+	ActivityID uint   `json:"activityId" form:"activity_id" validate:"required"`
+	Title      string `json:"title" form:"title" validate:"required"`
 }
 
 // ChangeActivityDescriptionRequest 用于修改活动描述的请求

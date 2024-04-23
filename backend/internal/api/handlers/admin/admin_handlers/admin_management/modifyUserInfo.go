@@ -2,6 +2,7 @@ package admin_management
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
@@ -14,22 +15,10 @@ import (
 )
 
 func UpdateUserHandler(c *fiber.Ctx) error {
+	var validate = validator.New()
 	var updateReq dto.UpdateUserRequest
-	if err := c.BodyParser(&updateReq); err != nil {
-		return model.SendFailureResponse(c, fiber.StatusBadRequest, "无法解析请求体")
-	}
-	// 验证字段
-	fieldsToCheck := map[string]interface{}{
-		"user_id":      updateReq.UserId,
-		"username":     updateReq.Username,
-		"email":        updateReq.Email,
-		"phone_number": updateReq.Phone,
-		"status":       updateReq.Status,
-	}
-	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
-	if !ok {
-		errorMessage := fmt.Sprintf("缺少必要字段: %s", missingField)
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
+	if err := c.BodyParser(&updateReq); err != nil || validate.Struct(updateReq) != nil {
+		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 	// 校验email
 	if !check_fields.ValidateEmail(updateReq.Email) {

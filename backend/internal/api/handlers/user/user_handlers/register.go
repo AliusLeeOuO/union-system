@@ -1,7 +1,7 @@
 package user_handlers
 
 import (
-	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
@@ -13,23 +13,10 @@ import (
 )
 
 func RegisterUserHandler(c *fiber.Ctx) error {
+	var validate = validator.New()
 	var request dto.UserRegisterRequest
-
-	if err := c.BodyParser(&request); err != nil {
-		return model.SendFailureResponse(c, fiber.StatusBadRequest, "请求参数错误")
-	}
-	// 验证字段
-	fieldsToCheck := map[string]interface{}{
-		"Username":       request.Username,
-		"Password":       request.Password,
-		"Email":          request.Email,
-		"PhoneNumber":    request.PhoneNumber,
-		"InvitationCode": request.InvitationCode,
-	}
-	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
-	if !ok {
-		errorMessage := fmt.Sprintf("缺少必要字段: %s", missingField)
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
+	if err := c.BodyParser(&request); err != nil || validate.Struct(request) != nil {
+		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 	// 校验email
 	if !check_fields.ValidateEmail(request.Email) {

@@ -2,6 +2,7 @@ package admin_activity
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
@@ -9,23 +10,14 @@ import (
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/internal/service"
-	"union-system/utils/check_fields"
 	"union-system/utils/logModelEnum"
 )
 
 func DeleteActivityHandler(c *fiber.Ctx) error {
+	var validate = validator.New()
 	var request dto.DropActivityRequest
-	if err := c.BodyParser(&request); err != nil {
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, "请求参数解析失败")
-	}
-	// 验证字段
-	fieldsToCheck := map[string]interface{}{
-		"password": request.Password,
-	}
-	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
-	if !ok {
-		errorMessage := "缺少必要字段: " + missingField
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
+	if err := c.BodyParser(&request); err != nil || validate.Struct(request) != nil {
+		return model.SendFailureResponse(c, model.QueryParamErrorCode)
 	}
 
 	// 从认证中间件获取 userID

@@ -46,9 +46,9 @@ type ReplyAssistanceRequest struct {
 
 // NewAssistanceRequest 接收发起工单请求的数据结构
 type NewAssistanceRequest struct {
-	TypeID      uint   `json:"type_id" form:"type_id"`
-	Title       string `json:"title" form:"title"`
-	Description string `json:"description" form:"description"`
+	TypeID      uint   `json:"type_id" form:"type_id" validate:"required"`
+	Title       string `json:"title" form:"title" validate:"required"`
+	Description string `json:"description" form:"description" validate:"required"`
 }
 
 type UserReplyAssistanceRequest struct {

@@ -1,6 +1,7 @@
 package admin_management
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"time"
 	"union-system/global"
@@ -8,24 +9,13 @@ import (
 	"union-system/internal/model"
 	"union-system/internal/repository"
 	"union-system/internal/service"
-	"union-system/utils/check_fields"
 )
 
 func GetUserList(c *fiber.Ctx) error {
+	var validate = validator.New()
 	var request dto.GetUserListRequest
-	if err := c.BodyParser(&request); err != nil {
+	if err := c.BodyParser(&request); err != nil || validate.Struct(request) != nil {
 		return model.SendFailureResponse(c, model.QueryParamErrorCode)
-	}
-
-	// 校验字段
-	fieldsToCheck := map[string]interface{}{
-		"pageSize": int(request.PageSize),
-		"pageNum":  int(request.PageNum),
-	}
-	ok, missingField := check_fields.CheckFieldsWithDefaults(fieldsToCheck)
-	if !ok {
-		errorMessage := "缺少必要字段: " + missingField
-		return model.SendFailureResponse(c, model.QueryParamErrorCode, errorMessage)
 	}
 
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))

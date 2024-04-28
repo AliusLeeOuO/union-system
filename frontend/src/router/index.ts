@@ -237,6 +237,26 @@ const routes: Array<routeRecordWithRole> = [
                 component: () => import("@/views/admin/management/systemInfo.vue")
               }
             ]
+          },
+          {
+            path: "/admin/fee",
+            name: "adminFeeManagement",
+            component: () => import("@/views/admin/fee/index.vue"),
+            meta: {
+              roles: roles.ADMIN,
+              title: "会费管理"
+            },
+            children: [
+              {
+                path: "/admin/fee",
+                redirect: "/admin/fee/registeredMember"
+              },
+              {
+                path: "/admin/fee/registeredMember",
+                name: "registeredMember",
+                component: () => import("@/views/admin/fee/registeredMember.vue"),
+              }
+            ]
           }
         ]
       },

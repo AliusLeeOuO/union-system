@@ -1,5 +1,5 @@
 <template>
-  <div class="prime-actions">
+  <div class="flex justify-between flex-items-center mb-3">
     <a-space>
       <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
         <a-button status="success" @click="navigate">添加新用户</a-button>
@@ -171,11 +171,3 @@ onMounted(async () => {
   await fetchUserList()
 })
 </script>
-<style scoped lang="less">
-.prime-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-</style>

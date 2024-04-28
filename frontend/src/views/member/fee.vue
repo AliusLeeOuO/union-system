@@ -14,14 +14,14 @@
   <div class="description-title">
     我的会费标准
   </div>
-  <div class="fee-overview">
-    <div class="fee-overview-block">
+  <div class="fee-overview grid grid-cols-3 p-4">
+    <div class="text-center">
       <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
     </div>
-    <div class="fee-overview-block">
+    <div class="text-center">
       <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
     </div>
-    <div class="fee-overview-block">
+    <div class="text-center">
       <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
     </div>
   </div>
@@ -237,13 +237,9 @@ onMounted(async () => {
 }
 
 .fee-overview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
-  padding: 20px;
 
   .fee-overview-block {
-    text-align: center;
 
     .fee-overview-title {
       font-size: 12px;

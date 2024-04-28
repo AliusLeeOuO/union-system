@@ -1,7 +1,7 @@
 <template>
-  <div class="login-container">
+  <div class="login-container bg-cover min-h-lvh flex flex-col justify-center flex-items-center">
     <div class="login-header">登录</div>
-    <div class="login-form-container">
+    <div class="login-form-container flex justify-center flex-items-center w-full">
       <div v-if="loginSuccessfully">
         <a-result status="success" title="登录成功" />
       </div>
@@ -22,15 +22,15 @@
           <a-form-item>
             <div class="captcha-block">
               <a-image :src="captchaPicture" show-loader :preview="false" :height="50" :width="120" @click="addCaptcha"
-                       class="captcha" />
-              <span class="change-captcha" @click="addCaptcha">点击更换验证码</span>
+                       class="cursor-pointer" />
+              <span class="change-captcha cursor-pointer select-none" @click="addCaptcha">点击更换验证码</span>
             </div>
           </a-form-item>
           <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">登录</a-button>
         </a-form>
       </div>
     </div>
-    <a-space class="prime-action" v-if="!loginSuccessfully">
+    <a-space class="prime-action flex justify-center flex-items-center" v-if="!loginSuccessfully">
       <router-link to="/register" custom v-slot="{ navigate }">
         <a-link @click="navigate">注册用户</a-link>
       </router-link>
@@ -121,14 +121,8 @@ body[arco-theme="dark"] {
 }
 
 .login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
   background-color: #f5f5f5;
   background-image: url("@/assets/images/loginbg.jpg");
-  background-size: cover;
 
   .login-header {
     font-size: 24px;
@@ -141,23 +135,14 @@ body[arco-theme="dark"] {
     padding: 40px 40px 20px 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
     max-width: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
     .captcha-block {
-      .captcha {
-        cursor: pointer;
-      }
 
       .change-captcha {
         color: var(--color-text-2);
-        cursor: pointer;
         transition: 0.3ms ease;
         margin-left: 10px;
-        user-select: none;
 
         &:hover {
           color: var(--color-text-1);
@@ -169,9 +154,6 @@ body[arco-theme="dark"] {
 
 .prime-action {
   margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 </style>

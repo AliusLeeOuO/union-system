@@ -8,10 +8,10 @@
       </template>
     </a-breadcrumb>
   </div>
-  <div class="assistance-status">
-    <div class="description-title">援助状态</div>
+  <div class="flex justify-between">
+    <div class="description-title mt-4">援助状态</div>
   </div>
-  <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
+  <a-steps label-placement="vertical" :current="state.status.id" class="mb-4 mt-4">
     <a-step description="This is a description">待审核</a-step>
     <a-step description="This is a description">处理中</a-step>
     <a-step description="This is a description">已解决</a-step>
@@ -46,7 +46,7 @@
               v-model="submitAssistanceForm.response_text"
             />
           </a-form-item>
-          <div class="submit-button">
+          <div class="submit-button flex flex-items-center justify-end">
             <span>新状态：</span>
             <a-select :style="{width:'220px'}" placeholder="选择回复状态" v-model="submitAssistanceForm.new_status">
               <a-option :value="1">待审核</a-option>
@@ -165,18 +165,7 @@ const submitAssistanceForm = reactive({
 
 </script>
 <style scoped lang="less">
-.assistance-status {
-  display: flex;
-  justify-content: space-between;
-}
-
-
-.step-items {
-  margin: 20px 0;
-}
-
 .description-title {
-  margin-top: 10px;
   font-size: 16px;
   padding-bottom: 5px;
 
@@ -196,10 +185,7 @@ const submitAssistanceForm = reactive({
 }
 
 .submit-button {
-  display: flex;
-  align-items: center;
   gap: 5px;
   font-size: 14px;
-  justify-content: flex-end;
 }
 </style>

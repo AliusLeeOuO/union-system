@@ -17,7 +17,7 @@
         :max-participants="item.maxParticipants"
       />
     </div>
-    <div class="activity-pagination">
+    <div class="flex justify-end flex-items-center p-4">
       <a-pagination
         :total="pagination.total"
         v-model:page-size="pagination.pageSize"
@@ -71,11 +71,3 @@ onMounted(async () => {
   await getActivityMemberList()
 })
 </script>
-<style scoped lang="less">
-.activity-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-</style>

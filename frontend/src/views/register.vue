@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container flex flex-col flex-items-center justify-center min-h-full bg-cover">
     <div class="login-header">注册</div>
 
     <div class="login-form-container">
@@ -133,14 +133,8 @@ body[arco-theme="dark"] {
 
 
 .login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
   background-color: #f5f5f5;
   background-image: url("@/assets/images/loginbg.jpg");
-  background-size: cover;
 
   .login-header {
     font-size: 24px;

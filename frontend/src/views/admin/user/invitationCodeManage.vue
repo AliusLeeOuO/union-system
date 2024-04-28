@@ -1,5 +1,5 @@
 <template>
-  <div class="prime-actions">
+  <div class="mb-3 flex flex-items-center justify-between">
     <a-space>
       <a-button status="success" @click="fetchGetNewInvitationCode">生成新邀请码</a-button>
     </a-space>
@@ -12,10 +12,10 @@
 <!--      </a-button>-->
 <!--    </a-space>-->
   </div>
-  <div class="tooltip-zone" v-if="getNewInvitationCodeSuccess">
+  <div class="mb-3" v-if="getNewInvitationCodeSuccess">
     <a-alert type="success" closable @close="closeInvitationAlert">新邀请码生成成功！</a-alert>
   </div>
-  <div class="action-zone">
+  <div class="flex justify-between mb-3">
 <!--    <a-form :models="searchForm" layout="inline">-->
 <!--      <a-form-item label="状态">-->
 <!--        <a-select :style="{width:'180px'}" v-models="searchForm.status">-->
@@ -150,19 +150,3 @@ onMounted(async () => {
   await fetchCodeList()
 })
 </script>
-<style scoped lang="less">
-.prime-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.tooltip-zone {
-  margin-bottom: 10px;
-}
-.action-zone {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-</style>

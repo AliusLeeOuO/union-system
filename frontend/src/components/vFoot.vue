@@ -1,5 +1,5 @@
 <template>
-  <footer>
+  <footer class="text-center p-5">
     <p>This project using MIT License. Author: {{ pkg.author }}. Mail: {{ pkg.email }}</p>
     <p>
       页面版本v{{ pkg.version }}-{{ buildDate }}
@@ -38,7 +38,5 @@ function toMIIT(event: MouseEvent) {
 <style lang="less" scoped>
 footer {
   color: var(--color-text-1);
-  text-align: center;
-  padding: 20px;
 }
 </style>

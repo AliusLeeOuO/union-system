@@ -19,7 +19,7 @@
       <a-button @click="navigate" :type="isActive? 'primary': 'text'">新建援助</a-button>
     </router-link>
   </a-space>
-  <div class="router-container">
+  <div class="mt-4 mb-3">
     <router-view />
   </div>
 </template>
@@ -32,10 +32,4 @@ const routes: BreadcrumbRoute[] = [
     label: "帮助"
   }
 ]
-
 </script>
-<style scoped lang="less">
-.router-container {
-  margin: 20px 0;
-}
-</style>

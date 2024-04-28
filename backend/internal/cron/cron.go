@@ -1,10 +1,8 @@
 package cron
 
 import (
-	"union-system/global"
-	cronFunc2 "union-system/internal/cron/cron_func"
-
 	"github.com/robfig/cron/v3"
+	cronFunc2 "union-system/internal/cron/cron_func"
 )
 
 func InitCron() {
@@ -17,5 +15,4 @@ func InitCron() {
 	c.AddFunc("@every 1s", cronFunc2.SetMemoryInfo)
 
 	c.Start()
-	global.Cron = c
 }

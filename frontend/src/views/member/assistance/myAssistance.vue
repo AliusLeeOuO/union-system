@@ -1,12 +1,12 @@
 <template>
-  <div class="my-assistant-overview">
-    <div class="my-assistant-overview-block">
+  <div class="my-assistant-overview grid grid-cols-3 p-4">
+    <div class="my-assistant-overview-block text-center">
       <a-statistic title="总工单数" :value="overviewItem.total" :value-from="0" animation />
     </div>
-    <div class="my-assistant-overview-block">
+    <div class="my-assistant-overview-block text-center">
       <a-statistic title="待我处理" :value="overviewItem.resolved" :value-from="0" animation />
     </div>
-    <div class="my-assistant-overview-block">
+    <div class="my-assistant-overview-block text-center">
       <a-statistic title="处理中" :value="overviewItem.pending" :value-from="0" animation />
     </div>
   </div>
@@ -124,22 +124,7 @@ onMounted(async () => {
 </script>
 <style scoped lang="less">
 .my-assistant-overview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
   padding: 20px;
-
-  .my-assistant-overview-block {
-    text-align: center;
-
-    .my-assistant-overview-title {
-      font-size: 12px;
-    }
-
-    .my-assistant-overview-content {
-      font-size: 20px;
-      margin-top: 10px;
-    }
-  }
 }
 </style>

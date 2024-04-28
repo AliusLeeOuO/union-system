@@ -1,6 +1,6 @@
 <template>
   <v-head />
-  <main>
+  <main class="pl-4 pr-4">
     <RouterView />
   </main>
   <v-foot />
@@ -14,6 +14,5 @@ main {
   min-height: 70vh;
   max-width: 1400px;
   margin: 20px auto;
-  padding: 0 20px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <header class="header-pc">
+  <header class="header-pc flex justify-between flex-items-center">
     <div class="header-left">
-      <div @click="toIndex" class="logo">
+      <div @click="toIndex" class="logo cursor-pointer flex justify-center flex-items-center">
         <img src="@/assets/images/logo.png" alt="logo">
         <span>工会管理系统</span>
       </div>
@@ -192,6 +192,10 @@ const adminNavList = reactive<navList[]>([
     path: "/admin/manageActivity"
   },
   {
+    title: "会费管理",
+    path: "/admin/fee"
+  },
+  {
     title: "系统管理",
     path: "/admin/management"
   }
@@ -240,9 +244,6 @@ body[arco-theme="dark"] {
 .header-pc {
   padding: 0 10px;
   height: 60px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   @media only screen and (max-width: 768px) {
     display: none;
   }
@@ -251,10 +252,6 @@ body[arco-theme="dark"] {
     min-width: 100px;
 
     .logo {
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       gap: 5px;
 
       img {

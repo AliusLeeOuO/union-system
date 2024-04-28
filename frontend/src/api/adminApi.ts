@@ -207,6 +207,22 @@ export interface logMemberListItem {
   time: string
 }
 
+export interface getRegisteredFeeList {
+  page_num: number
+  page_size: number
+  total: number
+  users: registeredFeeListItem[] | null
+}
+
+export interface registeredFeeListItem {
+  user_id: number
+  username: string
+  email: string
+  phone_number: string
+  registration_date: string
+  fee_amount: string
+}
+
 
 export default function useAdminApi() {
   return {
@@ -347,6 +363,10 @@ export default function useAdminApi() {
         page_num: pageNum,
         page_size: pageSize
       }))
-    }
+    },
+    getRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getRegisteredFeeList>> => axiosInstance.post("/admin/fee/getRegisteredFeeList", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    }))
   }
 }

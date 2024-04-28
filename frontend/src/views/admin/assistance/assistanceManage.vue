@@ -11,7 +11,7 @@
   <a-typography-title :heading="2">
     援助管理
   </a-typography-title>
-  <div class="action-zone">
+  <div class="flex justify-between mb-3">
     <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
       <a-form-item label="ID">
         <a-input v-model="searchForm.id" placeholder="通过ID查找" />
@@ -210,10 +210,3 @@ onMounted(async () => {
 })
 
 </script>
-<style scoped lang="less">
-.action-zone {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-</style>

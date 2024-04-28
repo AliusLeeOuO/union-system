@@ -1,7 +1,7 @@
 <template>
-  <div class="header">
+  <div class="header overflow-hidden flex justify-between flex-items-center">
     <span>{{ title }}</span>
-    <a-link :href="link" target="_blank" class="link">{{ link }}</a-link>
+    <a-link :href="link" target="_blank" class="text-right">{{ link }}</a-link>
   </div>
   <div class="content">
     <div>
@@ -30,15 +30,7 @@ body[arco-theme="dark"] {
   background-color: #eee;
   min-height: 40px;
   border-radius: 5px;
-  overflow: hidden;
   font-size: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .link {
-    text-align: right;
-  }
 }
 
 .content {

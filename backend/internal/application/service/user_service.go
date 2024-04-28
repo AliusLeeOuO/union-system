@@ -2,8 +2,11 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"time"
+	"union-system/global"
 	"union-system/internal/application/dto"
 	"union-system/internal/domain"
 	"union-system/internal/infrastructure/repository"
@@ -21,7 +24,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{Repo: repo}
 }
 
-func (s *UserService) Login(username, password, captchaID, captchaVal string) (*dto.LoginResponse, error) {
+func (s *UserService) Login(c *fiber.Ctx, username, password, captchaID, captchaVal string) (*dto.LoginResponse, error) {
 	// 验证验证码
 	if !captcha.VerifyCode(captchaID, captchaVal) {
 		return nil, errors.New("验证码错误")
@@ -63,6 +66,19 @@ func (s *UserService) Login(username, password, captchaID, captchaVal string) (*
 		Role:     user.UserTypeID,
 		Status:   user.IsActive,
 	}
+
+	// 保存 Token 到 Redis
+	userTokenKey := fmt.Sprintf("user_tokens:%d", responseData.UserId)
+	pipe := global.RedisClient.Pipeline()
+	pipe.LPush(c.Context(), userTokenKey, responseData.Token)
+	pipe.LTrim(c.Context(), userTokenKey, 0, 2) // 保持列表最多 3 个元素
+	pipe.Expire(c.Context(), userTokenKey, 24*time.Hour)
+	_, err = pipe.Exec(c.Context())
+	if err != nil {
+		global.Logger.Info("保存 Token 出错", err)
+		return nil, errors.New("保存 Token 出错")
+	}
+
 	return &responseData, nil
 }
 

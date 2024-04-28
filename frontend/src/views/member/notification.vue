@@ -8,7 +8,7 @@
       </template>
     </a-breadcrumb>
   </div>
-  <div class="notification-top">
+  <div class="notification-top flex justify-between flex-items-center">
     <a-typography-title :heading="2">
       我的通知
     </a-typography-title>
@@ -43,7 +43,7 @@
         </template>
       </notification-block>
     </div>
-    <div class="pagination">
+    <div class="flex justify-end flex-items-center mt-4">
       <a-pagination :total="notificationPageData.total" @change="pageChange" />
     </div>
   </div>
@@ -118,9 +118,6 @@ onMounted(() => {
 </script>
 <style scoped lang="less">
 .notification-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   height: 60px;
   :deep(.arco-typography) {
     margin: 0;
@@ -129,12 +126,5 @@ onMounted(() => {
   h1 {
     font-size: 20px;
   }
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
 }
 </style>

@@ -11,7 +11,7 @@
   <a-typography-title :heading="2">
     活动管理
   </a-typography-title>
-  <div class="prime-actions">
+  <div class="flex justify-between flex-items-center">
     <a-space>
       <router-link to="/admin/addNewActivity" custom v-slot="{ navigate }">
         <a-button status="success" @click="navigate">添加新活动</a-button>
@@ -26,7 +26,8 @@
       </a-button>
     </a-space>
   </div>
-  <div class="activity-content">
+  <a-empty v-if="activityList.length === 0"></a-empty>
+  <div class="activity-content" v-else>
     <div class="activity-items">
       <activity-block
         v-for="item in activityList"
@@ -43,7 +44,7 @@
         :max-participants="item.maxParticipants"
       />
     </div>
-    <div class="activity-pagination">
+    <div class="flex justify-end mt-4">
       <a-pagination
         :total="pagination.total"
         v-model:page-size="pagination.pageSize"
@@ -106,17 +107,4 @@ const getActivityList = async () => {
 onMounted(async () => {
   await getActivityList()
 })
-
 </script>
-<style scoped lang="less">
-.prime-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.activity-pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-</style>

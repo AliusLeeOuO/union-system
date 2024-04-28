@@ -19,7 +19,7 @@
       <a-button @click="navigate" :type="isActive? 'primary': 'text'">邀请码管理</a-button>
     </router-link>
   </a-space>
-  <div class="router-container">
+  <div class="mt-4 mb-3">
     <router-view />
   </div>
 </template>
@@ -40,9 +40,3 @@ const routes: BreadcrumbRoute[] = [
 
 
 </script>
-<style scoped lang="less">
-.router-container {
-  margin: 20px 0;
-}
-
-</style>

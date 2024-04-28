@@ -1,24 +1,24 @@
 <template>
   <div>
-    <div class="description-block">
-      <div class="description">
+    <div class="description-block mb-4 grid gap-xl">
+      <div class="w-full">
         <a-typography-title :heading="4">
           CPU信息
         </a-typography-title>
         <a-descriptions :data="cpuInfoData" size="large" :column="1" bordered />
       </div>
-      <div class="chart">
+      <div class="h-sm w-full">
         <v-chart :theme="chartTheme" :option="cpuInfoOption"></v-chart>
       </div>
     </div>
-    <div class="description-block">
-      <div class="description">
+    <div class="description-block mb-4 grid gap-xl">
+      <div class="w-full">
         <a-typography-title :heading="4">
          内存信息
         </a-typography-title>
         <a-descriptions class="description" :data="memInfoData" size="large" :column="1" bordered />
       </div>
-      <div class="chart">
+      <div class="h-sm w-full">
         <v-chart :theme="chartTheme" :option="memInfoOption"></v-chart>
       </div>
     </div>
@@ -234,18 +234,6 @@ onUnmounted(() => {
 </script>
 <style lang="less" scoped>
 .description-block {
-  margin-bottom: 20px;
-  display: grid;
   grid-template-columns: 70% 30%;
-  gap: 20px;
-
-  .description {
-    width: 100%;
-  }
-
-  .chart {
-    width: 100%;
-    height: 350px;
-  }
 }
 </style>

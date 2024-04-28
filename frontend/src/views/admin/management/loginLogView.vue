@@ -1,5 +1,5 @@
 <template>
-  <div class="action-zone">
+  <div class="flex justify-between">
     <a-form :model="searchForm" layout="inline">
       <a-form-item label="状态">
         <a-select :style="{width:'180px'}" v-model="searchForm.status">
@@ -119,9 +119,3 @@ onMounted(async () => {
   await fetchLoginLog()
 })
 </script>
-<style scoped lang="less">
-.action-zone {
-  display: flex;
-  justify-content: space-between;
-}
-</style>

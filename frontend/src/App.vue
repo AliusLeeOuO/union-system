@@ -30,6 +30,3 @@ onMounted(async () => {
   }
 })
 </script>
-<style lang="less" scoped>
-
-</style>

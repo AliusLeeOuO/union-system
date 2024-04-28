@@ -21,6 +21,4 @@ func InitFiber(servicePort int) {
 	if err != nil {
 		global.Logger.Panic("fiber lost: %v", err)
 	}
-
-	global.FiberService = app
 }

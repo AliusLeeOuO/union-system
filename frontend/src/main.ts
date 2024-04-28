@@ -5,6 +5,7 @@ import ClickOutside from './directives/clickoutside'
 
 import "./assets/main.less"
 import { Message } from '@arco-design/web-vue'
+import 'virtual:uno.css'
 
 import App from "./App.vue"
 import router from "./router"

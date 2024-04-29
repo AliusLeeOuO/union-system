@@ -51,3 +51,15 @@ type UserWithFeeResponse struct {
 	PageResponse
 	Users []UserWithFee `json:"users"`
 }
+
+type UserNonFee struct {
+	UserID      uint   `json:"user_id"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+type UserNonFeeResponse struct {
+	PageResponse
+	Users []UserNonFee `json:"users"`
+}

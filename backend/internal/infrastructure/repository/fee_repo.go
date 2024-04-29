@@ -120,6 +120,28 @@ func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint
 	return usersWithFees, uint(total), nil
 }
 
+// GetNonRegisteredUsers 获取未注册的用户
+func (r *FeeRepository) GetNonRegisteredUsers(pageSize, pageNum uint) ([]domain.User, uint, error) {
+	var users []domain.User
+	var total int64
+	err := r.DB.
+		Table("tb_user").
+		Where("is_active = ? AND fee_standard = ? AND user_type_id = ?", true, -1, 2).
+		Offset(int(pageNum)).
+		Limit(int(pageSize)).
+		Find(&users).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	err = r.DB.
+		Table("tb_user").
+		Where("is_active = ? AND fee_standard = ? AND user_type_id = ?", true, -1, 2).
+		Count(&total).Error
+
+	return users, uint(total), nil
+}
+
 //func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint) (dto.UserWithFee, error) {
 //	var usersWithFees []dto.UserWithFee
 //	var total int64

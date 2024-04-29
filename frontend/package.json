@@ -22,7 +22,7 @@
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "qs": "^6.12.1",
-    "vue": "^3.4.25",
+    "vue": "^3.4.26",
     "vue-echarts": "^6.7.1",
     "vue-router": "^4.3.2"
   },

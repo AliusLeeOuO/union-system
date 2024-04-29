@@ -134,3 +134,12 @@ func (s *FeeService) GetRegisteredFeeList(pageSize, pageNum uint) ([]dto.UserWit
 	}
 	return usersWithFees, total, nil
 }
+
+// GetNonRegisteredUsers 获取未注册会费的用户
+func (s *FeeService) GetNonRegisteredUsers(pageSize, pageNum uint) ([]domain.User, uint, error) {
+	users, total, err := s.Repo.GetNonRegisteredUsers(pageSize, pageNum)
+	if err != nil {
+		return nil, 0, err
+	}
+	return users, total, nil
+}

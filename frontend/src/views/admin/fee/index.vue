@@ -12,8 +12,14 @@
     会费管理
   </a-typography-title>
   <a-space>
+    <router-link to="/admin/fee/feeSetting" custom v-slot="{ navigate, isActive }">
+      <a-button @click="navigate" :type="isActive? 'primary': 'text'">会费标准管理</a-button>
+    </router-link>
     <router-link to="/admin/fee/registeredMember" custom v-slot="{ navigate, isActive }">
       <a-button @click="navigate" :type="isActive? 'primary': 'text'">已注册会员管理</a-button>
+    </router-link>
+    <router-link to="/admin/fee/nonRegisteredMember" custom v-slot="{ navigate, isActive }">
+      <a-button @click="navigate" :type="isActive? 'primary': 'text'">未注册会员管理</a-button>
     </router-link>
   </a-space>
   <div class="mt-4 mb-3">

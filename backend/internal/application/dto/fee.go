@@ -45,6 +45,7 @@ type UserWithFee struct {
 	PhoneNumber      string    `json:"phone_number"`
 	RegistrationDate time.Time `json:"registration_date"`
 	FeeAmount        string    `json:"fee_amount"` // 从 FeeStandardNew 表获取
+	FeeStandardName  string    `json:"fee_standard_name"`
 }
 
 type UserWithFeeResponse struct {
@@ -62,4 +63,10 @@ type UserNonFee struct {
 type UserNonFeeResponse struct {
 	PageResponse
 	Users []UserNonFee `json:"users"`
+}
+
+type FeeStandard struct {
+	StandardID   uint   `json:"standard_id"`
+	StandardName string `json:"standard_name"`
+	Amount       string `json:"amount"`
 }

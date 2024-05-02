@@ -24,34 +24,21 @@
       {{ dayjs.tz(record.registration_date).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
     <template #action="{ record }">
-      <!--  TODO: 等待实现  -->
-      <a-button>修改费率标准</a-button>
+      <a-button>注册会员费率</a-button>
     </template>
   </a-table>
 </template>
 <script setup lang="ts">
 import dayjs from "dayjs"
 import { onMounted, reactive } from "vue"
-import useAdminApi, { type registeredFeeListItem } from "@/api/adminApi"
+import useAdminApi, { type nonRegisteredFeeListItem } from "@/api/adminApi"
 import { handleXhrResponse } from "@/api"
 import { Message } from "@arco-design/web-vue"
-const { getRegisteredFeeList } = useAdminApi()
+const { getNonRegisteredFeeList } = useAdminApi()
 const columns = [
   {
     title: "用户名",
     slotName: "username"
-  },
-  {
-    title: "会费标准",
-    dataIndex: "fee_standard_name"
-  },
-  {
-    title: "会费金额",
-    dataIndex: "fee_amount"
-  },
-  {
-    title: "注册会费时间",
-    slotName: "regTime"
   },
   {
     title: "操作",
@@ -59,7 +46,7 @@ const columns = [
   }
 ]
 
-const registeredFeeList = reactive<registeredFeeListItem[]>([])
+const registeredFeeList = reactive<nonRegisteredFeeListItem[]>([])
 
 const page = reactive({
   current: 1,
@@ -68,7 +55,7 @@ const page = reactive({
 })
 
 const fetchFeeList = async () => {
-  const { data } = await handleXhrResponse(() => getRegisteredFeeList(page.current, page.pageSize), Message)
+  const { data } = await handleXhrResponse(() => getNonRegisteredFeeList(page.current, page.pageSize), Message)
   page.total = data.data.total
   if (data.data.users !== null) {
     registeredFeeList.splice(0, registeredFeeList.length, ...data.data.users)

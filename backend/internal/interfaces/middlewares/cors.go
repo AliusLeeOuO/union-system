@@ -11,7 +11,7 @@ func RegisterCORS() fiber.Handler {
 		AllowOriginsFunc: func(origin string) bool {
 			return origin != ""
 		},
-		AllowMethods:     "POST, GET, DELETE, OPTIONS",
+		AllowMethods:     "POST, GET, DELETE, PUT, OPTIONS",
 		AllowHeaders:     "Content-Type, AccessToken, Authorization, Token",
 		AllowCredentials: true,
 		ExposeHeaders:    "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type",

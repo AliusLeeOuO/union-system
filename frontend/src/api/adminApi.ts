@@ -1,11 +1,9 @@
 import type { AxiosApiResponse } from "@/api/index"
 import axiosInstance from "@/api/index"
 import qs from "qs"
+import type { pageResponse } from "@/api/public_types"
 
-export interface getUserResponseData {
-  page_num: number
-  page_size: number,
-  total: number,
+export interface getUserResponseData extends pageResponse {
   data: userListItem[] | null
 }
 
@@ -26,10 +24,7 @@ export interface userDetail {
   email: string
 }
 
-export interface getLoginLogResponseData {
-  page_num: number
-  page_size: number,
-  total: number,
+export interface getLoginLogResponseData extends pageResponse {
   data: loginLogItem[] | null
 }
 
@@ -42,10 +37,7 @@ export interface loginLogItem {
   username: string
 }
 
-export interface getAssistanceListResponseData {
-  page_num: number
-  page_size: number,
-  total: number,
+export interface getAssistanceListResponseData extends pageResponse {
   assistance_status: assistanceStatus[]
   data: assistanceListItem[] | null
 }
@@ -95,10 +87,7 @@ export interface assistanceDetailResponseData {
   username: string
 }
 
-export interface activityListResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface activityListResponseData extends pageResponse {
   data: activityListResponse[] | null
 }
 
@@ -128,10 +117,7 @@ export interface activityManagementListResponse {
   registrations: activityRegistrations[] | null
 }
 
-export interface invitationCodeListResponse {
-  page_size: number
-  page_num: number
-  total: number
+export interface invitationCodeListResponse extends pageResponse {
   data: invitationCodeListItem[] | null
 }
 
@@ -163,10 +149,7 @@ export interface activityType {
   type_name: string
 }
 
-export interface getLogAdminListResponse {
-  page_size: number
-  page_num: number
-  total: number
+export interface getLogAdminListResponse extends pageResponse {
   data: logAdminListItem[] | null
 }
 
@@ -185,10 +168,7 @@ export interface logAdminListItem {
   time: string
 }
 
-export interface getLogMemberListResponse {
-  page_size: number
-  page_num: number
-  total: number
+export interface getLogMemberListResponse extends pageResponse {
   data: logMemberListItem[] | null
 }
 
@@ -207,10 +187,7 @@ export interface logMemberListItem {
   time: string
 }
 
-export interface getRegisteredFeeList {
-  page_num: number
-  page_size: number
-  total: number
+export interface getRegisteredFeeList extends pageResponse {
   users: registeredFeeListItem[] | null
 }
 
@@ -221,6 +198,24 @@ export interface registeredFeeListItem {
   phone_number: string
   registration_date: string
   fee_amount: string
+  fee_standard_name: string
+}
+
+export interface nonRegisteredFeeListItem {
+  user_id: number
+  username: string
+  email: string
+  phone_number: string
+}
+
+export interface getNonRegisteredFeeList extends pageResponse {
+  users: nonRegisteredFeeListItem[] | null
+}
+
+export interface feeListItem {
+  standard_id: number
+  standard_name: string
+  amount: string
 }
 
 
@@ -367,6 +362,19 @@ export default function useAdminApi() {
     getRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getRegisteredFeeList>> => axiosInstance.post("/admin/fee/getRegisteredFeeList", qs.stringify({
       page_num: pageNum,
       page_size: pageSize
-    }))
+    })),
+    getNonRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getNonRegisteredFeeList>> => axiosInstance.post("/admin/fee/getNonRegisteredFeeList", qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    })),
+    getFeeStandardList: (): Promise<AxiosApiResponse<feeListItem[]>> => axiosInstance.get("/admin/fee/getFeeStandard"),
+    modifyFeeStandard: (standardId: number, amount: number, name: string): Promise<AxiosApiResponse<null>> => axiosInstance.put(`/admin/fee/modifyFeeStandard/${standardId}`, qs.stringify({
+      amount,
+      name
+    })),
+    addFeeStandard: (amount: number, name: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/fee/addNewFeeStandard", qs.stringify({
+      amount,
+      name
+    })),
   }
 }

@@ -1,11 +1,9 @@
 import axiosInstance from "@/api/index"
 import type { AxiosApiResponse } from "@/api/index"
 import qs from "qs"
+import type { pageResponse } from "@/api/public_types"
 
-export interface activityListResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface activityListResponseData extends pageResponse{
   data: activityListResponse[] | null
 }
 
@@ -29,10 +27,7 @@ export interface activityDetailResponse {
 }
 
 // 会员援助列表
-export interface assistanceListResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface assistanceListResponseData extends pageResponse{
   resolved_count: number
   pending_review_count: number
   assistances: assistanceListResponse[] | null
@@ -90,10 +85,7 @@ export interface feeStandardResponse {
   category_id: number
 }
 
-export interface feeHistoryResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface feeHistoryResponseData extends pageResponse{
   history: feeHistoryResponse[] | null
 }
 
@@ -112,10 +104,7 @@ export interface feeWaitingResponseData {
   bills: feeHistoryResponse[] | null
 }
 
-export interface notificationListResponse {
-  page_num: number
-  page_size: number
-  total: number
+export interface notificationListResponse extends pageResponse{
   notifications: notificationResponseObject[] | null
 }
 

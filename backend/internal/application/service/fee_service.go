@@ -143,3 +143,32 @@ func (s *FeeService) GetNonRegisteredUsers(pageSize, pageNum uint) ([]domain.Use
 	}
 	return users, total, nil
 }
+
+// GetFeeStandardList 获取会费标准列表
+func (s *FeeService) GetFeeStandardList() ([]dto.FeeStandard, error) {
+	feeStandardList, err := s.Repo.GetFeeStandard()
+	if err != nil {
+		return nil, err
+	}
+	var res []dto.FeeStandard
+	for _, feeStandard := range feeStandardList {
+		res = append(res, dto.FeeStandard{
+			StandardID:   feeStandard.StandardId,
+			StandardName: feeStandard.StandardName,
+			Amount:       feeStandard.StandardAmount,
+		})
+	}
+	return res, nil
+}
+
+// ModifyFeeStandard 修改会费标准
+func (s *FeeService) ModifyFeeStandard(feeStandardID uint, amount float64, name string) error {
+	return s.Repo.ModifyFeeStandard(feeStandardID, amount, name)
+}
+
+// AddFeeStandard 添加会费标准
+func (s *FeeService) AddFeeStandard(amount float64, name string) error {
+	// 金额转为字符串
+	amountStr := fmt.Sprintf("%.2f", amount)
+	return s.Repo.AddFeeStandard(amountStr, name)
+}

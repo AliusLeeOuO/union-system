@@ -252,9 +252,31 @@ const routes: Array<routeRecordWithRole> = [
                 redirect: "/admin/fee/registeredMember"
               },
               {
+                path: "/admin/fee/feeSetting",
+                name: "feeSetting",
+                component: () => import("@/views/admin/fee/feeStandardList.vue"),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: "会费标准管理"
+                }
+              },
+              {
                 path: "/admin/fee/registeredMember",
                 name: "registeredMember",
                 component: () => import("@/views/admin/fee/registeredMember.vue"),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: "已注册会员管理"
+                }
+              },
+              {
+                path: "/admin/fee/nonRegisteredMember",
+                name: "nonRegisteredMember",
+                component: ()=>import("@/views/admin/fee/nonRegisteredMember.vue"),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: "未注册会员管理"
+                }
               }
             ]
           }

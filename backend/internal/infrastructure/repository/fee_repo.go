@@ -99,7 +99,7 @@ func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint
 	var usersWithFees []dto.UserWithFee
 	err := r.DB.
 		Table("tb_user").
-		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount").
+		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount, tb_fee_standard_new.standard_name AS fee_standard_name").
 		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
 		Where("tb_user.is_active = ?", true).
 		Offset(int(pageNum)).
@@ -140,6 +140,27 @@ func (r *FeeRepository) GetNonRegisteredUsers(pageSize, pageNum uint) ([]domain.
 		Count(&total).Error
 
 	return users, uint(total), nil
+}
+
+// GetFeeStandard 获取所有会费标准
+func (r *FeeRepository) GetFeeStandard() ([]domain.FeeStandardNew, error) {
+	var feeStandards []domain.FeeStandardNew
+	err := r.DB.Table("tb_fee_standard_new").Find(&feeStandards).Error
+	return feeStandards, err
+}
+
+// ModifyFeeStandard 修改会费标准
+func (r *FeeRepository) ModifyFeeStandard(feeStandardID uint, amount float64, name string) error {
+	result := r.DB.Model(&domain.FeeStandardNew{}).
+		Where("standard_id = ?", feeStandardID).
+		Update("standard_amount", amount).
+		Update("standard_name", name)
+	return result.Error
+}
+
+// AddFeeStandard 添加会费标准
+func (r *FeeRepository) AddFeeStandard(amount string, name string) error {
+	return r.DB.Create(&domain.FeeStandardNew{StandardAmount: amount, StandardName: name}).Error
 }
 
 //func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint) (dto.UserWithFee, error) {

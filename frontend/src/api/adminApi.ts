@@ -199,6 +199,7 @@ export interface registeredFeeListItem {
   registration_date: string
   fee_amount: string
   fee_standard_name: string
+  fee_standard_id: number
 }
 
 export interface nonRegisteredFeeListItem {
@@ -206,6 +207,7 @@ export interface nonRegisteredFeeListItem {
   username: string
   email: string
   phone_number: string
+  register_at: string
 }
 
 export interface getNonRegisteredFeeList extends pageResponse {
@@ -376,5 +378,9 @@ export default function useAdminApi() {
       amount,
       name
     })),
+    changeMemberFeeStandard: (userId: number, standardId: number): Promise<AxiosApiResponse<null>> => axiosInstance.put(`/admin/fee/changeFeeStandard/${userId}`, qs.stringify({
+      new_standard_id: standardId
+    })),
+    removeMemberFeeStandard: (userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/fee/removeFeeStandard/${userId}`)
   }
 }

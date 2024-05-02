@@ -99,7 +99,7 @@ func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint
 	var usersWithFees []dto.UserWithFee
 	err := r.DB.
 		Table("tb_user").
-		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount, tb_fee_standard_new.standard_name AS fee_standard_name").
+		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount, tb_fee_standard_new.standard_name AS fee_standard_name, tb_fee_standard_new.standard_id as fee_standard_id").
 		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
 		Where("tb_user.is_active = ?", true).
 		Offset(int(pageNum)).
@@ -163,32 +163,40 @@ func (r *FeeRepository) AddFeeStandard(amount string, name string) error {
 	return r.DB.Create(&domain.FeeStandardNew{StandardAmount: amount, StandardName: name}).Error
 }
 
-//func (r *FeeRepository) GetRegisteredUsersWithFeeStandard(pageSize, pageNum uint) (dto.UserWithFee, error) {
-//	var usersWithFees []dto.UserWithFee
-//	var total int64
-//
-//	// 计算符合条件的总记录数
-//	err := r.DB.
-//		Table("tb_user").
-//		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
-//		Where("tb_user.is_active = ?", true).
-//		Count(&total).Error
-//	if err != nil {
-//		return dto.UserWithFee{}, err
-//	}
-//
-//	// 分页查询数据
-//	err = r.DB.
-//		Table("tb_user").
-//		Select("tb_user.user_id, tb_user.username, tb_user.email, tb_user.phone_number, tb_user.registration_date, tb_fee_standard_new.standard_amount AS fee_amount").
-//		Joins("JOIN tb_fee_standard_new ON tb_user.fee_standard = tb_fee_standard_new.standard_id").
-//		Where("tb_user.is_active = ?", true).
-//		Offset(int(pageNum - 1) * int(pageSize)).
-//		Limit(int(pageSize)).
-//		Find(&usersWithFees).Error
-//	if err != nil {
-//		return dto.UserWithFee{}, err
-//	}
-//
-//	return dto.PaginatedUsersWithFees{Users: usersWithFees, Total: total}, nil
-//}
+// CheckFeeStandardExists 检查会费标准是否存在
+func (r *FeeRepository) CheckFeeStandardExists(standardID uint) (bool, error) {
+	var count int64
+	err := r.DB.Model(&domain.FeeStandardNew{}).Where("standard_id = ?", standardID).Count(&count).Error
+	fmt.Println(count > 0)
+	return count > 0, err
+}
+
+// ChangeFeeStandard 修改用户的会费标准
+func (r *FeeRepository) ChangeFeeStandard(userID uint, newStandardID uint) error {
+	result := r.DB.Model(&domain.User{}).
+		Where("user_id = ?", userID).
+		Update("fee_standard", newStandardID)
+	return result.Error
+}
+
+// RemoveMemberFeeStandard 移除用户的会费标准
+func (r *FeeRepository) RemoveMemberFeeStandard(userID uint) error {
+	result := r.DB.Model(&domain.User{}).
+		Where("user_id = ?", userID).
+		Update("fee_standard", -1)
+	return result.Error
+}
+
+// CheckUserExists 检查用户是否存在
+func (r *FeeRepository) CheckUserExists(userID uint) (bool, error) {
+	var count int64
+	err := r.DB.Model(&domain.User{}).Where("user_id = ?", userID).Count(&count).Error
+	return count > 0, err
+}
+
+// CheckUserHasFeeStandard 检查用户是否已经有会费标准
+func (r *FeeRepository) CheckUserHasFeeStandard(userID uint) (bool, error) {
+	var count int64
+	err := r.DB.Model(&domain.User{}).Where("user_id = ? AND fee_standard != ?", userID, -1).Count(&count).Error
+	return count > 0, err
+}

@@ -3,6 +3,7 @@ package admin_fee
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"time"
 	"union-system/global"
 	"union-system/internal/application/dto"
 	"union-system/internal/application/service"
@@ -34,6 +35,7 @@ func GetNonRegisteredFeeList(c *fiber.Ctx) error {
 			Username:    user.Username,
 			Email:       user.Email,
 			PhoneNumber: user.PhoneNumber,
+			RegisterAt:  user.RegistrationDate.Format(time.RFC3339),
 		})
 	}
 

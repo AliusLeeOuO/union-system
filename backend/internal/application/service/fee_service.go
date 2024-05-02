@@ -172,3 +172,29 @@ func (s *FeeService) AddFeeStandard(amount float64, name string) error {
 	amountStr := fmt.Sprintf("%.2f", amount)
 	return s.Repo.AddFeeStandard(amountStr, name)
 }
+
+// ChangeFeeStandard 修改用户会费标准
+func (s *FeeService) ChangeFeeStandard(userID, newStandardID uint) error {
+	// 检查新的会费标准是否存在
+	exists, err := s.Repo.CheckFeeStandardExists(newStandardID)
+	if !exists {
+		return errors.New("会费标准不存在")
+	}
+	if err != nil {
+		return err
+	}
+	return s.Repo.ChangeFeeStandard(userID, newStandardID)
+}
+
+// RemoveMemberFeeStandard 移除用户会费标准
+func (s *FeeService) RemoveMemberFeeStandard(userID uint) error {
+	// 检查用户是否存在
+	exists, err := s.Repo.CheckUserExists(userID)
+	if !exists {
+		return errors.New("用户不存在")
+	}
+	if err != nil {
+		return err
+	}
+	return s.Repo.RemoveMemberFeeStandard(userID)
+}

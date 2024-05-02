@@ -111,9 +111,9 @@ const changeFeeStandardForm = reactive({
   id: -1
 })
 
-const changeFeeStandardFormHandleBeforeOk = async (done: (closed?: boolean) => void) => {
+const changeFeeStandardFormHandleBeforeOk = async (done: (closed: boolean) => void) => {
   await fetchChangeFee()
-  done()
+  done(true)
   Message.success("修改成功")
   changeFeeStandardForm.id = -1
   changeFeeStandardForm.name = ""
@@ -143,9 +143,9 @@ const fetchNewFee = async () => {
   await handleXhrResponse(() => addFeeStandard(newFeeStandardForm.amount, newFeeStandardForm.name), Message)
 }
 
-const newFeeStandardFormHandleBeforeOk = async (done: (closed?: boolean) => void) => {
+const newFeeStandardFormHandleBeforeOk = async (done: (closed: boolean) => void) => {
   await fetchNewFee()
-  done()
+  done(true)
   Message.success("新建成功")
   newFeeStandardForm.name = ""
   newFeeStandardForm.amount = 0.00

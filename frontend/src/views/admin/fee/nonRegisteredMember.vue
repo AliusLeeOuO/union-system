@@ -20,8 +20,8 @@
         </template>
       </a-popover>
     </template>
-    <template #regTime="{ record }">
-      {{ dayjs.tz(record.registration_date).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #register_at="{ record }">
+      {{ dayjs.tz(record.register_at).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
     <template #action="{ record }">
       <a-button>注册会员费率</a-button>
@@ -34,15 +34,27 @@ import { onMounted, reactive } from "vue"
 import useAdminApi, { type nonRegisteredFeeListItem } from "@/api/adminApi"
 import { handleXhrResponse } from "@/api"
 import { Message } from "@arco-design/web-vue"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 const { getNonRegisteredFeeList } = useAdminApi()
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Shanghai")
+
 const columns = [
   {
     title: "用户名",
     slotName: "username"
   },
   {
+    title: "注册时间",
+    slotName: "register_at"
+  },
+  {
     title: "操作",
-    slotName: "action"
+    slotName: "action",
+    width: 200
   }
 ]
 

@@ -44,7 +44,7 @@ var (
 func LoadConfig() *Config {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./internal/infrastructure/config/")
+	viper.AddConfigPath("./")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {

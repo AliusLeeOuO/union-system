@@ -4,9 +4,6 @@
 .idea
 .vscode
 
-# Local config files
-internal/infrastructure/config/config.yaml
-
 # Upload files
 upload/*
 !uploads/.gitkeep

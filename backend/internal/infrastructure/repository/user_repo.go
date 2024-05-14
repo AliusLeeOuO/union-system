@@ -180,3 +180,23 @@ func (r *UserRepository) GetInvitationCodes(pageNum, pageSize uint) ([]domain.In
 func (r *UserRepository) CreateInvitationCode(invitationCode *domain.InvitationCodes) error {
 	return r.DB.Create(invitationCode).Error
 }
+
+// GetRolePermissions 获取角色的权限关联ID
+func (r *UserRepository) GetRolePermissions(roleID uint) ([]uint, error) {
+	var permissions []uint
+	result := r.DB.Model(&domain.RolePermission{}).Where("role_id = ?", roleID).Pluck("permission_id", &permissions)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return permissions, nil
+}
+
+// GetPermissionsByIDs 根据权限ID获取权限
+func (r *UserRepository) GetPermissionsByIDs(permissionIDs []uint) ([]domain.Permission, error) {
+	var permissions []domain.Permission
+	result := r.DB.Where("permission_id IN ?", permissionIDs).Find(&permissions)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return permissions, nil
+}

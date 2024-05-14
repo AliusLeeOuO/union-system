@@ -211,3 +211,28 @@ func (s *UserService) GenerateInvitationCode(userID uint) (dto.NewInvitationCode
 
 	return result, nil
 }
+
+func (s *UserService) GetPermissions(c *fiber.Ctx, userID uint) ([]domain.Permission, error) {
+	// 首先查询用户的角色 user_type_id
+	user, err := s.Repo.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	userType := user.UserTypeID
+	// 然后根据角色查询权限，先查询角色权限表
+	rolePermissions, err := s.Repo.GetRolePermissions(userType)
+	// 如果查询不到，返回空
+	if err != nil {
+		return nil, err
+	}
+	// 如果查询到，根据权限ID查询权限表
+	// 传入权限ID数组，查询权限表
+	permissions, err := s.Repo.GetPermissionsByIDs(rolePermissions)
+	// 如果查询不到，返回空
+	if err != nil {
+		return nil, err
+	}
+	// 如果查询到，返回权限列表
+	return permissions, nil
+}

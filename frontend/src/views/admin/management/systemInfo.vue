@@ -137,7 +137,7 @@ const memInfoData = reactive<DescData[]>([
 interface cpuInfoContent {
   cores: number
   trends: number
-  model: string
+  models: string
   cache: number
   usage: number
   idle: number
@@ -199,7 +199,7 @@ function connect() {
         break
       case "cpuInfo":
         const cpuInfoContent: cpuInfoContent = messageData.content.message
-        cpuInfoData[0].value = cpuInfoContent.model
+        cpuInfoData[0].value = cpuInfoContent.models
         cpuInfoData[1].value = cpuInfoContent.cores.toString()
         cpuInfoData[2].value = cpuInfoContent.cache.toString()
         cpuInfoData[3].value = cpuInfoContent.usage.toString() + "%"

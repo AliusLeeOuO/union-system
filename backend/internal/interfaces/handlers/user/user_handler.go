@@ -19,4 +19,5 @@ func Init(app *fiber.App) {
 	user.Post("/changePassword", user_handlers.ChangePasswordHandler)
 	user.Post("/logout", user_handlers.LogoutHandler)
 	user.Post("/uploadFile", user_handlers.UploadHandler)
+	user.Get("/permission", user_handlers.GetPermissions)
 }

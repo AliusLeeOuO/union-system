@@ -86,6 +86,7 @@ const handleSubmit = async (form: {
       userStore.userInfo.userRole = data.data.role
       userStore.userInfo.phone = data.data.phone
       userStore.userInfo.email = data.data.email
+      await userStore.fetchPermission()
       setTimeout(async () => {
         if (userStore.userInfo.userRole === roles.ADMIN) {
           // 跳转到管理员页面

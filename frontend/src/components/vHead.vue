@@ -7,16 +7,23 @@
       </div>
     </div>
     <nav>
-      <router-link :to="item.path" v-for="item in navIndex" :key="item.title"
-                   class="nav-item">
+      <router-link
+        :to="item.permission_node"
+        v-for="item in navList"
+        :key="item.description"
+        class="nav-item"
+      >
         <div>
-          {{ item.title }}
+          {{ item.description }}
         </div>
       </router-link>
     </nav>
     <div class="header-right">
-      <router-link to="/member/notification" custom v-slot="{ navigate }"
-                   v-if="userStore.userInfo.userRole === roles.USER">
+      <router-link
+        to="/member/notification"
+        custom v-slot="{ navigate }"
+        v-if="userStore.userInfo.userRole === roles.USER"
+      >
         <a-badge :count="notificationStore.notificationCount" :offset="[-20, -2]" @click="navigate">
           <div class="header-notification">
             <span>通知</span>
@@ -49,7 +56,7 @@
     </router-link>
     <div class="burger-nav">
       <div class="burger-icon" @click="openMobileNav = true">
-        <svg id="menu-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        <svg id="menu-icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
              x="0px" y="0px" viewBox="0 0 24 24">
           <line id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
                 vector-effect="non-scaling-stroke"
@@ -81,9 +88,14 @@
         </div>
       </div>
       <div class="mobile-nav-main">
-        <router-link :to="item.path" v-for="item in navIndex" :key="item.title" @click="openMobileNav = false"
-                     class="mobile-nav-item">
-          {{ item.title }}
+        <router-link
+          :to="item.permission_node"
+          v-for="item in navList"
+          :key="item.permission_id"
+          @click="openMobileNav = false"
+          class="mobile-nav-item"
+        >
+          {{ item.description }}
         </router-link>
       </div>
     </div>
@@ -91,7 +103,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from "vue"
+import { computed, ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { useNotificationStore } from "@/stores/notification"
@@ -140,79 +152,6 @@ const toLogin = async () => {
 //手机端汉堡菜单
 const openMobileNav = ref(false)
 
-
-// nav列表数组
-interface navList {
-  title: string
-  path: string
-}
-
-// 公共导航栏
-const navList = reactive<navList[]>([
-  {
-    title: "首页",
-    path: "/index"
-  }
-])
-// 会员导航栏
-const memberNavList = reactive<navList[]>([
-  {
-    title: "首页",
-    path: "/member/index"
-  },
-  {
-    title: "活动",
-    path: "/member/activity"
-  },
-  {
-    title: "帮助",
-    path: "/member/assistance"
-  },
-  {
-    title: "会费",
-    path: "/member/fee"
-  }
-])
-// 管理员导航栏
-const adminNavList = reactive<navList[]>([
-  {
-    title: "首页",
-    path: "/admin/index"
-  },
-  {
-    title: "用户管理",
-    path: "/admin/user"
-  },
-  {
-    title: "援助管理",
-    path: "/admin/manageAssistance"
-  },
-  {
-    title: "活动管理",
-    path: "/admin/manageActivity"
-  },
-  {
-    title: "会费管理",
-    path: "/admin/fee"
-  },
-  {
-    title: "系统管理",
-    path: "/admin/management"
-  }
-])
-
-// 监听用户登录状态，切换导航栏
-const navIndex = computed(() => {
-  if (userStore.isUserLoggedIn) {
-    if (userStore.userInfo.userRole === roles.ADMIN) {
-      return adminNavList
-    } else if (userStore.userInfo.userRole === roles.USER) {
-      return memberNavList
-    }
-  }
-  return navList
-})
-
 // 根据角色跳转首页
 const toIndex = async () => {
   if (userStore.isUserLoggedIn) {
@@ -226,21 +165,29 @@ const toIndex = async () => {
   }
 }
 
+const navList = computed(() => userStore.userPermissions.filter(item => !item.list_hidden).sort((a, b) => a.list_order - b.list_order))
+
+onMounted(async () => {
+  await userStore.fetchPermission()
+})
+
 </script>
 
 <style lang="less" scoped>
 body[arco-theme="dark"] {
-.header-pc {
-  .header-pc-person-info {
-    .header-pc-person-info-text {
-      background-color: #232323;
-    }
-    .header-pc-person-info-button {
-      background-color: #424242;
+  .header-pc {
+    .header-pc-person-info {
+      .header-pc-person-info-text {
+        background-color: #232323;
+      }
+
+      .header-pc-person-info-button {
+        background-color: #424242;
+      }
     }
   }
 }
-}
+
 .header-pc {
   padding: 0 10px;
   height: 60px;

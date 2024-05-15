@@ -12,12 +12,8 @@
     用户管理
   </a-typography-title>
   <a-space>
-    <router-link to="/admin/user/manage" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">用户管理</a-button>
-    </router-link>
-    <router-link to="/admin/user/invitationCode" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">邀请码管理</a-button>
-    </router-link>
+    <custom-route-link to="/admin/user/manage">用户管理</custom-route-link>
+    <custom-route-link to="/admin/user/invitationCode">邀请码管理</custom-route-link>
   </a-space>
   <div class="mt-4 mb-3">
     <router-view />
@@ -25,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import { type BreadcrumbRoute } from "@arco-design/web-vue"
-
+import customRouteLink from "@/components/customRouteLink.vue"
 
 
 // 面包屑
@@ -35,8 +31,6 @@ const routes: BreadcrumbRoute[] = [
     label: "用户管理"
   }
 ]
-
-
 
 
 </script>

@@ -26,6 +26,18 @@ interface getUserInfoResponseData {
   email: string
 }
 
+export interface permissionResponseData {
+  permission_id: number
+  permission_name: string
+  description: string
+  role_type: string
+  permission_node: string
+  gmt_create: string
+  list_hidden: boolean
+  list_order: number
+  children?: permissionResponseData[]
+}
+
 
 export default function useUserApi() {
   return {
@@ -60,5 +72,6 @@ export default function useUserApi() {
       email,
       invitation_code: invitationCode
     })),
+    getPermission: (): Promise<AxiosApiResponse<permissionResponseData[]>> => axiosInstance.get("/user/permission"),
   }
 }

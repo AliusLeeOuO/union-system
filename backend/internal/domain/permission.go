@@ -13,4 +13,6 @@ type Permission struct {
 	Icon               string    `gorm:"column:icon;size:30" json:"icon,omitempty"`
 	GmtCreate          time.Time `gorm:"column:gmt_create" json:"gmt_create"`
 	DelFlag            bool      `gorm:"column:del_flag" json:"del_flag,omitempty"`
+	ListHidden         bool      `gorm:"column:list_hidden" json:"list_hidden,omitempty"`
+	ListOrder          uint      `gorm:"column:list_order" json:"list_order"`
 }

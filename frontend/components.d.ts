@@ -45,6 +45,7 @@ declare module 'vue' {
     ATag: typeof import('@arco-design/web-vue')['Tag']
     ATextarea: typeof import('@arco-design/web-vue')['Textarea']
     ATypographyTitle: typeof import('@arco-design/web-vue')['TypographyTitle']
+    CustomRouteLink: typeof import('./src/components/customRouteLink.vue')['default']
     NotificationBlock: typeof import('./src/components/notificationBlock.vue')['default']
     OpenSourceBlock: typeof import('./src/components/openSource/openSourceBlock.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

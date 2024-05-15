@@ -10,6 +10,7 @@ import (
 	"union-system/internal/application/dto"
 	"union-system/internal/domain"
 	"union-system/internal/infrastructure/repository"
+	"union-system/utils/build_permission_tree"
 	"union-system/utils/captcha"
 	"union-system/utils/generate_random_code"
 	"union-system/utils/jwt"
@@ -212,7 +213,7 @@ func (s *UserService) GenerateInvitationCode(userID uint) (dto.NewInvitationCode
 	return result, nil
 }
 
-func (s *UserService) GetPermissions(c *fiber.Ctx, userID uint) ([]domain.Permission, error) {
+func (s *UserService) GetPermissions(c *fiber.Ctx, userID uint) ([]*build_permission_tree.PermissionNode, error) {
 	// 首先查询用户的角色 user_type_id
 	user, err := s.Repo.GetUserByID(userID)
 	if err != nil {
@@ -233,6 +234,7 @@ func (s *UserService) GetPermissions(c *fiber.Ctx, userID uint) ([]domain.Permis
 	if err != nil {
 		return nil, err
 	}
+	permissionTree := build_permission_tree.BuildPermissionTree(permissions)
 	// 如果查询到，返回权限列表
-	return permissions, nil
+	return permissionTree, nil
 }

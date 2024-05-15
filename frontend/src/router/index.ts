@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import { findPermissionNode } from "@/utils/roleHelper"
 
 export enum roles {
   ADMIN = 1,
@@ -148,7 +149,7 @@ const routes: Array<routeRecordWithRole> = [
           {
             path: "/admin/manageSoloUser/:id",
             name: "manageSoloUser",
-            component: () => import("@/views/admin/manageSoloUser.vue"),
+            component: () => import("@/views/admin/user/manageSoloUser.vue"),
             meta: {
               roles: roles.ADMIN,
               title: "管理用户"
@@ -426,7 +427,7 @@ router.beforeEach((to, form, next) => {
       next({ path: "/login" })
       return
     }
-    if (to.meta.roles !== userStore.userInfo.userRole && to.meta.roles !== roles.LOGIN) {
+    if (!findPermissionNode(userStore.userPermissions, to.path)) {
       next({ path: `/noAuth` })
       return
     }

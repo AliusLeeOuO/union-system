@@ -1,5 +1,6 @@
-import { reactive, computed } from "vue"
+import { ref, reactive, computed } from "vue"
 import { defineStore } from "pinia"
+import useUserApi, { type permissionResponseData } from "@/api/userApi"
 
 export const useUserStore = defineStore("user", () => {
   const userInfo = reactive({
@@ -8,7 +9,7 @@ export const useUserStore = defineStore("user", () => {
     userName: "",
     userRole: -1,
     phone: "",
-    email: "",
+    email: ""
   })
 
   const isUserLoggedIn = computed(() => {
@@ -26,18 +27,35 @@ export const useUserStore = defineStore("user", () => {
     }
   })
 
+  const userPermissions = ref<permissionResponseData[]>([])
+  const fetchPermission = async () => {
+    const userApi = useUserApi()
+    const { data } = await userApi.getPermission()
+
+    // 对获取的权限数据进行排序
+    const sortedData = data.data.sort((a, b) => a.list_order - b.list_order)
+
+    // 将排序后的数据放入 RBACNavListItem 数组中
+    userPermissions.value.splice(0, userPermissions.value.length, ...sortedData)
+  }
+
   function clearUserInfo() {
     userInfo.token = ""
     userInfo.userId = -1
     userInfo.userName = ""
     userInfo.userRole = -1
+    userInfo.phone = ""
+    userInfo.email = ""
+    userPermissions.value.splice(0, userPermissions.value.length)
   }
 
   return {
     userInfo,
     isUserLoggedIn,
     getUserRoleName,
-    clearUserInfo
+    clearUserInfo,
+    userPermissions,
+    fetchPermission
   }
 }, {
   persist: {

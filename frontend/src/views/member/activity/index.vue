@@ -12,12 +12,8 @@
     会员活动
   </a-typography-title>
   <a-space>
-    <router-link to="/member/activity/plaza" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">活动广场</a-button>
-    </router-link>
-    <router-link to="/member/activity/my" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">我的活动</a-button>
-    </router-link>
+    <custom-route-link to="/member/activity/plaza">活动广场</custom-route-link>
+    <custom-route-link to="/member/activity/my">我的活动</custom-route-link>
   </a-space>
   <div class="mt-4 mb-3">
     <router-view />
@@ -26,6 +22,7 @@
 <script setup lang="ts">
 // 面包屑
 import type { BreadcrumbRoute } from "@arco-design/web-vue"
+import customRouteLink from "@/components/customRouteLink.vue"
 
 const routes: BreadcrumbRoute[] = [
   {

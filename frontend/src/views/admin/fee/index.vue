@@ -12,21 +12,16 @@
     会费管理
   </a-typography-title>
   <a-space>
-    <router-link to="/admin/fee/feeSetting" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">会费标准管理</a-button>
-    </router-link>
-    <router-link to="/admin/fee/registeredMember" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">已注册会员管理</a-button>
-    </router-link>
-    <router-link to="/admin/fee/nonRegisteredMember" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">未注册会员管理</a-button>
-    </router-link>
+    <custom-route-link to="/admin/fee/feeSetting">会费标准管理</custom-route-link>
+    <custom-route-link to="/admin/fee/registeredMember">已注册会员管理</custom-route-link>
+    <custom-route-link to="/admin/fee/nonRegisteredMember">未注册会员管理</custom-route-link>
   </a-space>
   <div class="mt-4 mb-3">
     <router-view />
   </div>
 </template>
 <script setup lang="ts">
+import customRouteLink from "@/components/customRouteLink.vue"
 // 面包屑
 const routes = [
   {

@@ -194,7 +194,7 @@ func (r *UserRepository) GetRolePermissions(roleID uint) ([]uint, error) {
 // GetPermissionsByIDs 根据权限ID获取权限
 func (r *UserRepository) GetPermissionsByIDs(permissionIDs []uint) ([]domain.Permission, error) {
 	var permissions []domain.Permission
-	result := r.DB.Where("permission_id IN ?", permissionIDs).Find(&permissions)
+	result := r.DB.Where("permission_id IN ?", permissionIDs).Order("list_order ASC").Find(&permissions)
 	if result.Error != nil {
 		return nil, result.Error
 	}

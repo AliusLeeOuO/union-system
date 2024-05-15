@@ -12,12 +12,8 @@
     帮助
   </a-typography-title>
   <a-space>
-    <router-link to="/member/assistance/myAssistance" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">我的援助</a-button>
-    </router-link>
-    <router-link to="/member/assistance/newAssistance" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">新建援助</a-button>
-    </router-link>
+    <custom-route-link to="/member/assistance/myAssistance">我的援助</custom-route-link>
+    <custom-route-link to="/member/assistance/newAssistance">新建援助</custom-route-link>
   </a-space>
   <div class="mt-4 mb-3">
     <router-view />
@@ -25,6 +21,7 @@
 </template>
 <script setup lang="ts">
 import type { BreadcrumbRoute } from "@arco-design/web-vue"
+import customRouteLink from "@/components/customRouteLink.vue"
 // 面包屑
 const routes: BreadcrumbRoute[] = [
   {

@@ -12,18 +12,10 @@
     系统管理
   </a-typography-title>
   <a-space>
-    <router-link to="/admin/management/loginLog" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">登录日志</a-button>
-    </router-link>
-    <router-link to="/admin/management/adminActionLog" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">管理员操作日志</a-button>
-    </router-link>
-    <router-link to="/admin/management/userActionLog" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">用户操作日志</a-button>
-    </router-link>
-    <router-link to="/admin/management/systemInfo" custom v-slot="{ navigate, isActive }">
-      <a-button @click="navigate" :type="isActive? 'primary': 'text'">系统信息</a-button>
-    </router-link>
+    <custom-route-link to="/admin/management/loginLog">登录日志</custom-route-link>
+    <custom-route-link to="/admin/management/adminActionLog">管理员操作日志</custom-route-link>
+    <custom-route-link to="/admin/management/userActionLog">用户操作日志</custom-route-link>
+    <custom-route-link to="/admin/management/systemInfo">系统信息</custom-route-link>
   </a-space>
   <div class="mt-4 mb-3">
     <router-view />
@@ -31,6 +23,7 @@
 </template>
 <script setup lang="ts">
 import { type BreadcrumbRoute } from "@arco-design/web-vue"
+import customRouteLink from "@/components/customRouteLink.vue"
 
 // 面包屑
 const routes: BreadcrumbRoute[] = [

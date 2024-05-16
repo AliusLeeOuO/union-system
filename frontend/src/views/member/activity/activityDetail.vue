@@ -1,16 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    活动详情
-  </a-typography-title>
   <div class="activity-detail-content">
     <div class="activity-detail-item">
       <div class="description-title">

@@ -1,13 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
   <div class="flex justify-between">
     <div class="description-title mt-4">
       援助状态

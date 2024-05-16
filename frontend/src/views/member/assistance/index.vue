@@ -1,16 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    帮助
-  </a-typography-title>
   <a-space>
     <custom-route-link to="/member/assistance/myAssistance">
       我的援助

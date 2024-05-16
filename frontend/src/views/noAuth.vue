@@ -17,7 +17,7 @@ body[arco-theme="dark"] {
 }
 
 div {
-  height: calc(100vh - 150px);
+  height: 100%;
   color: var(--color-text-1);
 
   h1 {

@@ -1,7 +1,4 @@
 <template>
-  <a-typography-title :heading="2">
-    添加新活动
-  </a-typography-title>
   <a-form
     :model="formItem"
     :rules="rules"
@@ -38,26 +35,30 @@
     <a-form-item field="active" label="是否激活">
       <a-switch v-model="formItem.active" />
     </a-form-item>
-    <div>
+    <div class="flex flex-col gap-2">
       <a-button type="primary" html-type="submit" size="large" long>
         添加
+      </a-button>
+      <a-button size="large" long @click="handlerClose">
+        取消
       </a-button>
     </div>
   </a-form>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { defineEmits, onMounted, reactive } from 'vue'
 import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import useAdminApi, { type activityType } from '@/api/adminApi'
 import { handleXhrResponse } from '@/api'
 
-const router = useRouter()
-
+// 定义一个事件，用于提交表单后通知父组件关闭抽屉
+const emit = defineEmits(['closeDrawer'])
+// const router = useRouter()
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
@@ -127,7 +128,6 @@ const rules: Record<string, FieldRule | FieldRule[]> = {
   }],
   active: [{ required: true, message: '请选择是否激活' }]
 }
-
 async function handleSubmit(form: {
   values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
@@ -135,7 +135,7 @@ async function handleSubmit(form: {
   if (!form.errors) {
     const startTime = dayjs.tz(formItem.time[0]).format('YYYY-MM-DDTHH:mm:ssZ')
     const endTime = dayjs.tz(formItem.time[1]).format('YYYY-MM-DDTHH:mm:ssZ')
-    const { data } = await handleXhrResponse(() => adminApi.addNewActivity(
+    await handleXhrResponse(() => adminApi.addNewActivity(
       formItem.title,
       formItem.description,
       startTime,
@@ -146,8 +146,12 @@ async function handleSubmit(form: {
       formItem.active
     ), Message)
     Message.success('新建活动成功')
-    await router.push(`/admin/manageActivityDetail/${data.data.id}`)
+    emit('closeDrawer')
   }
+}
+
+function handlerClose() {
+  emit('closeDrawer')
 }
 
 const activityTypeList = reactive<activityType[]>([])

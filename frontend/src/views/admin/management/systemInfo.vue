@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="of-hidden">
     <div class="description-block grid mb-4 gap-xl">
       <div class="w-full">
         <a-typography-title :heading="4">
@@ -8,7 +8,7 @@
         <a-descriptions :data="cpuInfoData" size="large" :column="1" bordered />
       </div>
       <div class="h-sm w-full">
-        <VChart :theme="chartTheme" :option="cpuInfoOption" />
+        <VChart :theme="chartTheme" :option="cpuInfoOption" :autoresize="true" />
       </div>
     </div>
     <div class="description-block grid mb-4 gap-xl">
@@ -19,7 +19,7 @@
         <a-descriptions class="description" :data="memInfoData" size="large" :column="1" bordered />
       </div>
       <div class="h-sm w-full">
-        <VChart :theme="chartTheme" :option="memInfoOption" />
+        <VChart :theme="chartTheme" :option="memInfoOption" :autoresize="true" />
       </div>
     </div>
   </div>

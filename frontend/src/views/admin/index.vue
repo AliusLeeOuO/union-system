@@ -1,7 +1,4 @@
 <template>
-  <a-typography-title :heading="2">
-    主页
-  </a-typography-title>
   <a-typography-title :heading="5">
     欢迎回来！ {{ userStore.userInfo.userName }}
   </a-typography-title>

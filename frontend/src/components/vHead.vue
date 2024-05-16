@@ -6,18 +6,6 @@
         <span>工会管理系统</span>
       </div>
     </div>
-    <nav>
-      <router-link
-        v-for="item in navList"
-        :key="item.description"
-        :to="item.permission_node"
-        class="nav-item"
-      >
-        <div>
-          {{ item.description }}
-        </div>
-      </router-link>
-    </nav>
     <div class="header-right">
       <router-link
         v-if="userStore.userInfo.userRole === roles.USER"
@@ -58,76 +46,10 @@
       </div>
     </div>
   </header>
-  <header class="header-mobile">
-    <router-link v-slot="{ navigate }" to="/index" custom>
-      <div class="logo" @click="navigate">
-        工会管理系统
-      </div>
-    </router-link>
-    <div class="burger-nav">
-      <div class="burger-icon" @click="openMobileNav = true">
-        <svg
-          id="menu-icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
-          x="0px" y="0px" viewBox="0 0 24 24"
-        >
-          <line
-            id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
-            vector-effect="non-scaling-stroke"
-            style="transform-origin: 0 0;"
-          />
-          <line
-            id="menu-line-mid" class="menu-line" x1="1" y1="12" x2="23" y2="12" stroke-width="2.4"
-            vector-effect="non-scaling-stroke"
-            style="transform-origin: 0 0;"
-          />
-          <line
-            id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
-            vector-effect="non-scaling-stroke"
-            style="transform-origin: 0 0;"
-          />
-        </svg>
-      </div>
-    </div>
-    <div class="mobile-nav" :class="{ 'open-mobile-nav': openMobileNav }">
-      <div class="mobile-nav-top">
-        <div class="nav-top-left" />
-        <div class="nav-top-right">
-          <div class="close-menu-icon" @click="openMobileNav = false">
-            <svg
-              version="1.1" xmlns="http://www.w3.org/2000/svg"
-              x="0px" y="0px" viewBox="0 0 24 24"
-            >
-              <line
-                id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
-                vector-effect="non-scaling-stroke" data-svg-origin="12 6" style="transform-origin: 0 0;"
-                transform="matrix(-0.70711,-0.70711,0.70711,-0.70711,16.24266,24.72798)"
-              />
-              <line
-                id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
-                vector-effect="non-scaling-stroke" data-svg-origin="12 18" style="transform-origin: 0 0;"
-                transform="matrix(-0.70711,0.70711,-0.70711,-0.70711,33.2133,16.24266)"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-      <div class="mobile-nav-main">
-        <router-link
-          v-for="item in navList"
-          :key="item.permission_id"
-          :to="item.permission_node"
-          class="mobile-nav-item"
-          @click="openMobileNav = false"
-        >
-          {{ item.description }}
-        </router-link>
-      </div>
-    </div>
-  </header>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { IconNotification } from '@arco-design/web-vue/es/icon'
@@ -177,9 +99,6 @@ async function toLogin() {
   await router.push('/login')
 }
 
-// 手机端汉堡菜单
-const openMobileNav = ref(false)
-
 // 根据角色跳转首页
 async function toIndex() {
   if (userStore.isUserLoggedIn) {
@@ -195,8 +114,6 @@ async function toIndex() {
   }
 }
 
-const navList = computed(() => userStore.userPermissions.filter(item => !item.list_hidden).sort((a, b) => a.list_order - b.list_order))
-
 onMounted(async () => {
   await userStore.fetchPermission()
 })
@@ -207,6 +124,7 @@ onMounted(async () => {
 
 body[arco-theme="dark"] {
   .header-pc {
+    border-bottom: 1px solid #424242;
     .header-pc-person-info {
       .header-pc-person-info-text {
         background-color: #232323;
@@ -222,9 +140,7 @@ body[arco-theme="dark"] {
 .header-pc {
   padding: 0 10px;
   height: @header-height;
-  @media only screen and (max-width: 768px) {
-    display: none;
-  }
+  border-bottom: 1px solid #f0f0f0;
 
   .header-left {
     min-width: 100px;
@@ -357,105 +273,6 @@ body[arco-theme="dark"] {
   }
 }
 
-.header-mobile {
-  padding: 0 10px;
-  height: @header-height;
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  @media only screen and (max-width: 768px) {
-    display: flex;
-  }
-
-  .logo {
-    min-width: 100px;
-    cursor: pointer;
-  }
-
-  .burger-nav {
-    display: flex;
-
-    .darkmode-switch {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-
-      span {
-        margin-right: 10px;
-      }
-    }
-
-    .burger-icon {
-      margin-left: 10px;
-      width: 25px;
-      height: 25px;
-      cursor: pointer;
-
-      #menu-icon {
-        line {
-          stroke: rgb(0, 0, 0);
-        }
-      }
-    }
-  }
-
-  .mobile-nav {
-    background-color: rgb(241, 241, 241);
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 100vw;
-    pointer-events: none;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    padding: 20px;
-
-    .mobile-nav-top {
-      height: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .nav-top-right {
-        .close-menu-icon {
-          height: 25px;
-          width: 25px;
-          cursor: pointer;
-
-          svg {
-            height: 100%;
-            width: 100%;
-
-            line {
-              stroke: rgb(0, 0, 0);
-            }
-          }
-        }
-      }
-    }
-
-    .mobile-nav-main {
-      margin-top: 10px;
-
-      .mobile-nav-item {
-        display: block;
-        color: #000;
-        text-decoration: none;
-        font-size: 18px;
-        margin: 10px 0;
-      }
-    }
-  }
-
-  .open-mobile-nav {
-    opacity: 1;
-    left: 0;
-    pointer-events: inherit;
-  }
-}
-
 body[arco-theme='dark'] {
   header {
     background-color: #232324;
@@ -487,51 +304,6 @@ body[arco-theme='dark'] {
         }
       }
     }
-  }
-
-  .header-mobile {
-    .burger-nav {
-      .burger-icon {
-        #menu-icon {
-          line {
-            stroke: rgb(255, 255, 255);
-          }
-        }
-      }
-    }
-
-    .mobile-nav {
-      background-color: #191919;
-
-      .mobile-nav-top {
-        .nav-top-right {
-          .close-menu-icon {
-            svg {
-              line {
-                stroke: #fff;
-              }
-            }
-          }
-        }
-      }
-
-      .mobile-nav-main {
-        .mobile-nav-item {
-          color: rgb(var(--color-text-1));
-        }
-      }
-    }
-  }
-}
-
-@keyframes show-person-info {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>

@@ -1,17 +1,5 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
   <div class="notification-top flex justify-between flex-items-center">
-    <a-typography-title :heading="2">
-      我的通知
-    </a-typography-title>
     <a-space>
       <a-button v-if="notificationList.length !== 0" @click="fetchReadAll">
         一键已读

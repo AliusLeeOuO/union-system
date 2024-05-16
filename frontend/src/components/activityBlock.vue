@@ -1,22 +1,24 @@
 <template>
-  <router-link :to="props.path" class="mb-5 mt-5 block cursor-pointer rounded-lg bg-gray-100 p-5 text-inherit no-underline transition-all duration-300">
-    <div class="text-xl font-bold">
-      {{ props.title }}
-    </div>
-    <div class="display-box line-clamp-3 mt-2.5 overflow-hidden text-ellipsis">
-      {{ props.description }}
-    </div>
-    <div class="mt-2.5">
-      报名人数：{{ props.registrationCount }}/{{ props.maxParticipants }}
-    </div>
-    <div class="mt-2.5">
-      地址：{{ props.location }}
-      活动类型：{{ props.activityTypeName }}
-    </div>
-    <div class="mt-2.5">
-      {{ dayjs.tz(props.startTime).format("YYYY年MM月DD日 HH:mm") }} -
-      {{ dayjs.tz(props.endTime).format("YYYY年MM月DD日 HH:mm") }}
-    </div>
+  <router-link v-slot="{ navigate }" :to="props.path" custom>
+    <a-card class="block cursor-pointer" @click="navigate">
+      <div class="text-xl font-bold">
+        {{ props.title }}
+      </div>
+      <div class="display-box line-clamp-3 mt-2.5 overflow-hidden text-ellipsis">
+        {{ props.description }}
+      </div>
+      <div class="mt-2.5">
+        报名人数：{{ props.registrationCount }}/{{ props.maxParticipants }}
+      </div>
+      <div class="mt-2.5">
+        地址：{{ props.location }}
+        活动类型：{{ props.activityTypeName }}
+      </div>
+      <div class="mt-2.5">
+        {{ dayjs.tz(props.startTime).format('YYYY年MM月DD日 HH:mm') }} -
+        {{ dayjs.tz(props.endTime).format('YYYY年MM月DD日 HH:mm') }}
+      </div>
+    </a-card>
   </router-link>
 </template>
 

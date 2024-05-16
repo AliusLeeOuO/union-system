@@ -6,7 +6,14 @@
   box-sizing: border-box;
 }
 
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 body[arco-theme="dark"] {
-  background-color: #3A3A3D;
+  background-color: #121212;
   color: #fff;
 }

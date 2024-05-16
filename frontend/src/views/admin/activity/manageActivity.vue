@@ -1,23 +1,9 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    活动管理
-  </a-typography-title>
-  <div class="flex justify-between flex-items-center">
+  <div class="mb-4 flex justify-between flex-items-center">
     <a-space>
-      <router-link v-slot="{ navigate }" to="/admin/addNewActivity" custom>
-        <a-button status="success" @click="navigate">
-          添加新活动
-        </a-button>
-      </router-link>
+      <a-button status="success" @click="showNewActivity">
+        添加新活动
+      </a-button>
     </a-space>
     <a-space>
       <a-button>
@@ -30,7 +16,7 @@
   </div>
   <a-empty v-if="activityList.length === 0" />
   <div v-else class="activity-content">
-    <div class="activity-items">
+    <div class="activity-items flex flex-col gap-4">
       <ActivityBlock
         v-for="item in activityList"
         :key="item.activityId"
@@ -57,16 +43,22 @@
       />
     </div>
   </div>
+  <a-drawer :width="700" :visible="newActivityVisible" unmount-on-close :footer="false" @cancel="handleNewActivityCancel">
+    <template #title>
+      创建新活动
+    </template>
+    <AddNewActivity @close-drawer="handleNewActivityCancel" />
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
-import { IconRefresh } from '@arco-design/web-vue/es/icon'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
 import type { activityListResponse } from '@/api/memberApi'
 import { handleXhrResponse } from '@/api'
 import useAdminApi from '@/api/adminApi'
 import ActivityBlock from '@/components/activityBlock.vue'
+import AddNewActivity from '@/views/admin/activity/addNewActivity.vue'
 
 const adminApi = useAdminApi()
 
@@ -109,4 +101,13 @@ async function getActivityList() {
 onMounted(async () => {
   await getActivityList()
 })
+
+// 新活动抽屉
+const newActivityVisible = ref(false)
+function showNewActivity() {
+  newActivityVisible.value = true
+}
+function handleNewActivityCancel() {
+  newActivityVisible.value = false
+}
 </script>

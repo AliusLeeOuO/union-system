@@ -183,15 +183,6 @@ const routes: Array<routeRecordWithRole> = [
             }
           },
           {
-            path: '/admin/addNewActivity',
-            name: 'addNewActivity',
-            component: () => import('@/views/admin/activity/addNewActivity.vue'),
-            meta: {
-              roles: roles.ADMIN,
-              title: '添加活动'
-            }
-          },
-          {
             path: '/admin/manageActivityDetail/:id',
             name: 'manageActivityDetail',
             component: () => import('@/views/admin/activity/activityDetail.vue'),

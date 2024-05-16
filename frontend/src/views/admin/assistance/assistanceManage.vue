@@ -1,16 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    援助管理
-  </a-typography-title>
   <div class="mb-3 flex justify-between">
     <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
       <a-form-item label="ID">

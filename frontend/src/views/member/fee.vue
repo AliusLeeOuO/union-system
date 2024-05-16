@@ -1,16 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    会费
-  </a-typography-title>
   <div class="description-title">
     我的会费标准
   </div>

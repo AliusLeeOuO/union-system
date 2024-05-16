@@ -1,10 +1,10 @@
 <template>
-  <footer class="p-5 text-center">
+  <footer class="mb-2 text-center">
     <p>This project using MIT License. Author: {{ pkg.author }}. Mail: {{ pkg.email }}</p>
     <p>
       页面版本v{{ pkg.version }}-{{ buildDate }}
       <a-link href="https://beian.miit.gov.cn/" @click="toMIIT">
-        桂ICP备2022003399号-1
+        桂ICP备2022003399号-2
       </a-link>
       <router-link v-slot="{ navigate }" to="/openSourceLicense" custom>
         <a-link @click="navigate">

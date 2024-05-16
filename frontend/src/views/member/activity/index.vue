@@ -1,16 +1,4 @@
 <template>
-  <div>
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div>
-  <a-typography-title :heading="2">
-    会员活动
-  </a-typography-title>
   <a-space>
     <custom-route-link to="/member/activity/plaza">
       活动广场

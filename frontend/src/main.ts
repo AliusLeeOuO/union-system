@@ -2,7 +2,7 @@ import { createApp } from "vue"
 import { createPinia } from "pinia"
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import ClickOutside from './directives/clickoutside'
-
+import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import "./assets/main.less"
 import { Message } from '@arco-design/web-vue'
 import 'virtual:uno.css'
@@ -16,6 +16,7 @@ piniaInstance.use(piniaPluginPersistedstate)
 const app = createApp(App)
   .use(piniaInstance)
   .use(router)
+  .use(ArcoVueIcon)
   .directive("click-outside", ClickOutside)
   .mount("#app")
 

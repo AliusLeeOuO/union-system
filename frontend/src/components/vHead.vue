@@ -174,6 +174,8 @@ onMounted(async () => {
 </script>
 
 <style lang="less" scoped>
+@import "../assets/variable.less";
+
 body[arco-theme="dark"] {
   .header-pc {
     .header-pc-person-info {
@@ -190,7 +192,7 @@ body[arco-theme="dark"] {
 
 .header-pc {
   padding: 0 10px;
-  height: 60px;
+  height: @header-height;
   @media only screen and (max-width: 768px) {
     display: none;
   }
@@ -329,7 +331,7 @@ body[arco-theme="dark"] {
 
 .header-mobile {
   padding: 0 10px;
-  height: 60px;
+  height: @header-height;
   display: none;
   align-items: center;
   justify-content: space-between;

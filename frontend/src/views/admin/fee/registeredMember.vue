@@ -31,7 +31,7 @@
         >
           修改费率标准
         </a-button>
-        <a-popconfirm content="确定要取消会费规则吗？" type="warning" @ok="handlerRemoveFeeStandard(record.user_id)">
+        <a-popconfirm content="确定要取消会费规则吗？" type="warning" @ok="() => handlerRemoveFeeStandard(record.user_id)">
           <a-button type="primary" status="danger">
             取消会费规则
           </a-button>

@@ -160,7 +160,7 @@
               <span>{{ item.phone }}</span>
               <span>{{ item.email }}</span>
               <div>
-                <a-popconfirm content="确定要取消报名吗？" @ok="cancelUserReg(item.userId)">
+                <a-popconfirm content="确定要取消报名吗？" @ok="() => cancelUserReg(item.userId)">
                   <a-button status="danger">
                     取消报名
                   </a-button>
@@ -210,7 +210,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { onMounted, reactive, ref } from 'vue'
-import { type BreadcrumbRoute, type FormInstance, Message, type ValidatedError } from '@arco-design/web-vue'
+import { type FormInstance, Message, type ValidatedError } from '@arco-design/web-vue'
 import { useRoute, useRouter } from 'vue-router'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -225,17 +225,6 @@ dayjs.tz.setDefault('Asia/Shanghai')
 const adminApi = useAdminApi()
 const route = useRoute()
 const router = useRouter()
-
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/admin/manageActivity',
-    label: '活动管理'
-  },
-  {
-    path: route.path,
-    label: '活动详情'
-  }
-]
 
 const activityDetail = reactive({
   title: '',

@@ -1,11 +1,11 @@
 <template>
   <a-empty v-if="memberActivityList.length === 0" />
-  <div class="activity-content" v-else>
+  <div v-else class="activity-content">
     <div class="activity-items">
-      <activity-block
+      <ActivityBlock
         v-for="item in memberActivityList"
         :key="item.activityId"
-        :path="'/member/activityDetail/' + item.activityId"
+        :path="`/member/activityDetail/${item.activityId}`"
         :activity-id="item.activityId"
         :title="item.title"
         :registration-count="item.registrationCount"
@@ -19,9 +19,9 @@
     </div>
     <div class="flex justify-end flex-items-center p-4">
       <a-pagination
-        :total="pagination.total"
         v-model:page-size="pagination.pageSize"
         v-model:current="pagination.current"
+        :total="pagination.total"
         :default-page-size="5"
         show-page-size @change="memberPageChange"
         @page-size-change="memberPageSizeChange"
@@ -29,13 +29,14 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import ActivityBlock from "@/components/activityBlock.vue"
-import { reactive, onMounted } from "vue"
-import type { activityListResponse } from "@/api/memberApi"
-import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
-import useMemberApi from "@/api/memberApi"
+import { onMounted, reactive } from 'vue'
+import { Message } from '@arco-design/web-vue'
+import ActivityBlock from '@/components/activityBlock.vue'
+import type { activityListResponse } from '@/api/memberApi'
+import { handleXhrResponse } from '@/api'
+import useMemberApi from '@/api/memberApi'
 
 const memberApi = useMemberApi()
 const memberActivityList = reactive<activityListResponse[]>([])
@@ -45,22 +46,23 @@ const pagination = reactive({
   current: 1
 })
 
-const memberPageChange = async (current: number) => {
+async function memberPageChange(current: number) {
   pagination.current = current
   await getActivityMemberList()
 }
 
-const memberPageSizeChange = async (pageSize: number) => {
+async function memberPageSizeChange(pageSize: number) {
   pagination.pageSize = pageSize
   pagination.current = 1
   await getActivityMemberList()
 }
 
-const getActivityMemberList = async () => {
+async function getActivityMemberList() {
   const { data } = await handleXhrResponse(() => memberApi.activityMemberList(pagination.pageSize, pagination.current), Message)
   if (data.data.data === null) {
     return
   }
+
   // 清除原有数据
   memberActivityList.splice(0, memberActivityList.length)
   memberActivityList.push(...data.data.data!)

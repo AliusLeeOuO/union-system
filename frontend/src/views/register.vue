@@ -1,17 +1,21 @@
 <template>
-  <div class="login-container flex flex-col flex-items-center justify-center min-h-full bg-cover">
-    <div class="login-header">注册</div>
+  <div class="login-container min-h-full flex flex-col justify-center flex-items-center bg-cover">
+    <div class="login-header">
+      注册
+    </div>
 
     <div class="login-form-container">
       <div v-if="registerSuccessfully">
         <a-result status="success" title="注册成功" />
       </div>
       <div v-else>
-        <a-form :model="registerForm" :style="{width:'400px'}" :rules="rules" @submit="handleSubmit" :label-col-props="{
-        span: 6
-      }" :wrapper-col-props="{
-        span: 18
-      }">
+        <a-form
+          :model="registerForm" :style="{ width: '400px' }" :rules="rules" :label-col-props="{
+            span: 6,
+          }" :wrapper-col-props="{
+            span: 18,
+          }" @submit="handleSubmit"
+        >
           <a-form-item field="username" label="用户名" validate-trigger="blur">
             <a-input v-model="registerForm.username" />
           </a-form-item>
@@ -30,107 +34,113 @@
           <a-form-item field="invitationCode" label="邀请码" validate-trigger="blur">
             <a-input v-model="registerForm.invitationCode" />
           </a-form-item>
-          <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">注册</a-button>
+          <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">
+            注册
+          </a-button>
         </a-form>
       </div>
     </div>
     <a-space class="prime-action">
-      <router-link to="/login" custom v-slot="{ navigate }">
-        <a-link @click="navigate">返回到登录</a-link>
+      <router-link v-slot="{ navigate }" to="/login" custom>
+        <a-link @click="navigate">
+          返回到登录
+        </a-link>
       </router-link>
     </a-space>
   </div>
 </template>
-<script setup lang="ts">
-import { ref, reactive } from "vue"
-import { useRouter } from "vue-router"
-import { handleXhrResponse } from "@/api"
-import useUserApi from "@/api/userApi"
-import { type FieldRule, Message } from "@arco-design/web-vue"
-import type { ValidatedError } from "@arco-design/web-vue"
 
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
+
+import { handleXhrResponse } from '@/api'
+import useUserApi from '@/api/userApi'
 
 const router = useRouter()
 const userApi = useUserApi()
 const handleButtonLoading = ref(false)
 
 const registerForm = reactive({
-  username: "",
-  password: "",
-  reTypePassword: "",
-  email: "",
-  phone: "",
-  invitationCode: ""
+  username: '',
+  password: '',
+  reTypePassword: '',
+  email: '',
+  phone: '',
+  invitationCode: ''
 })
 
 const rules: Record<string, FieldRule | FieldRule[]> = {
-  username: [{ required: true, message: "请输入用户名" }],
-  password: [{ required: true, message: "请输入密码" }],
+  username: [{ required: true, message: '请输入用户名' }],
+  password: [{ required: true, message: '请输入密码' }],
   reTypePassword: [
-    { required: true, message: "请重复密码" },
+    { required: true, message: '请重复密码' },
     {
       validator: (value, callback) => {
         return new Promise((resolve) => {
           if (value !== registerForm.password) {
-            callback("两次密码不一致")
+            callback('两次密码不一致')
           }
+
           resolve(void 0)
         })
       }
     }
   ],
-  email: [{ required: true, type: "email", message: "请输入正确的邮箱" }],
+  email: [{ required: true, type: 'email', message: '请输入正确的邮箱' }],
   phone: [
     {
       required: true,
-      message: "请输入正确的手机号",
+      message: '请输入正确的手机号',
       validator: (value, callback) => {
         return new Promise((resolve) => {
           if (!/^1[3-9]\d{9}$/.test(value)) {
-            callback("请输入正确的手机号")
+            callback('请输入正确的手机号')
           }
+
           resolve(void 0)
         })
       }
     }
   ],
-  invitationCode: [{ required: true, message: "请输入邀请码" }]
+  invitationCode: [{ required: true, message: '请输入邀请码' }]
 }
 
 const registerSuccessfully = ref(false)
 
-const handleSubmit = async (form: {
-  values: Record<string, any>;
+async function handleSubmit(form: {
+  values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
-}) => {
+}) {
   if (!form.errors) {
     handleButtonLoading.value = true
     try {
       await handleXhrResponse(() => userApi.register(registerForm.username, registerForm.password, registerForm.phone, registerForm.email, registerForm.invitationCode), Message)
       registerSuccessfully.value = true
       setTimeout(async () => {
-        await router.push("/login")
+        await router.push('/login')
       }, 3000)
-    } finally {
+    }
+    finally {
       handleButtonLoading.value = false
     }
   }
 }
-
-
 </script>
+
 <style scoped lang="less">
 body[arco-theme="dark"] {
   .login-container {
     .login-header {
       color: rgba(0, 0, 0, 0.8);
     }
+
     .login-form-container {
       background-color: rgba(0, 0, 0, 0.8);
     }
   }
 }
-
 
 .login-container {
   background-color: #f5f5f5;
@@ -179,5 +189,4 @@ body[arco-theme="dark"] {
   justify-content: center;
   align-items: center;
 }
-
 </style>

@@ -3,14 +3,16 @@
     <div>已登录账号：{{ userStore.userInfo.userName }} | 当前身份：{{ getRoleName(userStore.userInfo.userRole) }}</div>
   </div>
   <div class="user-center">
-    <div class="user-center-title">账号信息</div>
+    <div class="user-center-title">
+      账号信息
+    </div>
     <div class="user-center-item">
       <div class="user-center-item-left">
         <div>用户名</div>
         <div>{{ userStore.userInfo.userName }}</div>
       </div>
       <div>
-        <!--        <icon-pen-fill /> 编辑-->
+        <!--        <icon-pen-fill /> 编辑 -->
       </div>
     </div>
     <div class="user-center-item">
@@ -19,20 +21,22 @@
         <div>{{ getRoleName(userStore.userInfo.userRole) }}</div>
       </div>
       <div>
-        <!--        <icon-pen-fill /> 编辑-->
+        <!--        <icon-pen-fill /> 编辑 -->
       </div>
     </div>
     <div class="user-center-item">
       <div class="user-center-item-left">
         <div>密码</div>
-        <div v-if="!changePassword">******</div>
-        <div class="user-center-form" v-else>
+        <div v-if="!changePassword">
+          ******
+        </div>
+        <div v-else class="user-center-form">
           <a-form :model="changePasswordForm" layout="inline" @submit="submitChangePassword">
             <a-form-item
               field="oldPassword"
               label="旧密码"
               validate-trigger="blur"
-              :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]"
+              :rules="[{ required: true, message: '请输入密码' }, { minLength: 6, message: '密码需要在6个字符以上' }]"
             >
               <a-input-password v-model="changePasswordForm.oldPassword" />
             </a-form-item>
@@ -40,7 +44,7 @@
               field="newPassword"
               label="新密码"
               validate-trigger="blur"
-              :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]"
+              :rules="[{ required: true, message: '请输入密码' }, { minLength: 6, message: '密码需要在6个字符以上' }]"
             >
               <a-input-password v-model="changePasswordForm.newPassword" />
             </a-form-item>
@@ -48,28 +52,30 @@
               field="confirmPassword"
               label="确认密码"
               validate-trigger="blur"
-              :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'},{validator: conformValidator}]"
+              :rules="[{ required: true, message: '请输入密码' }, { minLength: 6, message: '密码需要在6个字符以上' }, { validator: conformValidator }]"
             >
               <a-input-password v-model="changePasswordForm.confirmPassword" />
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" html-type="submit">确认修改</a-button>
+              <a-button type="primary" html-type="submit">
+                确认修改
+              </a-button>
             </a-form-item>
           </a-form>
         </div>
       </div>
-      <div @click="changePassword = true" v-if="!changePassword">
+      <div v-if="!changePassword" @click="changePassword = true">
         <a-button>
           <template #icon>
-            <icon-pen-fill />
+            <IconPenFill />
           </template>
           编辑
         </a-button>
       </div>
-      <div @click="changePassword = false" v-else>
+      <div v-else @click="changePassword = false">
         <a-button>
           <template #icon>
-            <icon-close />
+            <IconClose />
           </template>
           取消
         </a-button>
@@ -81,7 +87,7 @@
         <div>{{ userStore.userInfo.email }}</div>
       </div>
       <div>
-        <!--        <icon-pen-fill /> 编辑-->
+        <!--        <icon-pen-fill /> 编辑 -->
       </div>
     </div>
     <div class="user-center-item">
@@ -90,23 +96,26 @@
         <div>{{ userStore.userInfo.phone }}</div>
       </div>
       <div>
-        <!--        <icon-pen-fill /> 编辑-->
+        <!--        <icon-pen-fill /> 编辑 -->
       </div>
     </div>
     <div class="actions">
-      <a-button @click="logout">退出登录</a-button>
+      <a-button @click="logout">
+        退出登录
+      </a-button>
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import { reactive, ref } from "vue"
-import { IconPenFill, IconClose } from "@arco-design/web-vue/es/icon"
-import { useUserStore } from "@/stores/user"
-import { Message, type ValidatedError } from "@arco-design/web-vue"
-import useUserApi from "@/api/userApi"
-import { useRouter } from "vue-router"
-import { handleXhrResponse } from "@/api"
-import { getRoleName } from "@/utils/roleHelper"
+import { reactive, ref } from 'vue'
+import { IconClose, IconPenFill } from '@arco-design/web-vue/es/icon'
+import { Message, type ValidatedError } from '@arco-design/web-vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import useUserApi from '@/api/userApi'
+import { handleXhrResponse } from '@/api'
+import { getRoleName } from '@/utils/roleHelper'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -114,56 +123,61 @@ const userApi = useUserApi()
 
 const changePassword = ref(false)
 const changePasswordForm = reactive({
-  oldPassword: "",
-  newPassword: "",
-  confirmPassword: ""
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
 })
-const submitChangePassword = async (form: {
-  values: Record<string, any>;
+
+async function submitChangePassword(form: {
+  values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
-}) => {
+}) {
   if (!form.errors) {
     // 提交修改密码
     try {
       await handleXhrResponse(() => userApi.changePassword(form.values.oldPassword, form.values.newPassword), Message)
-      Message.success("修改密码成功")
+      Message.success('修改密码成功')
       changePassword.value = false
       // 清空表单
-      changePasswordForm.oldPassword = ""
-      changePasswordForm.newPassword = ""
-      changePasswordForm.confirmPassword = ""
-    } catch (e) {
+      changePasswordForm.oldPassword = ''
+      changePasswordForm.newPassword = ''
+      changePasswordForm.confirmPassword = ''
+    }
+    catch (e) {
       console.warn(e)
     }
   }
 }
+
 // ( value: FieldValue | undefined, callback: (error?: string) => void ) => void
-const conformValidator = (value: string, callback: (error?: string) => void) => {
+function conformValidator(value: string, callback: (error?: string) => void) {
   if (value !== changePasswordForm.newPassword) {
-    callback("两次输入的密码不一致")
-  } else {
+    callback('两次输入的密码不一致')
+  }
+  else {
     callback()
   }
 }
 
-const logout = async () => {
+async function logout() {
   try {
     await handleXhrResponse(() => userApi.logout(), Message)
     userStore.clearUserInfo()
-    await router.push("/login")
-  } catch (e) {
+    await router.push('/login')
+  }
+  catch (e) {
     console.log(e)
   }
 }
 </script>
+
 <style scoped lang="less">
 body[arco-theme="dark"] {
-.user-center {
+  .user-center {
     background-color: #333;
     box-shadow: 0 0 10px 0 #000;
   }
 }
-
 
 .user-info {
   text-align: center;
@@ -233,6 +247,7 @@ body[arco-theme="dark"] {
   }
 }
 </style>
+
 <style>
 
 </style>

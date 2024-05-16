@@ -1,64 +1,79 @@
 <template>
-  <div class="login-container bg-cover min-h-lvh flex flex-col justify-center flex-items-center">
-    <div class="login-header">登录</div>
-    <div class="login-form-container flex justify-center flex-items-center w-full">
+  <div class="login-container flex flex-col justify-center flex-items-center bg-cover min-h-lvh">
+    <div class="login-header">
+      登录
+    </div>
+    <div class="login-form-container w-full flex justify-center flex-items-center">
       <div v-if="loginSuccessfully">
         <a-result status="success" title="登录成功" />
       </div>
       <div v-else>
-        <a-form :model="form" :style="{width:'400px'}" @submit="handleSubmit">
-          <a-form-item field="username" label="用户名" validate-trigger="blur"
-                       :rules="[{required:true,message:'请输入用户名'}]">
+        <a-form :model="form" :style="{ width: '400px' }" @submit="handleSubmit">
+          <a-form-item
+            field="username" label="用户名" validate-trigger="blur"
+            :rules="[{ required: true, message: '请输入用户名' }]"
+          >
             <a-input v-model="form.username" />
           </a-form-item>
-          <a-form-item field="password" label="密码" validate-trigger="blur"
-                       :rules="[{required:true,message:'请输入密码'},{minLength:6,message:'密码需要在6个字符以上'}]">
+          <a-form-item
+            field="password" label="密码" validate-trigger="blur"
+            :rules="[{ required: true, message: '请输入密码' }, { minLength: 6, message: '密码需要在6个字符以上' }]"
+          >
             <a-input-password v-model="form.password" />
           </a-form-item>
-          <a-form-item field="captchaVal" label="验证码" validate-trigger="blur"
-                       :rules="[{required:true,message:'请输入验证码'},{minLength:4,message:'请输入完整的验证码'}]">
+          <a-form-item
+            field="captchaVal" label="验证码" validate-trigger="blur"
+            :rules="[{ required: true, message: '请输入验证码' }, { minLength: 4, message: '请输入完整的验证码' }]"
+          >
             <a-input v-model="form.captchaVal" :max-length="4" />
           </a-form-item>
           <a-form-item>
             <div class="captcha-block">
-              <a-image :src="captchaPicture" show-loader :preview="false" :height="50" :width="120" @click="addCaptcha"
-                       class="cursor-pointer" />
+              <a-image
+                :src="captchaPicture" show-loader :preview="false" :height="50" :width="120" class="cursor-pointer"
+                @click="addCaptcha"
+              />
               <span class="change-captcha cursor-pointer select-none" @click="addCaptcha">点击更换验证码</span>
             </div>
           </a-form-item>
-          <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">登录</a-button>
+          <a-button type="primary" html-type="submit" long size="large" :loading="handleButtonLoading">
+            登录
+          </a-button>
         </a-form>
       </div>
     </div>
-    <a-space class="prime-action flex justify-center flex-items-center" v-if="!loginSuccessfully">
-      <router-link to="/register" custom v-slot="{ navigate }">
-        <a-link @click="navigate">注册用户</a-link>
+    <a-space v-if="!loginSuccessfully" class="prime-action flex justify-center flex-items-center">
+      <router-link v-slot="{ navigate }" to="/register" custom>
+        <a-link @click="navigate">
+          注册用户
+        </a-link>
       </router-link>
     </a-space>
   </div>
 </template>
+
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/stores/user"
-import { handleXhrResponse } from "@/api"
-import useUserApi from "@/api/userApi"
-import { Message } from "@arco-design/web-vue"
-import type { ValidatedError } from "@arco-design/web-vue"
-import { roles } from "@/router"
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Message } from '@arco-design/web-vue'
+import type { ValidatedError } from '@arco-design/web-vue'
+import { useUserStore } from '@/stores/user'
+import { handleXhrResponse } from '@/api'
+import useUserApi from '@/api/userApi'
+import { roles } from '@/router'
 
 const router = useRouter()
 const userApi = useUserApi()
 const userStore = useUserStore()
 
-const captchaPicture = ref("")
+const captchaPicture = ref('')
 const handleButtonLoading = ref(false)
 
 const form = reactive({
-  username: "",
-  password: "",
-  captchaID: "",
-  captchaVal: ""
+  username: '',
+  password: '',
+  captchaID: '',
+  captchaVal: ''
 })
 
 async function addCaptcha() {
@@ -67,10 +82,12 @@ async function addCaptcha() {
   form.captchaID = data.data.captchaID
 }
 
-const handleSubmit = async (form: {
-  values: Record<string, any>;
+const loginSuccessfully = ref(false)
+
+async function handleSubmit(form: {
+  values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
-}) => {
+}) {
   if (!form.errors) {
     handleButtonLoading.value = true
     try {
@@ -90,31 +107,33 @@ const handleSubmit = async (form: {
       setTimeout(async () => {
         if (userStore.userInfo.userRole === roles.ADMIN) {
           // 跳转到管理员页面
-          await router.push("/admin/index")
-        } else if (userStore.userInfo.userRole === roles.USER) {
+          await router.push('/admin/index')
+        }
+        else if (userStore.userInfo.userRole === roles.USER) {
           // 跳转到用户页面
-          await router.push("/member/index")
+          await router.push('/member/index')
         }
       }, 3000)
-    } finally {
+    }
+    finally {
       handleButtonLoading.value = false
       await addCaptcha()
     }
   }
 }
 
-const loginSuccessfully = ref(false)
-
 onMounted(async () => {
   await addCaptcha()
 })
 </script>
+
 <style scoped lang="less">
 body[arco-theme="dark"] {
   .login-container {
     .login-header {
       color: rgba(0, 0, 0, 0.8);
     }
+
     .login-form-container {
       background-color: rgba(0, 0, 0, 0.8);
     }
@@ -156,5 +175,4 @@ body[arco-theme="dark"] {
 .prime-action {
   margin-top: 10px;
 }
-
 </style>

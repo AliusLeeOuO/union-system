@@ -1,7 +1,7 @@
-import type { AxiosApiResponse } from "@/api/index"
-import axiosInstance from "@/api/index"
-import qs from "qs"
-import type { pageResponse } from "@/api/public_types"
+import qs from 'qs'
+import type { AxiosApiResponse } from '@/api/index'
+import axiosInstance from '@/api/index'
+import type { pageResponse } from '@/api/public_types'
 
 export interface getUserResponseData extends pageResponse {
   data: userListItem[] | null
@@ -220,10 +220,9 @@ export interface feeListItem {
   amount: string
 }
 
-
 export default function useAdminApi() {
   return {
-    getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = "", role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
+    getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = '', role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
       const params: { id?: number, username?: string, role?: number, page_num: number, page_size: number } = {
         id,
         username,
@@ -231,13 +230,19 @@ export default function useAdminApi() {
         page_num: pageNum,
         page_size: pageSize
       }
-      if (params.id === -1) delete params.id
-      if (params.username === "") delete params.username
-      if (params.role === -1) delete params.role
-      return axiosInstance.post("/admin/management/getUserList", qs.stringify(params))
+      if (params.id === -1) {
+        delete params.id
+      }
+      if (params.username === '') {
+        delete params.username
+      }
+      if (params.role === -1) {
+        delete params.role
+      }
+      return axiosInstance.post('/admin/management/getUserList', qs.stringify(params))
     },
     addNewUser: (username: string, password: string, role: number, email: string, phone: number): Promise<AxiosApiResponse<null>> => {
-      return axiosInstance.post("/admin/management/addNewUser", qs.stringify({
+      return axiosInstance.post('/admin/management/addNewUser', qs.stringify({
         username,
         password,
         role,
@@ -246,15 +251,15 @@ export default function useAdminApi() {
       }))
     },
     getUserInfo: (user_id: number): Promise<AxiosApiResponse<userDetail>> => {
-      return axiosInstance.post("/admin/management/getUserInfo", qs.stringify({ user_id }))
+      return axiosInstance.post('/admin/management/getUserInfo', qs.stringify({ user_id }))
     },
     updateUser: (user_id: number, username: string, status: boolean, phone: string, email: string, password?: string): Promise<AxiosApiResponse<null>> => {
       const params: {
-        user_id: number,
-        username: string,
-        status: boolean,
-        phone: string,
-        email: string,
+        user_id: number
+        username: string
+        status: boolean
+        phone: string
+        email: string
         password?: string
       } = {
         user_id,
@@ -263,11 +268,13 @@ export default function useAdminApi() {
         phone,
         email
       }
-      if (password) params.password = password
-      return axiosInstance.post("/admin/management/updateUser", qs.stringify(params))
+      if (password) {
+        params.password = password
+      }
+      return axiosInstance.post('/admin/management/updateUser', qs.stringify(params))
     },
-    getLoginLog: (pageNum: number, pageSize: number, status: "all" | "true" | "false"): Promise<AxiosApiResponse<getLoginLogResponseData>> => {
-      return axiosInstance.post("/admin/management/getLoginList", qs.stringify({
+    getLoginLog: (pageNum: number, pageSize: number, status: 'all' | 'true' | 'false'): Promise<AxiosApiResponse<getLoginLogResponseData>> => {
+      return axiosInstance.post('/admin/management/getLoginList', qs.stringify({
         page_num: pageNum,
         page_size: pageSize,
         status
@@ -280,9 +287,13 @@ export default function useAdminApi() {
         page_num: pageNum,
         page_size: pageSize
       }
-      if (params.assistance_type_id === undefined) delete params.assistance_type_id
-      if (params.id === undefined) delete params.id
-      return axiosInstance.post("/admin/assistance/requests", qs.stringify(params))
+      if (params.assistance_type_id === undefined) {
+        delete params.assistance_type_id
+      }
+      if (params.id === undefined) {
+        delete params.id
+      }
+      return axiosInstance.post('/admin/assistance/requests', qs.stringify(params))
     },
     assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> =>
       axiosInstance.post(
@@ -291,7 +302,7 @@ export default function useAdminApi() {
           request_id: assistanceId
         })
       ),
-    assistanceReply: (assistanceId: number, responseText: string, newStatusId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/assistance/replyAssistance", qs.stringify({
+    assistanceReply: (assistanceId: number, responseText: string, newStatusId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/assistance/replyAssistance', qs.stringify({
       request_id: assistanceId,
       response_text: responseText,
       new_status_id: newStatusId
@@ -299,11 +310,10 @@ export default function useAdminApi() {
     activityList: (
       pageSize: number,
       pageNum: number
-    ): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post("/admin/activity/list", qs.stringify({
-        page_size: pageSize,
-        page_num: pageNum
-      })
-    ),
+    ): Promise<AxiosApiResponse<activityListResponseData>> => axiosInstance.post('/admin/activity/list', qs.stringify({
+      page_size: pageSize,
+      page_num: pageNum
+    })),
     activityDetail: (activityId: number): Promise<AxiosApiResponse<activityManagementListResponse>> =>
       axiosInstance.get(`/admin/activity/detail/${activityId}`),
     addNewActivity: (
@@ -315,7 +325,7 @@ export default function useAdminApi() {
       type: number,
       max_participants: number,
       is_active: boolean
-    ): Promise<AxiosApiResponse<createActivityResponse>> => axiosInstance.post("/admin/activity/create", qs.stringify({
+    ): Promise<AxiosApiResponse<createActivityResponse>> => axiosInstance.post('/admin/activity/create', qs.stringify({
       title,
       description,
       start_time,
@@ -325,56 +335,55 @@ export default function useAdminApi() {
       max_participants,
       is_active
     })),
-    getActivityTypes: (): Promise<AxiosApiResponse<activityType[]>> => axiosInstance.get("/admin/activity/type"),
-    modifyActivityTitle: (activityId: number, title: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyTitle", qs.stringify({
+    getActivityTypes: (): Promise<AxiosApiResponse<activityType[]>> => axiosInstance.get('/admin/activity/type'),
+    modifyActivityTitle: (activityId: number, title: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/modifyTitle', qs.stringify({
       activity_id: activityId,
       title
     })),
-    modifyActivityDescription: (activityId: number, description: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyDescription", qs.stringify({
-        activity_id: activityId,
-        description
-      })
-    ),
-    modifyActivityLocation: (activityId: number, location: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/modifyLocation", qs.stringify({
+    modifyActivityDescription: (activityId: number, description: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/modifyDescription', qs.stringify({
+      activity_id: activityId,
+      description
+    })),
+    modifyActivityLocation: (activityId: number, location: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/modifyLocation', qs.stringify({
       activity_id: activityId,
       location
     })),
-    cancelUserReg: (activityId: number, userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/activity/cancelUserReg", qs.stringify({
+    cancelUserReg: (activityId: number, userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/cancelUserReg', qs.stringify({
       activity_id: activityId,
       user_id: userId
     })),
     dropActivity: (activityId: number, password: string): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/admin/activity/delete/${activityId}`, qs.stringify({
       password
     })),
-    getInvitationCodeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<invitationCodeListResponse>> => axiosInstance.post("/admin/management/getInvitationCodeList", qs.stringify({
+    getInvitationCodeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<invitationCodeListResponse>> => axiosInstance.post('/admin/management/getInvitationCodeList', qs.stringify({
       page_num: pageNum,
       page_size: pageSize
     })),
-    generateInvitationCode: (): Promise<AxiosApiResponse<generateInvitationCodeResponse>> => axiosInstance.post("/admin/management/generateInvitationCode"),
-    getLogAdminList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogAdminListResponse>> => axiosInstance.post("/admin/management/getLogAdminList", qs.stringify({
+    generateInvitationCode: (): Promise<AxiosApiResponse<generateInvitationCodeResponse>> => axiosInstance.post('/admin/management/generateInvitationCode'),
+    getLogAdminList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogAdminListResponse>> => axiosInstance.post('/admin/management/getLogAdminList', qs.stringify({
       page_num: pageNum,
       page_size: pageSize
     })),
     getLogMemberList(pageNum: number, pageSize: number): Promise<AxiosApiResponse<getLogMemberListResponse>> {
-      return axiosInstance.post("/admin/management/getLogMemberList", qs.stringify({
+      return axiosInstance.post('/admin/management/getLogMemberList', qs.stringify({
         page_num: pageNum,
         page_size: pageSize
       }))
     },
-    getRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getRegisteredFeeList>> => axiosInstance.post("/admin/fee/getRegisteredFeeList", qs.stringify({
+    getRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getRegisteredFeeList>> => axiosInstance.post('/admin/fee/getRegisteredFeeList', qs.stringify({
       page_num: pageNum,
       page_size: pageSize
     })),
-    getNonRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getNonRegisteredFeeList>> => axiosInstance.post("/admin/fee/getNonRegisteredFeeList", qs.stringify({
+    getNonRegisteredFeeList: (pageNum: number, pageSize: number): Promise<AxiosApiResponse<getNonRegisteredFeeList>> => axiosInstance.post('/admin/fee/getNonRegisteredFeeList', qs.stringify({
       page_num: pageNum,
       page_size: pageSize
     })),
-    getFeeStandardList: (): Promise<AxiosApiResponse<feeListItem[]>> => axiosInstance.get("/admin/fee/getFeeStandard"),
+    getFeeStandardList: (): Promise<AxiosApiResponse<feeListItem[]>> => axiosInstance.get('/admin/fee/getFeeStandard'),
     modifyFeeStandard: (standardId: number, amount: number, name: string): Promise<AxiosApiResponse<null>> => axiosInstance.put(`/admin/fee/modifyFeeStandard/${standardId}`, qs.stringify({
       amount,
       name
     })),
-    addFeeStandard: (amount: number, name: string): Promise<AxiosApiResponse<null>> => axiosInstance.post("/admin/fee/addNewFeeStandard", qs.stringify({
+    addFeeStandard: (amount: number, name: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/fee/addNewFeeStandard', qs.stringify({
       amount,
       name
     })),

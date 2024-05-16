@@ -5,8 +5,8 @@
   <a-form
     :model="formItem"
     :rules="rules"
-    @submit="handleSubmit"
     layout="vertical"
+    @submit="handleSubmit"
   >
     <a-form-item field="title" label="活动名称">
       <a-input v-model="formItem.title" />
@@ -29,63 +29,67 @@
     </a-form-item>
     <a-form-item field="time" label="活动时间">
       <a-range-picker
+        v-model:model-value="formItem.time"
         show-time
         :time-picker-props="{ defaultValue: ['00:00:00', '09:09:06'] }"
         format="YYYY-MM-DD HH:mm"
-        v-model:model-value="formItem.time"
       />
     </a-form-item>
     <a-form-item field="active" label="是否激活">
       <a-switch v-model="formItem.active" />
     </a-form-item>
     <div>
-      <a-button type="primary" html-type="submit" size="large" long>添加</a-button>
+      <a-button type="primary" html-type="submit" size="large" long>
+        添加
+      </a-button>
     </div>
   </a-form>
 </template>
+
 <script setup lang="ts">
-import { onMounted, reactive } from "vue"
-import { type FieldRule, Message, type ValidatedError } from "@arco-design/web-vue"
-import { handleXhrResponse } from "@/api"
-import useAdminApi, { type activityType } from "@/api/adminApi"
-import { useRouter } from "vue-router"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { onMounted, reactive } from 'vue'
+import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import useAdminApi, { type activityType } from '@/api/adminApi'
+import { handleXhrResponse } from '@/api'
 
 const router = useRouter()
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const adminApi = useAdminApi()
 
-
 const formItem = reactive({
-  title: "",
-  description: "",
+  title: '',
+  description: '',
   type: -1,
   maxCount: 0,
-  adderss: "",
+  adderss: '',
   time: [
-    "",
-    ""
+    '',
+    ''
   ],
   active: true
 })
 
 const rules: Record<string, FieldRule | FieldRule[]> = {
-  title: [{ required: true, message: "请输入标题" }],
-  description: [{ required: true, message: "请输入活动详情" }],
+  title: [{ required: true, message: '请输入标题' }],
+  description: [{ required: true, message: '请输入活动详情' }],
   type: [
     {
-      required: true, message: "请选择活动类型",
+      required: true,
+      message: '请选择活动类型',
       validator: (value, callback) => {
         return new Promise((resolve) => {
           if (value === -1) {
-            callback("请选择活动类型")
+            callback('请选择活动类型')
           }
+
           resolve(void 0)
         })
       }
@@ -94,41 +98,43 @@ const rules: Record<string, FieldRule | FieldRule[]> = {
   maxCount: [
     {
       required: true,
-      message: "请输入最大报名人数",
+      message: '请输入最大报名人数',
       validator: (value, callback) => {
         return new Promise((resolve) => {
           if (value <= 0) {
-            callback("最大报名人数必须大于0")
+            callback('最大报名人数必须大于0')
           }
+
           resolve(void 0)
         })
       }
     }
   ],
-  adderss: [{ required: true, message: "请输入活动地址" }],
+  adderss: [{ required: true, message: '请输入活动地址' }],
   time: [{
     required: true,
-    message: "请选择活动时间",
+    message: '请选择活动时间',
     validator: (value, callback) => {
       return new Promise((resolve) => {
         // 如果是默认值，提示输入
-        if (value[0] === "" || value[1] === "") {
-          callback("请选择活动时间")
+        if (value[0] === '' || value[1] === '') {
+          callback('请选择活动时间')
         }
+
         resolve(void 0)
       })
     }
   }],
-  active: [{ required: true, message: "请选择是否激活" }]
+  active: [{ required: true, message: '请选择是否激活' }]
 }
 
-const handleSubmit = async (form: {
-  values: Record<string, any>;
+async function handleSubmit(form: {
+  values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
-}) => {
+}) {
   if (!form.errors) {
-    const startTime = dayjs.tz(formItem.time[0]).format("YYYY-MM-DDTHH:mm:ssZ")
-    const endTime = dayjs.tz(formItem.time[1]).format("YYYY-MM-DDTHH:mm:ssZ")
+    const startTime = dayjs.tz(formItem.time[0]).format('YYYY-MM-DDTHH:mm:ssZ')
+    const endTime = dayjs.tz(formItem.time[1]).format('YYYY-MM-DDTHH:mm:ssZ')
     const { data } = await handleXhrResponse(() => adminApi.addNewActivity(
       formItem.title,
       formItem.description,
@@ -139,13 +145,14 @@ const handleSubmit = async (form: {
       formItem.maxCount,
       formItem.active
     ), Message)
-    Message.success("新建活动成功")
+    Message.success('新建活动成功')
     await router.push(`/admin/manageActivityDetail/${data.data.id}`)
   }
 }
 
 const activityTypeList = reactive<activityType[]>([])
-const fetchActivityType = async () => {
+
+async function fetchActivityType() {
   const { data } = await handleXhrResponse(() => adminApi.getActivityTypes(), Message)
   activityTypeList.splice(0, activityTypeList.length, ...data.data)
 }
@@ -153,8 +160,8 @@ const fetchActivityType = async () => {
 onMounted(async () => {
   await fetchActivityType()
 })
-
 </script>
+
 <style scoped lang="less">
 
 </style>

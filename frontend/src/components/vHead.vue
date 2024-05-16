@@ -1,16 +1,16 @@
 <template>
   <header class="header-pc flex justify-between flex-items-center">
     <div class="header-left">
-      <div @click="toIndex" class="logo cursor-pointer flex justify-center flex-items-center">
+      <div class="logo flex cursor-pointer justify-center flex-items-center" @click="toIndex">
         <img src="@/assets/images/logo.png" alt="logo">
         <span>工会管理系统</span>
       </div>
     </div>
     <nav>
       <router-link
-        :to="item.permission_node"
         v-for="item in navList"
         :key="item.description"
+        :to="item.permission_node"
         class="nav-item"
       >
         <div>
@@ -20,9 +20,9 @@
     </nav>
     <div class="header-right">
       <router-link
-        to="/member/notification"
-        custom v-slot="{ navigate }"
         v-if="userStore.userInfo.userRole === roles.USER"
+        v-slot="{ navigate }" to="/member/notification"
+        custom
       >
         <a-badge :count="notificationStore.notificationCount" :offset="[-20, -2]" @click="navigate">
           <div class="header-notification">
@@ -31,69 +31,93 @@
           </div>
         </a-badge>
       </router-link>
-      <div class="user-info" @click="openPersonInfo = !openPersonInfo" v-if="userStore.isUserLoggedIn"
-           v-click-outside:[dropdownRef]="handleClickOutside">
+      <div
+        v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside" class="user-info"
+        @click="openPersonInfo = !openPersonInfo"
+      >
         {{ userStore.userInfo.userName }}
         <a-tag>{{ userStore.getUserRoleName }}</a-tag>
       </div>
-      <div class="user-info" v-else>
-        <a-button @click="toLogin">登录</a-button>
+      <div v-else class="user-info">
+        <a-button @click="toLogin">
+          登录
+        </a-button>
       </div>
     </div>
-    <div class="header-pc-person-info" v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef">
+    <div v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef" class="header-pc-person-info">
       <div class="header-pc-person-info-text">
         {{ userStore.userInfo.userName }}
       </div>
       <div class="header-pc-person-info-button">
-        <a-button @click="toUserIndex">查看</a-button>
-        <a-button status="danger" @click="logout">退出登录</a-button>
+        <a-button @click="toUserIndex">
+          查看
+        </a-button>
+        <a-button status="danger" @click="logout">
+          退出登录
+        </a-button>
       </div>
     </div>
   </header>
   <header class="header-mobile">
-    <router-link to="/index" custom v-slot="{ navigate }">
-      <div @click="navigate" class="logo">工会管理系统</div>
+    <router-link v-slot="{ navigate }" to="/index" custom>
+      <div class="logo" @click="navigate">
+        工会管理系统
+      </div>
     </router-link>
     <div class="burger-nav">
       <div class="burger-icon" @click="openMobileNav = true">
-        <svg id="menu-icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
-             x="0px" y="0px" viewBox="0 0 24 24">
-          <line id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
-                vector-effect="non-scaling-stroke"
-                style="transform-origin: 0 0;"></line>
-          <line id="menu-line-mid" class="menu-line" x1="1" y1="12" x2="23" y2="12" stroke-width="2.4"
-                vector-effect="non-scaling-stroke"
-                style="transform-origin: 0 0;"></line>
-          <line id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
-                vector-effect="non-scaling-stroke"
-                style="transform-origin: 0 0;"></line>
+        <svg
+          id="menu-icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          x="0px" y="0px" viewBox="0 0 24 24"
+        >
+          <line
+            id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
+            vector-effect="non-scaling-stroke"
+            style="transform-origin: 0 0;"
+          />
+          <line
+            id="menu-line-mid" class="menu-line" x1="1" y1="12" x2="23" y2="12" stroke-width="2.4"
+            vector-effect="non-scaling-stroke"
+            style="transform-origin: 0 0;"
+          />
+          <line
+            id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
+            vector-effect="non-scaling-stroke"
+            style="transform-origin: 0 0;"
+          />
         </svg>
       </div>
     </div>
-    <div class="mobile-nav" :class="{'open-mobile-nav': openMobileNav}">
+    <div class="mobile-nav" :class="{ 'open-mobile-nav': openMobileNav }">
       <div class="mobile-nav-top">
-        <div class="nav-top-left"></div>
+        <div class="nav-top-left" />
         <div class="nav-top-right">
           <div class="close-menu-icon" @click="openMobileNav = false">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                 x="0px" y="0px" viewBox="0 0 24 24">
-              <line id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
-                    vector-effect="non-scaling-stroke" data-svg-origin="12 6" style="transform-origin: 0 0;"
-                    transform="matrix(-0.70711,-0.70711,0.70711,-0.70711,16.24266,24.72798)"></line>
-              <line id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
-                    vector-effect="non-scaling-stroke" data-svg-origin="12 18" style="transform-origin: 0 0;"
-                    transform="matrix(-0.70711,0.70711,-0.70711,-0.70711,33.2133,16.24266)"></line>
+            <svg
+              version="1.1" xmlns="http://www.w3.org/2000/svg"
+              x="0px" y="0px" viewBox="0 0 24 24"
+            >
+              <line
+                id="menu-line-top" class="menu-line" x1="1" y1="6" x2="23" y2="6" stroke-width="2.4"
+                vector-effect="non-scaling-stroke" data-svg-origin="12 6" style="transform-origin: 0 0;"
+                transform="matrix(-0.70711,-0.70711,0.70711,-0.70711,16.24266,24.72798)"
+              />
+              <line
+                id="menu-line-bot" class="menu-line" x1="1" y1="18" x2="23" y2="18" stroke-width="2.4"
+                vector-effect="non-scaling-stroke" data-svg-origin="12 18" style="transform-origin: 0 0;"
+                transform="matrix(-0.70711,0.70711,-0.70711,-0.70711,33.2133,16.24266)"
+              />
             </svg>
           </div>
         </div>
       </div>
       <div class="mobile-nav-main">
         <router-link
-          :to="item.permission_node"
           v-for="item in navList"
           :key="item.permission_id"
-          @click="openMobileNav = false"
+          :to="item.permission_node"
           class="mobile-nav-item"
+          @click="openMobileNav = false"
         >
           {{ item.description }}
         </router-link>
@@ -103,22 +127,25 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/stores/user"
-import { useNotificationStore } from "@/stores/notification"
-import { handleXhrResponse } from "@/api"
-import useUserApi from "@/api/userApi"
-import { Message } from "@arco-design/web-vue"
-import { IconNotification } from "@arco-design/web-vue/es/icon"
-import { roles } from "@/router"
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Message } from '@arco-design/web-vue'
+import { IconNotification } from '@arco-design/web-vue/es/icon'
+import { useUserStore } from '@/stores/user'
+import { useNotificationStore } from '@/stores/notification'
+import { handleXhrResponse } from '@/api'
+import useUserApi from '@/api/userApi'
+import { roles } from '@/router'
 
-//PC端个人信息
+const router = useRouter()
+
+// PC端个人信息
 const userStore = useUserStore()
 const notificationStore = useNotificationStore()
 const dropdownRef = ref<HTMLElement | null>(null)
 const openPersonInfo = ref(false)
-const handleClickOutside = (e: MouseEvent) => {
+
+function handleClickOutside(e: MouseEvent) {
   // 点击外部关闭个人信息
   if (dropdownRef.value && !dropdownRef.value.contains(e.target as HTMLElement)) {
     openPersonInfo.value = false
@@ -126,42 +153,45 @@ const handleClickOutside = (e: MouseEvent) => {
 }
 
 // 跳转到用户个人中心
-const toUserIndex = async () => {
-  await router.push("/user")
+async function toUserIndex() {
+  await router.push('/user')
   // 关闭个人信息
   openPersonInfo.value = false
 }
 
 // 退出登录
 const userApi = useUserApi()
-const logout = async () => {
+
+async function logout() {
   try {
     await handleXhrResponse(() => userApi.logout(), Message)
     userStore.clearUserInfo()
-    await router.push("/login")
-  } catch (e) {
+    await router.push('/login')
+  }
+  catch (e) {
     console.log(e)
   }
 }
 
-const router = useRouter()
-const toLogin = async () => {
-  await router.push("/login")
+async function toLogin() {
+  await router.push('/login')
 }
 
-//手机端汉堡菜单
+// 手机端汉堡菜单
 const openMobileNav = ref(false)
 
 // 根据角色跳转首页
-const toIndex = async () => {
+async function toIndex() {
   if (userStore.isUserLoggedIn) {
     if (userStore.userInfo.userRole === roles.ADMIN) {
-      await router.push("/admin/index")
-    } else if (userStore.userInfo.userRole === roles.USER) {
-      await router.push("/member/index")
+      await router.push('/admin/index')
     }
-  } else {
-    await router.push("/index")
+    else if (userStore.userInfo.userRole === roles.USER) {
+      await router.push('/member/index')
+    }
+  }
+  else {
+    await router.push('/index')
   }
 }
 
@@ -170,7 +200,6 @@ const navList = computed(() => userStore.userPermissions.filter(item => !item.li
 onMounted(async () => {
   await userStore.fetchPermission()
 })
-
 </script>
 
 <style lang="less" scoped>
@@ -327,7 +356,6 @@ body[arco-theme="dark"] {
     gap: 5px;
   }
 }
-
 
 .header-mobile {
   padding: 0 10px;

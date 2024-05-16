@@ -1,17 +1,20 @@
 {
   "name": "union-system",
+  "type": "module",
   "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.1.0+sha512.67f5879916a9293e5cf059c23853d571beaf4f753c707f40cb22bed5fb1578c6aad3b6c4107ccb3ba0b35be003eb621a16471ac836c87beb53f9d54bb4612724",
   "author": "Alius Lee",
   "email": "admin (at) githvb.cn ",
   "license": "MIT",
-  "private": true,
-  "type": "module",
   "scripts": {
     "dev": "vite --host --port 43123",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "lint": "eslint .",
+    "lint:eslint": "eslint . --cache --fix"
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.55.2",
@@ -27,13 +30,16 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.18.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.12.12",
     "@types/numeral": "^2.0.5",
     "@types/qs": "^6.9.15",
+    "@unocss/eslint-plugin": "^0.60.2",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
     "@vueuse/core": "^10.9.0",
+    "eslint": "9.2.0",
     "less": "^4.2.0",
     "npm-run-all2": "^6.1.2",
     "prettier": "^3.2.5",
@@ -44,6 +50,5 @@
     "vite": "^5.2.11",
     "vite-plugin-html": "^3.2.2",
     "vue-tsc": "^2.0.18"
-  },
-  "packageManager": "pnpm@9.1.0+sha512.67f5879916a9293e5cf059c23853d571beaf4f753c707f40cb22bed5fb1578c6aad3b6c4107ccb3ba0b35be003eb621a16471ac836c87beb53f9d54bb4612724"
+  }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-breadcrumb :routes="routes">
-      <template #item-render="{route, paths}">
+      <template #item-render="{ route }">
         <router-link :to="route">
           {{ route.label }}
         </router-link>
@@ -9,46 +9,68 @@
     </a-breadcrumb>
   </div>
   <div class="assistance-status">
-    <div class="description-title">援助状态</div>
-    <a-button @click="closeModal = true" v-if="state.status.id !== 4">关闭本援助</a-button>
+    <div class="description-title">
+      援助状态
+    </div>
+    <a-button v-if="state.status.id !== 4" @click="closeModal = true">
+      关闭本援助
+    </a-button>
   </div>
   <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
-    <a-step description="This is a description">待审核</a-step>
-    <a-step description="This is a description">处理中</a-step>
-    <a-step description="This is a description">已解决</a-step>
-    <a-step description="This is a description">已关闭</a-step>
+    <a-step description="This is a description">
+      待审核
+    </a-step>
+    <a-step description="This is a description">
+      处理中
+    </a-step>
+    <a-step description="This is a description">
+      已解决
+    </a-step>
+    <a-step description="This is a description">
+      已关闭
+    </a-step>
   </a-steps>
   <div>
-    <a-descriptions :data="descriptionData" size="large" title="帮助信息" layout="inline-vertical" :column="4"
-                    bordered />
+    <a-descriptions
+      :data="descriptionData" size="large" title="帮助信息" layout="inline-vertical" :column="4"
+      bordered
+    />
     <div>
-      <div class="description-title">交流记录</div>
+      <div class="description-title">
+        交流记录
+      </div>
       <div>
         <a-empty v-if="state.responses.length === 0" />
-        <a-comment v-for="response in state.responses"
-                   :author="response.username"
-                   :key="response.response_id"
-                   :content="response.response_text"
-                   :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
-                   v-else
+        <a-comment
+          v-for="response in state.responses"
+          v-else
+          :key="response.response_id"
+          :author="response.username"
+          :content="response.response_text"
+          :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
         />
       </div>
       <div v-if="state.status.id !== 4">
-        <div class="description-title">补充反馈</div>
+        <div class="description-title">
+          补充反馈
+        </div>
         <a-form :model="submitAssistanceForm" @submit="handleSubmit">
-          <a-form-item hide-label
-                       validate-trigger="blur"
-                       :rules="[{required:true,message:'请输入回复内容'}]"
-                       field="response_text"
+          <a-form-item
+            hide-label
+            validate-trigger="blur"
+            :rules="[{ required: true, message: '请输入回复内容' }]"
+            field="response_text"
           >
             <a-textarea
+              v-model="submitAssistanceForm.response_text"
               placeholder="在这里输入你的回复"
               auto-size
-              v-model="submitAssistanceForm.response_text"
             />
           </a-form-item>
           <div class="submit-button">
-            <a-button type="primary" html-type="submit">提交回复</a-button>
+            <a-button type="primary" html-type="submit">
+              提交回复
+            </a-button>
           </div>
         </a-form>
       </div>
@@ -63,36 +85,65 @@
     </div>
   </a-modal>
 </template>
+
 <script setup lang="ts">
-import { useRoute } from "vue-router"
-import useMemberApi, { type assistanceDetailResponse } from "@/api/memberApi"
-import { handleXhrResponse } from "@/api"
-import { type BreadcrumbRoute, Message, type ValidatedError } from "@arco-design/web-vue"
-import { onMounted, reactive, ref } from "vue"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { useRoute } from 'vue-router'
+import { type BreadcrumbRoute, Message, type ValidatedError } from '@arco-design/web-vue'
+import { onMounted, reactive, ref } from 'vue'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { handleXhrResponse } from '@/api'
+import useMemberApi, { type assistanceDetailResponse } from '@/api/memberApi'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 const memberApi = useMemberApi()
 const route = useRoute()
 
 // 面包屑
 const routes: BreadcrumbRoute[] = [
   {
-    path: "/member/assistance",
-    label: "帮助"
+    path: '/member/assistance',
+    label: '帮助'
   },
   {
     path: route.path,
-    label: "查看详情"
+    label: '查看详情'
   }
 ]
 
+const state = reactive<assistanceDetailResponse>({
+  created_at: '',
+  updated_at: '',
+  assistance_type: '',
+  description: '',
+  id: 0,
+  responses: [],
+  status: { id: 0, name: '' },
+  title: '',
+  type: { assistance_type_id: 0, type_name: '' }
+})
 
-const getAssistanceDetail = async () => {
+const descriptionData = reactive([{
+  label: '帮助标题',
+  value: ''
+}, {
+  label: '帮助类型',
+  value: ''
+}, {
+  label: '创建时间',
+  value: ''
+}, {
+  label: '更新时间',
+  value: ''
+}, {
+  label: '详细描述',
+  value: ''
+}])
+
+async function getAssistanceDetail() {
   const assistantId = Number(route.params.id)
   const { data } = await handleXhrResponse(() => memberApi.assistanceDetail(assistantId), Message)
   state.assistance_type = data.data.assistance_type
@@ -105,85 +156,56 @@ const getAssistanceDetail = async () => {
   // 实验性
   descriptionData[0].value = data.data.title
   descriptionData[1].value = data.data.type.type_name
-  descriptionData[2].value = dayjs.tz(data.data.created_at).format("YYYY-MM-DD HH:mm:ss")
-  descriptionData[3].value = dayjs.tz(data.data.updated_at).format("YYYY-MM-DD HH:mm:ss")
+  descriptionData[2].value = dayjs.tz(data.data.created_at).format('YYYY-MM-DD HH:mm:ss')
+  descriptionData[3].value = dayjs.tz(data.data.updated_at).format('YYYY-MM-DD HH:mm:ss')
   descriptionData[4].value = data.data.description
 }
-
-const state = reactive<assistanceDetailResponse>({
-  created_at: "", updated_at: "",
-  assistance_type: "",
-  description: "",
-  id: 0,
-  responses: [],
-  status: { id: 0, name: "" },
-  title: "",
-  type: { assistance_type_id: 0, type_name: "" }
-})
-
-const descriptionData = reactive([{
-  label: "帮助标题",
-  value: ""
-}, {
-  label: "帮助类型",
-  value: ""
-}, {
-  label: "创建时间",
-  value: ""
-}, {
-  label: "更新时间",
-  value: ""
-}, {
-  label: "详细描述",
-  value: ""
-}])
-
 
 onMounted(async () => {
   await getAssistanceDetail()
 })
 
+const submitAssistanceForm = reactive({
+  response_text: ''
+})
+
 // 提交回复
-const handleSubmit = async (form: {
-  values: Record<string, any>;
+async function handleSubmit(form: {
+  values: Record<string, any>
   errors: Record<string, ValidatedError> | undefined
-}) => {
+}) {
   if (!form.errors) {
     try {
       await handleXhrResponse(() => memberApi.assistanceReply(Number(route.params.id), form.values.response_text), Message)
-      Message.success("回复成功")
-      submitAssistanceForm.response_text = ""
+      Message.success('回复成功')
+      submitAssistanceForm.response_text = ''
       await getAssistanceDetail()
-    } catch (error) {
+    }
+    catch (error) {
       console.log(error)
     }
   }
 }
 
-const submitAssistanceForm = reactive({
-  response_text: ""
-})
-
-
 // 关闭援助
 const closeModal = ref(false)
-const closeAssistance = async () => {
+async function closeAssistance() {
   try {
     await handleXhrResponse(() => memberApi.assistanceClose(Number(route.params.id)), Message)
-    Message.success("关闭成功")
+    Message.success('关闭成功')
     await getAssistanceDetail()
-  } catch (error) {
+  }
+  catch (error) {
     console.log(error)
   }
 }
-
 </script>
+
 <style scoped lang="less">
 .assistance-status {
   display: flex;
   justify-content: space-between;
 }
-
 
 .step-items {
   margin: 20px 0;

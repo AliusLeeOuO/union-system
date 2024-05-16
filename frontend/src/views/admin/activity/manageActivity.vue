@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-breadcrumb :routes="routes">
-      <template #item-render="{route, paths}">
+      <template #item-render="{ route }">
         <router-link :to="route">
           {{ route.label }}
         </router-link>
@@ -13,26 +13,28 @@
   </a-typography-title>
   <div class="flex justify-between flex-items-center">
     <a-space>
-      <router-link to="/admin/addNewActivity" custom v-slot="{ navigate }">
-        <a-button status="success" @click="navigate">添加新活动</a-button>
+      <router-link v-slot="{ navigate }" to="/admin/addNewActivity" custom>
+        <a-button status="success" @click="navigate">
+          添加新活动
+        </a-button>
       </router-link>
     </a-space>
     <a-space>
       <a-button>
         <template #icon>
-          <icon-refresh />
+          <IconRefresh />
         </template>
         刷新
       </a-button>
     </a-space>
   </div>
-  <a-empty v-if="activityList.length === 0"></a-empty>
-  <div class="activity-content" v-else>
+  <a-empty v-if="activityList.length === 0" />
+  <div v-else class="activity-content">
     <div class="activity-items">
-      <activity-block
+      <ActivityBlock
         v-for="item in activityList"
         :key="item.activityId"
-        :path="'/admin/manageActivityDetail/' + item.activityId"
+        :path="`/admin/manageActivityDetail/${item.activityId}`"
         :activity-id="item.activityId"
         :title="item.title"
         :registration-count="item.registrationCount"
@@ -44,11 +46,11 @@
         :max-participants="item.maxParticipants"
       />
     </div>
-    <div class="flex justify-end mt-4">
+    <div class="mt-4 flex justify-end">
       <a-pagination
-        :total="pagination.total"
         v-model:page-size="pagination.pageSize"
         v-model:current="pagination.current"
+        :total="pagination.total"
         :default-page-size="5"
         show-page-size @change="pageChange"
         @page-size-change="pageSizeChange"
@@ -56,22 +58,22 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import dayjs from "dayjs"
-import { reactive, onMounted } from "vue"
-import type { activityListResponse } from "@/api/memberApi"
-import { handleXhrResponse } from "@/api"
-import { Message, type BreadcrumbRoute } from "@arco-design/web-vue"
-import useAdminApi from "@/api/adminApi"
-import ActivityBlock from "@/components/activityBlock.vue"
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import { onMounted, reactive } from 'vue'
+import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
+import type { activityListResponse } from '@/api/memberApi'
+import { handleXhrResponse } from '@/api'
+import useAdminApi from '@/api/adminApi'
+import ActivityBlock from '@/components/activityBlock.vue'
 
 const adminApi = useAdminApi()
 
 const routes: BreadcrumbRoute[] = [
   {
-    path: "/admin/manageActivity",
-    label: "活动管理"
+    path: '/admin/manageActivity',
+    label: '活动管理'
   }
 ]
 
@@ -82,18 +84,18 @@ const pagination = reactive({
   current: 1
 })
 
-const pageSizeChange = async (pageSize: number) => {
+async function pageSizeChange(pageSize: number) {
   pagination.pageSize = pageSize
   pagination.current = 1
   await getActivityList()
 }
 
-const pageChange = async (current: number) => {
+async function pageChange(current: number) {
   pagination.current = current
   await getActivityList()
 }
 
-const getActivityList = async () => {
+async function getActivityList() {
   const { data } = await handleXhrResponse(() => adminApi.activityList(pagination.pageSize, pagination.current), Message)
   // 清除原有数据
   activityList.splice(0, activityList.length)

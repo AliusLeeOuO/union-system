@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-between mb-3">
-<!--    <a-form :models="searchForm" layout="inline">
+  <div class="mb-3 flex justify-between">
+    <!--    <a-form :models="searchForm" layout="inline">
       <a-form-item label="状态">
         <a-select :style="{width:'180px'}" v-models="searchForm.status">
           <a-option value="all">所有</a-option>
@@ -8,10 +8,10 @@
           <a-option value="false">失败</a-option>
         </a-select>
       </a-form-item>
-    </a-form>-->
+    </a-form> -->
     <a-button @click="refreshList">
       <template #icon>
-        <icon-refresh />
+        <IconRefresh />
       </template>
       刷新
     </a-button>
@@ -20,12 +20,12 @@
     :columns="columns"
     :data="tableData"
     size="large"
-    @page-change="changePage"
     :pagination="{
       total: pageData.total,
       pageSize: pageData.pageSize,
-      current: pageData.currentPage
+      current: pageData.currentPage,
     }"
+    @page-change="changePage"
   >
     <template #username="{ record }">
       <a-popover>
@@ -58,54 +58,55 @@
       </a-popover>
     </template>
     <template #time="{ record }">
-      {{ dayjs.tz(record.time).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.time).format('YYYY-MM-DD HH:mm:ss') }}
     </template>
   </a-table>
 </template>
+
 <script setup lang="ts">
-import { onMounted, reactive, watch } from "vue"
-import useAdminApi, { type logAdminListItem } from "@/api/adminApi"
-import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
-import dayjs from "dayjs"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { onMounted, reactive, watch } from 'vue'
+import { Message } from '@arco-design/web-vue'
+import dayjs from 'dayjs'
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { handleXhrResponse } from '@/api'
+import useAdminApi, { type logAdminListItem } from '@/api/adminApi'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const adminApi = useAdminApi()
 
 const searchForm = reactive<{
-  status: "all" | "true" | "false"
+  status: 'all' | 'true' | 'false'
 }>({
-  status: "all"
+  status: 'all'
 })
 
 const columns = [
   {
-    title: "操作用户名",
-    slotName: "username"
+    title: '操作用户名',
+    slotName: 'username'
   },
   {
-    title: "操作模块",
-    slotName: "actionModule"
+    title: '操作模块',
+    slotName: 'actionModule'
   },
   {
-    title: "操作IP",
-    dataIndex: "ip"
+    title: '操作IP',
+    dataIndex: 'ip'
   },
   {
-    title: "操作详情",
-    slotName: "detail",
+    title: '操作详情',
+    slotName: 'detail',
     ellipsis: true,
     width: 500
   },
   {
-    title: "操作时间",
-    slotName: "time",
+    title: '操作时间',
+    slotName: 'time',
     width: 200
   }
 ]
@@ -118,7 +119,7 @@ const pageData = reactive({
   currentPage: 1
 })
 
-const fetchLoginLog = async () => {
+async function fetchLoginLog() {
   const { data } = await handleXhrResponse(() => adminApi.getLogAdminList(pageData.currentPage, pageData.pageSize), Message)
   tableData.splice(0, tableData.length)
   pageData.total = data.data.total
@@ -127,19 +128,19 @@ const fetchLoginLog = async () => {
   }
 }
 
-const changePage = async (page: number) => {
+async function changePage(page: number) {
   pageData.currentPage = page
   await fetchLoginLog()
 }
 
-const refreshList = async () => {
+async function refreshList() {
   pageData.currentPage = 1
-  searchForm.status = "all"
+  searchForm.status = 'all'
   await fetchLoginLog()
 }
 
 // 监听searchForm.status的变化，并在变化时调用fetchLoginLog
-watch(() => searchForm.status, async (newStatus, oldStatus) => {
+watch(() => searchForm.status, async () => {
   pageData.currentPage = 1
   await fetchLoginLog()
 })

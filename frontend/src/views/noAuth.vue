@@ -1,6 +1,8 @@
 <template>
-  <div class="flex justify-center items-center">
-    <h1 class="inline-block">Error 权限错误</h1>
+  <div class="flex items-center justify-center">
+    <h1 class="inline-block">
+      Error 权限错误
+    </h1>
     <h2>状态：您无权访问本页面 No Authorization</h2>
   </div>
 </template>
@@ -35,5 +37,4 @@ div {
     padding: 0;
   }
 }
-
 </style>

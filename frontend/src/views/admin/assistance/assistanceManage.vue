@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-breadcrumb :routes="routes">
-      <template #item-render="{route, paths}">
+      <template #item-render="{ route }">
         <router-link :to="route">
           {{ route.label }}
         </router-link>
@@ -11,29 +11,41 @@
   <a-typography-title :heading="2">
     援助管理
   </a-typography-title>
-  <div class="flex justify-between mb-3">
+  <div class="mb-3 flex justify-between">
     <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
       <a-form-item label="ID">
         <a-input v-model="searchForm.id" placeholder="通过ID查找" />
       </a-form-item>
       <a-form-item label="类型">
-        <a-select :style="{width:'180px'}" v-model="searchForm.type">
-          <a-option value="">所有类型</a-option>
-          <a-option value="1">法律援助</a-option>
-          <a-option value="2">紧急援助</a-option>
-          <a-option value="3">职业发展援助</a-option>
+        <a-select v-model="searchForm.type" :style="{ width: '180px' }">
+          <a-option value="">
+            所有类型
+          </a-option>
+          <a-option value="1">
+            法律援助
+          </a-option>
+          <a-option value="2">
+            紧急援助
+          </a-option>
+          <a-option value="3">
+            职业发展援助
+          </a-option>
         </a-select>
       </a-form-item>
       <div>
         <a-space>
-          <a-button type="primary" html-type="submit">查询</a-button>
-          <a-button status="danger" @click="resetSearch">清空查询条件</a-button>
+          <a-button type="primary" html-type="submit">
+            查询
+          </a-button>
+          <a-button status="danger" @click="resetSearch">
+            清空查询条件
+          </a-button>
         </a-space>
       </div>
     </a-form>
     <a-button @click="refreshList">
       <template #icon>
-        <icon-refresh />
+        <IconRefresh />
       </template>
       刷新
     </a-button>
@@ -42,97 +54,107 @@
     :columns="columns"
     :data="tableData"
     size="large"
-    @page-change="changePage"
     :loading="tableLoading"
     :pagination="{
       total: pageData.total,
       pageSize: pageData.pageSize,
-      current: pageData.currentPage
+      current: pageData.currentPage,
     }"
+    @page-change="changePage"
   >
     <template #status="{ record }">
-      <a-tag color="cyan" v-if="record.status === 1">待审核</a-tag>
-      <a-tag color="blue" v-else-if="record.status === 2">处理中</a-tag>
-      <a-tag color="green" v-else-if="record.status === 3">已解决</a-tag>
-      <a-tag color="gray" v-else-if="record.status === 4">已关闭</a-tag>
+      <a-tag v-if="record.status === 1" color="cyan">
+        待审核
+      </a-tag>
+      <a-tag v-else-if="record.status === 2" color="blue">
+        处理中
+      </a-tag>
+      <a-tag v-else-if="record.status === 3" color="green">
+        已解决
+      </a-tag>
+      <a-tag v-else-if="record.status === 4" color="gray">
+        已关闭
+      </a-tag>
     </template>
     <template #create_time="{ record }">
-      {{ dayjs.tz(record.create_time).format("YYYY-MM-DD HH:mm:ss") }}
+      {{ dayjs.tz(record.create_time).format('YYYY-MM-DD HH:mm:ss') }}
     </template>
     <template #type="{ record }">
       {{ record.assistance_type.name }}
     </template>
     <template #action="{ record }">
-      <router-link :to="`/admin/manageAssistanceDetail/${record.id}`" custom v-slot="{ navigate }">
-        <a-button type="primary" @click="navigate">操作</a-button>
+      <router-link v-slot="{ navigate }" :to="`/admin/manageAssistanceDetail/${record.id}`" custom>
+        <a-button type="primary" @click="navigate">
+          操作
+        </a-button>
       </router-link>
     </template>
   </a-table>
 </template>
+
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import dayjs from "dayjs"
-import useAdminApi, { type assistanceListItem } from "@/api/adminApi"
-import { type FormInstance, Message, type BreadcrumbRoute } from "@arco-design/web-vue"
-import { handleXhrResponse } from "@/api"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { onMounted, reactive, ref } from 'vue'
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import dayjs from 'dayjs'
+import { type BreadcrumbRoute, type FormInstance, Message } from '@arco-design/web-vue'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { handleXhrResponse } from '@/api'
+import useAdminApi, { type assistanceListItem } from '@/api/adminApi'
 
 const adminApi = useAdminApi()
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 
 // 面包屑
 const routes: BreadcrumbRoute[] = [
   {
-    path: "/admin/manageAssistance",
-    label: "援助管理"
+    path: '/admin/manageAssistance',
+    label: '援助管理'
   }
 ]
 
 const searchFormRef = ref<FormInstance | null>(null)
 const tableLoading = ref(true)
 
-
 const columns = [
   {
-    title: "援助ID",
-    dataIndex: "id"
+    title: '援助ID',
+    dataIndex: 'id'
   },
   {
-    title: "援助用户",
-    dataIndex: "username"
+    title: '援助用户',
+    dataIndex: 'username'
   },
   {
-    title: "援助标题",
-    dataIndex: "title"
+    title: '援助标题',
+    dataIndex: 'title'
   },
   {
-    title: "援助类型",
-    slotName: "type"
+    title: '援助类型',
+    slotName: 'type'
   },
   {
-    title: "发起时间",
-    slotName: "create_time"
+    title: '发起时间',
+    slotName: 'create_time'
   },
   {
-    title: "援助状态",
-    slotName: "status"
+    title: '援助状态',
+    slotName: 'status'
   },
   {
-    title: "操作",
-    slotName: "action"
+    title: '操作',
+    slotName: 'action'
   }
 ]
 
 const tableData = reactive<assistanceListItem[]>([])
 
 const searchForm = reactive({
-  id: "",
-  type: ""
+  id: '',
+  type: ''
 })
 
 const pageData = reactive({
@@ -141,36 +163,36 @@ const pageData = reactive({
   currentPage: 1
 })
 
-const changePage = async (page: number) => {
+async function changePage(page: number) {
   pageData.currentPage = page
   await fetchAssistanceList()
 }
 
-const submitSearch = async () => {
+async function submitSearch() {
   pageData.currentPage = 1
   await fetchAssistanceList()
 }
 
-const resetSearch = () => {
-  searchForm.id = ""
-  searchForm.type = ""
+function resetSearch() {
+  searchForm.id = ''
+  searchForm.type = ''
   pageData.currentPage = 1
   fetchAssistanceList()
 }
 
-const refreshList = async () => {
+async function refreshList() {
   pageData.currentPage = 1
   await submitSearch()
 }
 
-const fetchAssistanceList = async () => {
+async function fetchAssistanceList() {
   tableLoading.value = true
   // 构建基本的参数对象
-  let params: {
-    pageNum: number;
-    pageSize: number;
-    assistance_type_id?: number;
-    id?: number;
+  const params: {
+    pageNum: number
+    pageSize: number
+    assistance_type_id?: number
+    id?: number
   } = {
     pageNum: pageData.currentPage,
     pageSize: pageData.pageSize
@@ -179,7 +201,7 @@ const fetchAssistanceList = async () => {
   // 如果 id 不为空且可以转换为数字，则添加到参数对象中
   if (searchForm.id) {
     const idNumber = Number(searchForm.id)
-    if (!isNaN(idNumber)) { // 确保转换后是有效数字
+    if (!Number.isNaN(idNumber)) { // 确保转换后是有效数字
       params.id = idNumber
     }
   }
@@ -187,7 +209,7 @@ const fetchAssistanceList = async () => {
   // 如果 type 不为空且可以转换为数字，则添加到参数对象中
   if (searchForm.type) {
     const typeIdNumber = Number(searchForm.type)
-    if (!isNaN(typeIdNumber)) { // 确保转换后是有效数字
+    if (!Number.isNaN(typeIdNumber)) { // 确保转换后是有效数字
       params.assistance_type_id = typeIdNumber
     }
   }
@@ -201,12 +223,11 @@ const fetchAssistanceList = async () => {
   if (data.data.data) {
     tableData.push(...data.data.data)
   }
+
   tableLoading.value = false
 }
-
 
 onMounted(async () => {
   await fetchAssistanceList()
 })
-
 </script>

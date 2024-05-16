@@ -1,15 +1,15 @@
-import { ref, reactive, computed } from "vue"
-import { defineStore } from "pinia"
-import useUserApi, { type permissionResponseData } from "@/api/userApi"
+import { computed, reactive, ref } from 'vue'
+import { defineStore } from 'pinia'
+import useUserApi, { type permissionResponseData } from '@/api/userApi'
 
-export const useUserStore = defineStore("user", () => {
+export const useUserStore = defineStore('user', () => {
   const userInfo = reactive({
-    token: "",
+    token: '',
     userId: -1,
-    userName: "",
+    userName: '',
     userRole: -1,
-    phone: "",
-    email: ""
+    phone: '',
+    email: ''
   })
 
   const isUserLoggedIn = computed(() => {
@@ -19,11 +19,11 @@ export const useUserStore = defineStore("user", () => {
   const getUserRoleName = computed(() => {
     switch (userInfo.userRole) {
       case 1:
-        return "管理员"
+        return '管理员'
       case 2:
-        return "用户"
+        return '用户'
       default:
-        return "未知"
+        return '未知'
     }
   })
 
@@ -40,12 +40,12 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function clearUserInfo() {
-    userInfo.token = ""
+    userInfo.token = ''
     userInfo.userId = -1
-    userInfo.userName = ""
+    userInfo.userName = ''
     userInfo.userRole = -1
-    userInfo.phone = ""
-    userInfo.email = ""
+    userInfo.phone = ''
+    userInfo.email = ''
     userPermissions.value.splice(0, userPermissions.value.length)
   }
 
@@ -59,7 +59,7 @@ export const useUserStore = defineStore("user", () => {
   }
 }, {
   persist: {
-    key: "user",
+    key: 'user',
     storage: localStorage
   }
 })

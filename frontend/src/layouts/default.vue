@@ -2,6 +2,7 @@
   <VHead />
   <div class="main w-screen flex">
     <a-menu
+      v-if="userStore.isUserLoggedIn"
       class="h-full max-w-60"
       show-collapse-button
       auto-open-selected

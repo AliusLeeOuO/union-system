@@ -7,22 +7,28 @@
       </div>
     </div>
     <div class="header-right">
-      <router-link
-        v-if="userStore.userInfo.userRole === roles.USER"
-        v-slot="{ navigate }" to="/member/notification"
-        custom
-      >
+      <router-link v-if="userStore.userInfo.userRole === roles.USER" v-slot="{ navigate }" to="/member/notification"
+        custom>
         <a-badge :count="notificationStore.notificationCount" :offset="[-20, -2]" @click="navigate">
-          <div class="header-notification">
+          <div class="header-component-block">
             <span>通知</span>
-            <IconNotification />
+            <icon-notification />
           </div>
         </a-badge>
       </router-link>
-      <div
-        v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside" class="user-info"
-        @click="openPersonInfo = !openPersonInfo"
-      >
+      <a-dropdown>
+        <div class="header-component-block">
+          <span>配色模式</span>
+          <icon-sun />
+        </div>
+        <template #content>
+          <a-doption>跟随系统</a-doption>
+          <a-doption>亮色模式</a-doption>
+          <a-doption>暗色模式</a-doption>
+        </template>
+      </a-dropdown>
+      <div v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside" class="user-info"
+        @click="openPersonInfo = !openPersonInfo">
         {{ userStore.userInfo.userName }}
         <a-tag>{{ userStore.getUserRoleName }}</a-tag>
       </div>
@@ -52,7 +58,6 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
-import { IconNotification } from '@arco-design/web-vue/es/icon'
 import { useUserStore } from '@/stores/user'
 import { useNotificationStore } from '@/stores/notification'
 import { handleXhrResponse } from '@/api'
@@ -125,6 +130,7 @@ onMounted(async () => {
 body[arco-theme="dark"] {
   .header-pc {
     border-bottom: 1px solid #424242;
+
     .header-pc-person-info {
       .header-pc-person-info-text {
         background-color: #232323;
@@ -170,7 +176,7 @@ body[arco-theme="dark"] {
       position: relative;
       margin-left: 12px;
 
-      & > div {
+      &>div {
         padding: 5px 10px;
 
         &::before {
@@ -187,13 +193,13 @@ body[arco-theme="dark"] {
         }
       }
 
-      &:hover > div {
+      &:hover>div {
         background-color: #F2F3F5;
       }
     }
 
     .router-link-active {
-      & > div {
+      &>div {
         color: rgb(22, 93, 255);
 
         &:hover {
@@ -231,7 +237,7 @@ body[arco-theme="dark"] {
       justify-content: flex-end;
       align-items: center;
 
-      & > * {
+      &>* {
         margin-left: 5px;
       }
     }
@@ -244,13 +250,15 @@ body[arco-theme="dark"] {
   justify-content: flex-end;
   align-items: center;
 
-  .header-notification {
+  .header-component-block {
     font-size: 20px;
     margin-right: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     transition: color 0.3s;
+    height: 90%;
+    ;
 
     &:hover {
       color: rgb(var(--primary-6));
@@ -285,13 +293,13 @@ body[arco-theme='dark'] {
       .nav-item {
         color: rgb(201, 205, 212);
 
-        &:hover > div {
+        &:hover>div {
           background-color: #2C2C2D;
         }
       }
 
       .router-link-active {
-        & > div {
+        &>div {
           color: rgb(255, 255, 255);
 
           &:hover {

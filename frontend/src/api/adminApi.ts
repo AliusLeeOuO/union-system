@@ -336,6 +336,10 @@ export default function useAdminApi() {
       is_active
     })),
     getActivityTypes: (): Promise<AxiosApiResponse<activityType[]>> => axiosInstance.get('/admin/activity/type'),
+    newActivityType: (typeName: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/type', qs.stringify({
+      name: typeName
+    })),
+    deleteActivityType: (typeId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/activity/type/${typeId}`),
     modifyActivityTitle: (activityId: number, title: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/activity/modifyTitle', qs.stringify({
       activity_id: activityId,
       title

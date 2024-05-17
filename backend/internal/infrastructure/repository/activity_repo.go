@@ -34,7 +34,7 @@ func (r *ActivityRepository) GetActivities(pageNum, pageSize uint) ([]domain.Act
 
 func (r *ActivityRepository) GetActivityType() ([]domain.ActivityType, error) {
 	var activityType []domain.ActivityType
-	result := r.DB.Find(&activityType)
+	result := r.DB.Where("del_flag", false).Find(&activityType)
 	return activityType, result.Error
 }
 
@@ -238,4 +238,35 @@ func (r *ActivityRepository) ChangeActivityDescription(activityID uint, newDescr
 // ChangeActivityLocation 修改活动地点
 func (r *ActivityRepository) ChangeActivityLocation(activityID uint, newLocation string) error {
 	return r.DB.Model(&domain.Activity{}).Where("activity_id = ?", activityID).Update("location", newLocation).Error
+}
+
+// CheckActivityTypeExist 检查活动类型是否存在 使用名称检查
+func (r *ActivityRepository) CheckActivityTypeExist(typeName string) bool {
+	var count int64
+	r.DB.Model(&domain.ActivityType{}).Where("type_name = ?", typeName).Where("del_flag", false).Count(&count)
+	return count > 0
+}
+
+// CheckActivityTypeExistByID 检查活动类型是否存在 使用ID检查
+func (r *ActivityRepository) CheckActivityTypeExistByID(typeID uint) bool {
+	var count int64
+	r.DB.Model(&domain.ActivityType{}).Where("activity_type_id = ?", typeID).Where("del_flag", false).Count(&count)
+	return count > 0
+}
+
+// CreateActivityType 创建活动类型
+func (r *ActivityRepository) CreateActivityType(typeName string) (uint, error) {
+	activityType := domain.ActivityType{TypeName: typeName}
+	result := r.DB.Create(&activityType)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return activityType.ActivityTypeID, nil
+}
+
+// DeleteActivityType 删除活动类型
+func (r *ActivityRepository) DeleteActivityType(typeID uint) error {
+	// 逻辑删除，将 del_flag 置为 true
+	return r.DB.Model(&domain.ActivityType{}).Where("activity_type_id = ?", typeID).Update("del_flag", true).Error
 }

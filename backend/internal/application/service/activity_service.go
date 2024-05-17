@@ -310,3 +310,22 @@ func (s *ActivityService) ModifyActivityDescription(activityID uint, description
 func (s *ActivityService) ModifyActivityLocation(activityID uint, location string) error {
 	return s.Repo.ChangeActivityLocation(activityID, location)
 }
+
+// CreateActivityType 创建活动类型
+func (s *ActivityService) CreateActivityType(typeName string) (uint, error) {
+	// 检查是否存在
+	exist := s.Repo.CheckActivityTypeExist(typeName)
+	if exist {
+		return 0, errors.New("活动类型已存在")
+	}
+	return s.Repo.CreateActivityType(typeName)
+}
+
+// DeleteActivityType 删除活动类型
+func (s *ActivityService) DeleteActivityType(typeID uint) error {
+	exist := s.Repo.CheckActivityTypeExistByID(typeID)
+	if !exist {
+		return errors.New("活动类型不存在")
+	}
+	return s.Repo.DeleteActivityType(typeID)
+}

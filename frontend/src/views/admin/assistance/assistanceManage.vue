@@ -1,90 +1,94 @@
 <template>
-  <div class="mb-3 flex justify-between">
-    <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
-      <a-form-item label="ID">
-        <a-input v-model="searchForm.id" placeholder="通过ID查找" />
-      </a-form-item>
-      <a-form-item label="类型">
-        <a-select v-model="searchForm.type" :style="{ width: '180px' }">
-          <a-option value="">
-            所有类型
-          </a-option>
-          <a-option value="1">
-            法律援助
-          </a-option>
-          <a-option value="2">
-            紧急援助
-          </a-option>
-          <a-option value="3">
-            职业发展援助
-          </a-option>
-        </a-select>
-      </a-form-item>
-      <div>
-        <a-space>
-          <a-button type="primary" html-type="submit">
-            查询
-          </a-button>
-          <a-button status="danger" @click="resetSearch">
-            清空查询条件
-          </a-button>
-        </a-space>
-      </div>
-    </a-form>
-    <a-button @click="refreshList">
-      <template #icon>
-        <IconRefresh />
+  <a-card class="mb-4">
+    <div class="flex justify-between">
+      <a-form ref="searchFormRef" :model="searchForm" layout="inline" @submit="submitSearch">
+        <a-form-item label="ID">
+          <a-input v-model="searchForm.id" placeholder="通过ID查找" />
+        </a-form-item>
+        <a-form-item label="类型">
+          <a-select v-model="searchForm.type" :style="{ width: '180px' }">
+            <a-option value="">
+              所有类型
+            </a-option>
+            <a-option value="1">
+              法律援助
+            </a-option>
+            <a-option value="2">
+              紧急援助
+            </a-option>
+            <a-option value="3">
+              职业发展援助
+            </a-option>
+          </a-select>
+        </a-form-item>
+        <div>
+          <a-space>
+            <a-button type="primary" html-type="submit">
+              查询
+            </a-button>
+            <a-button status="danger" @click="resetSearch">
+              清空查询条件
+            </a-button>
+          </a-space>
+        </div>
+      </a-form>
+      <a-button @click="refreshList">
+        <template #icon>
+          <IconRefresh />
+        </template>
+        刷新
+      </a-button>
+    </div>
+  </a-card>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="tableData"
+      size="large"
+      :loading="tableLoading"
+      :pagination="{
+        total: pageData.total,
+        pageSize: pageData.pageSize,
+        current: pageData.currentPage,
+      }"
+      @page-change="changePage"
+    >
+      <template #status="{ record }">
+        <a-tag v-if="record.status === 1" color="cyan">
+          待审核
+        </a-tag>
+        <a-tag v-else-if="record.status === 2" color="blue">
+          处理中
+        </a-tag>
+        <a-tag v-else-if="record.status === 3" color="green">
+          已解决
+        </a-tag>
+        <a-tag v-else-if="record.status === 4" color="gray">
+          已关闭
+        </a-tag>
       </template>
-      刷新
-    </a-button>
-  </div>
-  <a-table
-    :columns="columns"
-    :data="tableData"
-    size="large"
-    :loading="tableLoading"
-    :pagination="{
-      total: pageData.total,
-      pageSize: pageData.pageSize,
-      current: pageData.currentPage,
-    }"
-    @page-change="changePage"
-  >
-    <template #status="{ record }">
-      <a-tag v-if="record.status === 1" color="cyan">
-        待审核
-      </a-tag>
-      <a-tag v-else-if="record.status === 2" color="blue">
-        处理中
-      </a-tag>
-      <a-tag v-else-if="record.status === 3" color="green">
-        已解决
-      </a-tag>
-      <a-tag v-else-if="record.status === 4" color="gray">
-        已关闭
-      </a-tag>
-    </template>
-    <template #create_time="{ record }">
-      {{ dayjs.tz(record.create_time).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #type="{ record }">
-      {{ record.assistance_type.name }}
-    </template>
-    <template #action="{ record }">
-      <router-link v-slot="{ navigate }" :to="`/admin/manageAssistanceDetail/${record.id}`" custom>
-        <a-button type="primary" @click="navigate">
-          操作
-        </a-button>
-      </router-link>
-    </template>
-  </a-table>
+      <template #create_time="{ record }">
+        {{ dayjs.tz(record.create_time).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+      <template #type="{ record }">
+        {{ record.assistance_type.name }}
+      </template>
+      <template #action="{ record }">
+        <router-link v-slot="{ navigate }" :to="`/admin/manageAssistanceDetail/${record.id}`" custom>
+          <a-button type="primary" @click="navigate">
+            操作
+          </a-button>
+        </router-link>
+      </template>
+    </a-table>
+  </a-card>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { IconRefresh } from '@arco-design/web-vue/es/icon'
 import dayjs from 'dayjs'
-import { type BreadcrumbRoute, type FormInstance, Message } from '@arco-design/web-vue'
+import { type FormInstance, Message } from '@arco-design/web-vue'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { handleXhrResponse } from '@/api'
@@ -95,14 +99,6 @@ const adminApi = useAdminApi()
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
-
-// 面包屑
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/admin/manageAssistance',
-    label: '援助管理'
-  }
-]
 
 const searchFormRef = ref<FormInstance | null>(null)
 const tableLoading = ref(true)

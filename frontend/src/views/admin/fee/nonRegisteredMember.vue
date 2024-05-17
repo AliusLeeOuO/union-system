@@ -1,34 +1,36 @@
 <template>
-  <a-table
-    :columns="columns"
-    :data="registeredFeeList"
-    size="large"
-    :pagination="{
-      total: page.total,
-      pageSize: page.pageSize,
-      current: page.current,
-    }"
-    @page-change="changePage"
-  >
-    <template #username="{ record }">
-      <a-popover>
-        <div>
-          {{ record.username }}
-        </div>
-        <template #content>
-          <p>用户ID：{{ record.user_id }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #register_at="{ record }">
-      {{ dayjs.tz(record.register_at).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #action="{ record }">
-      <a-button @click="openChangeFeeStandardModal(record.user_id, -1, record.username)">
-        注册会员费率
-      </a-button>
-    </template>
-  </a-table>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="registeredFeeList"
+      size="large"
+      :pagination="{
+        total: page.total,
+        pageSize: page.pageSize,
+        current: page.current,
+      }"
+      @page-change="changePage"
+    >
+      <template #username="{ record }">
+        <a-popover>
+          <div>
+            {{ record.username }}
+          </div>
+          <template #content>
+            <p>用户ID：{{ record.user_id }}</p>
+          </template>
+        </a-popover>
+      </template>
+      <template #register_at="{ record }">
+        {{ dayjs.tz(record.register_at).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+      <template #action="{ record }">
+        <a-button @click="openChangeFeeStandardModal(record.user_id, -1, record.username)">
+          注册会员费率
+        </a-button>
+      </template>
+    </a-table>
+  </a-card>
   <a-modal
     v-model:visible="changeFeeStandardVisible" title="注册费率标准" @cancel="changeFeeStandardVisible = false"
     @before-ok="newFeeStandardFormHandleBeforeOk"

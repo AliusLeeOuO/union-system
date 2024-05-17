@@ -35,6 +35,7 @@ export interface permissionResponseData {
   gmt_create: string
   list_hidden: boolean
   list_order: number
+  icon: string
   children?: permissionResponseData[]
 }
 

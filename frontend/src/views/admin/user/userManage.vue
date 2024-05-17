@@ -1,108 +1,134 @@
 <template>
-  <div class="mb-3 flex justify-between flex-items-center">
-    <a-space>
-      <router-link v-slot="{ navigate }" to="/admin/addNewUser" custom>
-        <a-button status="success" @click="navigate">
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button status="success" @click="newUserVisibleShow">
           添加新用户
         </a-button>
-      </router-link>
-    </a-space>
-    <a-space>
-      <a-button @click="submitSearch">
-        <template #icon>
-          <IconRefresh />
-        </template>
-        刷新
-      </a-button>
-    </a-space>
-  </div>
-  <div class="search-item">
-    <a-form
-      ref="searchFormRef"
-      layout="inline"
-      :model="searchFormItem"
-      @submit="submitSearch"
+      </a-space>
+    </div>
+  </a-card>
+  <a-card class="mb-4">
+    <div class="search-item flex justify-between">
+      <a-form
+        ref="searchFormRef"
+        layout="inline"
+        :model="searchFormItem"
+        @submit="submitSearch"
+      >
+        <a-form-item field="id" label="ID">
+          <a-input v-model="searchFormItem.id" placeholder="以ID查询" />
+        </a-form-item>
+        <a-form-item field="username" label="用户名">
+          <a-input v-model="searchFormItem.username" placeholder="以用户名查询" />
+        </a-form-item>
+        <a-form-item field="role" label="角色">
+          <a-select v-model="searchFormItem.role" :style="{ width: '200px' }" placeholder="选择角色">
+            <a-option :value="-1">
+              所有角色
+            </a-option>
+            <a-option :value="roles.ADMIN">
+              管理员
+            </a-option>
+            <a-option :value="roles.USER">
+              用户
+            </a-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-space>
+            <a-button html-type="submit" type="primary">
+              查询
+            </a-button>
+            <a-button status="danger" @click="resetFormItem">
+              清空查询条件
+            </a-button>
+          </a-space>
+        </a-form-item>
+      </a-form>
+      <div>
+        <a-button @click="submitSearch">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </div>
+    </div>
+  </a-card>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="dataSource"
+      :loading="tableLoading"
+      :pagination="{
+        total: pageItem.total,
+        pageSize: pageItem.pageSize,
+        current: pageItem.current,
+      }"
+      @page-change="changePage"
     >
-      <a-form-item field="id" label="ID">
-        <a-input v-model="searchFormItem.id" placeholder="以ID查询" />
-      </a-form-item>
-      <a-form-item field="username" label="用户名">
-        <a-input v-model="searchFormItem.username" placeholder="以用户名查询" />
-      </a-form-item>
-      <a-form-item field="role" label="角色">
-        <a-select v-model="searchFormItem.role" :style="{ width: '200px' }" placeholder="选择角色">
-          <a-option :value="-1">
-            所有角色
-          </a-option>
-          <a-option :value="roles.ADMIN">
-            管理员
-          </a-option>
-          <a-option :value="roles.USER">
-            用户
-          </a-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item>
-        <a-space>
-          <a-button html-type="submit" type="primary">
-            查询
-          </a-button>
-          <a-button status="danger" @click="resetFormItem">
-            清空查询条件
-          </a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
-  </div>
-  <a-table
-    :columns="columns"
-    :data="dataSource"
-    :loading="tableLoading"
-    :pagination="{
-      total: pageItem.total,
-      pageSize: pageItem.pageSize,
-      current: pageItem.current,
-    }"
-    @page-change="changePage"
-  >
-    <template #role="{ record }">
-      <a-tag>{{ getRoleName(record.role) }}</a-tag>
-    </template>
-    <template #status="{ record }">
-      <a-tag v-if="record.status" color="cyan">
-        正常
-      </a-tag>
-      <a-tag v-else color="gray">
-        冻结
-      </a-tag>
-    </template>
-    <template #create_time="{ record }">
-      <span>{{ dayjs.tz(record.create_time).format('YYYY-MM-DD') }}</span>
-    </template>
-    <template #action="{ record }">
-      <a-space class="active-buttons">
-        <router-link v-slot="{ navigate }" :to="`/admin/manageSoloUser/${record.id}`" custom>
-          <a-button type="primary" @click="navigate">
+      <template #role="{ record }">
+        <a-tag>{{ getRoleName(record.role) }}</a-tag>
+      </template>
+      <template #status="{ record }">
+        <a-tag v-if="record.status" color="cyan">
+          正常
+        </a-tag>
+        <a-tag v-else color="gray">
+          冻结
+        </a-tag>
+      </template>
+      <template #create_time="{ record }">
+        <span>{{ dayjs.tz(record.create_time).format('YYYY-MM-DD') }}</span>
+      </template>
+      <template #action="{ record }">
+        <a-space class="active-buttons">
+          <a-button type="primary" @click="modifyUserVisibleShow(record.id)">
             修改
           </a-button>
-        </router-link>
-      </a-space>
+        </a-space>
+      </template>
+    </a-table>
+  </a-card>
+  <a-drawer
+    :width="700"
+    :visible="newUserVisible"
+    unmount-on-close :footer="false"
+    @cancel="newUserVisibleCancel"
+  >
+    <template #title>
+      创建新用户
     </template>
-  </a-table>
+    <AddNewUser @close-drawer="newUserVisibleCancel" @success-create-user="successCreateUser" />
+  </a-drawer>
+  <a-drawer
+    :width="700"
+    :visible="modifyUserVisible"
+    unmount-on-close :footer="false"
+    @cancel="modifyUserVisibleCancel"
+  >
+    <template #title>
+      修改用户信息
+    </template>
+    <ManageSoloUser :user-id="modifyUserId" @close-drawer="modifyUserVisibleCancel" @success-modify-user="successModifyUser" />
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { IconRefresh } from '@arco-design/web-vue/es/icon'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { onMounted, reactive, ref } from 'vue'
 import { type FormInstance, Message } from '@arco-design/web-vue'
 import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
 import useAdminApi, { type userListItem } from '@/api/adminApi'
 import { getRoleName } from '@/utils/roleHelper'
 import { roles } from '@/router'
 import { handleXhrResponse } from '@/api'
+import AddNewUser from '@/views/admin/user/addNewUser.vue'
+import ManageSoloUser from '@/views/admin/user/manageSoloUser.vue'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -191,4 +217,35 @@ async function fetchUserList() {
 onMounted(async () => {
   await fetchUserList()
 })
+
+// 新用户抽屉
+const newUserVisible = ref(false)
+
+function newUserVisibleShow() {
+  newUserVisible.value = true
+}
+
+function successCreateUser() {
+  newUserVisible.value = false
+  resetFormItem()
+}
+
+function newUserVisibleCancel() {
+  newUserVisible.value = false
+}
+
+// 修改用户抽屉
+const modifyUserVisible = ref(false)
+const modifyUserId = ref(-1)
+function modifyUserVisibleShow(userId: number) {
+  modifyUserId.value = userId
+  modifyUserVisible.value = true
+}
+function modifyUserVisibleCancel() {
+  modifyUserVisible.value = false
+}
+function successModifyUser() {
+  modifyUserVisible.value = false
+  resetFormItem()
+}
 </script>

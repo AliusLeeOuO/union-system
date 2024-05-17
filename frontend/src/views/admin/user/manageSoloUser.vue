@@ -2,9 +2,9 @@
   <a-descriptions style="margin-top: 20px" :data="descInfo" size="large" title="用户信息" :column="1" />
   <a-form
     :model="formItem" :rules="rules" :label-col-props="{
-      span: 2,
+      span: 4,
     }" :wrapper-col-props="{
-      span: 22,
+      span: 20,
     }" @submit="handleSubmit"
   >
     <a-form-item field="username" label="用户名">
@@ -45,6 +45,12 @@ import { getRoleName } from '@/utils/roleHelper'
 import { handleXhrResponse } from '@/api'
 import useAdminApi from '@/api/adminApi'
 
+const props = defineProps<{
+  userId: number
+}>()
+
+const emit = defineEmits(['closeDrawer', 'successModifyUser'])
+
 const route = useRoute()
 const adminApi = useAdminApi()
 
@@ -56,11 +62,11 @@ const solidInfo = reactive({
 const descInfo = reactive<DescData[]>([
   {
     label: '用户ID',
-    value: () => solidInfo.id.toString() // Assuming id is numeric and needs to be string
+    value: () => props.userId
   },
   {
     label: '角色',
-    value: () => getRoleName(solidInfo.role) // Use a function to defer evaluation
+    value: () => getRoleName(solidInfo.role)
   }
 ])
 
@@ -114,25 +120,22 @@ async function handleSubmit(form: {
 }) {
   if (!form.errors) {
     if (form.values.password === '') {
-      await handleXhrResponse(() => adminApi.updateUser(Number.parseInt(route.params.id as string), formItem.username, formItem.status, formItem.phone, formItem.email), Message)
+      await handleXhrResponse(() => adminApi.updateUser(props.userId, formItem.username, formItem.status, formItem.phone, formItem.email), Message)
     }
     else {
-      await handleXhrResponse(() => adminApi.updateUser(Number.parseInt(route.params.id as string), formItem.username, formItem.status, formItem.phone, formItem.email, formItem.password), Message)
+      await handleXhrResponse(() => adminApi.updateUser(props.userId, formItem.username, formItem.status, formItem.phone, formItem.email, formItem.password), Message)
     }
-
     Message.success('修改成功')
-    await fetchUserInfo()
+    emit('successModifyUser')
   }
 }
 
 async function fetchUserInfo() {
-  const userID = Number.parseInt(route.params.id as string)
-  const { data } = await handleXhrResponse(() => adminApi.getUserInfo(userID), Message)
+  const { data } = await handleXhrResponse(() => adminApi.getUserInfo(props.userId), Message)
   formItem.username = data.data.username
   formItem.email = data.data.email
   formItem.phone = data.data.phone
   formItem.status = data.data.status
-
   solidInfo.role = data.data.role
 }
 

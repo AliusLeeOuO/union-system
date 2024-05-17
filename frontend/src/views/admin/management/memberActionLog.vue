@@ -1,21 +1,17 @@
 <template>
-  <div class="mb-4 flex justify-between">
-    <!--    <a-form :models="searchForm" layout="inline">
-          <a-form-item label="状态">
-            <a-select :style="{width:'180px'}" v-models="searchForm.status">
-              <a-option value="all">所有</a-option>
-              <a-option value="true">成功</a-option>
-              <a-option value="false">失败</a-option>
-            </a-select>
-          </a-form-item>
-        </a-form> -->
-    <a-button @click="refreshList">
-      <template #icon>
-        <IconRefresh />
-      </template>
-      刷新
-    </a-button>
-  </div>
+  <a-card class="mb-4">
+    <div class="flex justify-between">
+      <a-space />
+      <a-space>
+        <a-button @click="refreshList">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
   <a-table
     :columns="columns"
     :data="tableData"

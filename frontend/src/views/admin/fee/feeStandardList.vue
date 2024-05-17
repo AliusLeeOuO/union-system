@@ -1,19 +1,21 @@
 <template>
-  <div class="mb-4 flex justify-between flex-items-center">
-    <a-space>
-      <a-button status="success" @click="newFeeStandardVisible = true">
-        添加新费率
-      </a-button>
-    </a-space>
-    <a-space>
-      <a-button @click="fetchFeeList(true)">
-        <template #icon>
-          <IconRefresh />
-        </template>
-        刷新
-      </a-button>
-    </a-space>
-  </div>
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button status="success" @click="newFeeStandardVisible = true">
+          添加新费率
+        </a-button>
+      </a-space>
+      <a-space>
+        <a-button @click="fetchFeeList(true)">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
   <a-table
     :columns="columns"
     :data="feeList"

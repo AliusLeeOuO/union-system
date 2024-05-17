@@ -6,49 +6,62 @@
         <span>工会管理系统</span>
       </div>
     </div>
-    <div class="header-right">
-      <router-link v-if="userStore.userInfo.userRole === roles.USER" v-slot="{ navigate }" to="/member/notification"
-        custom>
+    <div class="header-right h-full flex justify-end gap-4 flex-items-center">
+      <router-link
+        v-if="userStore.userInfo.userRole === roles.USER" v-slot="{ navigate }" to="/member/notification"
+        custom
+      >
         <a-badge :count="notificationStore.notificationCount" :offset="[-20, -2]" @click="navigate">
-          <div class="header-component-block">
-            <span>通知</span>
+          <div class="header-component-block h-90% flex cursor-pointer flex-items-center font-size-6 transition">
+            <span class="mr-1 font-size-4">通知</span>
             <icon-notification />
           </div>
         </a-badge>
       </router-link>
       <a-dropdown>
-        <div class="header-component-block">
-          <span>配色模式</span>
+        <div class="header-component-block h-90% flex cursor-pointer flex-items-center font-size-6 transition">
           <icon-sun />
         </div>
         <template #content>
-          <a-doption>跟随系统</a-doption>
-          <a-doption>亮色模式</a-doption>
-          <a-doption>暗色模式</a-doption>
+          <a-doption @click="setTheme('system')">
+            跟随系统
+          </a-doption>
+          <a-doption @click="setTheme('light')">
+            亮色模式
+          </a-doption>
+          <a-doption @click="setTheme('dark')">
+            暗色模式
+          </a-doption>
         </template>
       </a-dropdown>
-      <div v-if="userStore.isUserLoggedIn" v-click-outside:[dropdownRef]="handleClickOutside" class="user-info"
-        @click="openPersonInfo = !openPersonInfo">
+      <div
+        v-if="userStore.isUserLoggedIn"
+        v-click-outside:[dropdownRef]="handleClickOutside"
+        class="h-90% flex cursor-pointer justify-center gap-2 flex-items-center"
+        @click="openPersonInfo = !openPersonInfo"
+      >
         {{ userStore.userInfo.userName }}
         <a-tag>{{ userStore.getUserRoleName }}</a-tag>
       </div>
-      <div v-else class="user-info">
+      <div v-else class="h-90% flex cursor-pointer justify-center gap-2 flex-items-center">
         <a-button @click="toLogin">
           登录
         </a-button>
       </div>
     </div>
-    <div v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef" class="header-pc-person-info">
+    <div v-if="openPersonInfo && userStore.isUserLoggedIn" ref="dropdownRef" class="header-pc-person-info absolute z-99 w-70 overflow-hidden">
       <div class="header-pc-person-info-text">
         {{ userStore.userInfo.userName }}
       </div>
-      <div class="header-pc-person-info-button">
-        <a-button @click="toUserIndex">
-          查看
-        </a-button>
-        <a-button status="danger" @click="logout">
-          退出登录
-        </a-button>
+      <div class="header-pc-person-info-button flex justify-end flex-items-center p-2">
+        <a-space>
+          <a-button @click="toUserIndex">
+            用户中心
+          </a-button>
+          <a-button status="danger" @click="logout">
+            退出登录
+          </a-button>
+        </a-space>
       </div>
     </div>
   </header>
@@ -58,12 +71,14 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
+import { useDark } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
 import { useNotificationStore } from '@/stores/notification'
 import { handleXhrResponse } from '@/api'
 import useUserApi from '@/api/userApi'
 import { roles } from '@/router'
 
+const isDark = useDark()
 const router = useRouter()
 
 // PC端个人信息
@@ -122,6 +137,20 @@ async function toIndex() {
 onMounted(async () => {
   await userStore.fetchPermission()
 })
+
+function setTheme(theme: 'system' | 'light' | 'dark') {
+  switch (theme) {
+    case 'system':
+      isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+      break
+    case 'light':
+      isDark.value = false
+      break
+    case 'dark':
+      isDark.value = true
+      break
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -129,7 +158,7 @@ onMounted(async () => {
 
 body[arco-theme="dark"] {
   .header-pc {
-    border-bottom: 1px solid #424242;
+    border-bottom: 1px solid @dark-mode-border-color;
 
     .header-pc-person-info {
       .header-pc-person-info-text {
@@ -146,7 +175,8 @@ body[arco-theme="dark"] {
 .header-pc {
   padding: 0 10px;
   height: @header-height;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid @border-color;
+  background-color: #fff;
 
   .header-left {
     min-width: 100px;
@@ -160,69 +190,12 @@ body[arco-theme="dark"] {
     }
   }
 
-  nav {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-
-    .nav-item {
-      color: rgb(78, 89, 105);
-      text-decoration: none;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      margin-left: 12px;
-
-      &>div {
-        padding: 5px 10px;
-
-        &::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          height: 3px;
-          width: calc(100% - 20px);
-          background-color: transparent;
-          transition: all 0.3s;
-          margin: auto;
-        }
-      }
-
-      &:hover>div {
-        background-color: #F2F3F5;
-      }
-    }
-
-    .router-link-active {
-      &>div {
-        color: rgb(22, 93, 255);
-
-        &:hover {
-          background-color: #F2F3F5;
-        }
-
-        &::before {
-          background-color: #165DFF;
-        }
-      }
-    }
-  }
-
   .header-pc-person-info {
-    position: absolute;
     right: 10px;
     top: 70px;
-    z-index: 99;
     background-color: #fff;
     color: rgb(var(--color-text-1));
     border-radius: 5px;
-    width: 320px;
-    overflow: hidden;
     animation: show-person-info 0.2s ease-in-out;
 
     .header-pc-person-info-text {
@@ -232,86 +205,21 @@ body[arco-theme="dark"] {
 
     .header-pc-person-info-button {
       background-color: #eee;
-      padding: 10px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-
-      &>* {
-        margin-left: 5px;
-      }
     }
   }
 }
 
 .header-right {
-  height: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
   .header-component-block {
-    font-size: 20px;
-    margin-right: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: color 0.3s;
-    height: 90%;
-    ;
-
     &:hover {
       color: rgb(var(--primary-6));
     }
-
-    span {
-      font-size: 14px;
-      margin-right: 5px;
-    }
-  }
-
-  .user-info {
-    margin-right: 10px;
-    height: 100%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
   }
 }
 
 body[arco-theme='dark'] {
   header {
     background-color: #232324;
-  }
-
-  .header-pc {
-    nav {
-      flex: 1;
-
-      .nav-item {
-        color: rgb(201, 205, 212);
-
-        &:hover>div {
-          background-color: #2C2C2D;
-        }
-      }
-
-      .router-link-active {
-        &>div {
-          color: rgb(255, 255, 255);
-
-          &:hover {
-            background-color: #2C2C2D;
-          }
-
-          &::before {
-            background-color: rgb(22, 93, 255);
-          }
-        }
-      }
-    }
   }
 }
 </style>

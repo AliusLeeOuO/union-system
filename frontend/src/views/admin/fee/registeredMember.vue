@@ -1,44 +1,46 @@
 <template>
-  <a-table
-    :columns="columns"
-    :data="registeredFeeList"
-    size="large"
-    :pagination="{
-      total: page.total,
-      pageSize: page.pageSize,
-      current: page.current,
-    }"
-    @page-change="changePage"
-  >
-    <template #username="{ record }">
-      <a-popover>
-        <div>
-          {{ record.username }}
-        </div>
-        <template #content>
-          <p>用户ID：{{ record.user_id }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #regTime="{ record }">
-      {{ dayjs.tz(record.registration_date).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #action="{ record }">
-      <a-space>
-        <a-button
-          type="primary"
-          @click="openChangeFeeStandardModal(record.user_id, record.fee_standard_id, record.username)"
-        >
-          修改费率标准
-        </a-button>
-        <a-popconfirm content="确定要取消会费规则吗？" type="warning" @ok="() => handlerRemoveFeeStandard(record.user_id)">
-          <a-button type="primary" status="danger">
-            取消会费规则
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="registeredFeeList"
+      size="large"
+      :pagination="{
+        total: page.total,
+        pageSize: page.pageSize,
+        current: page.current,
+      }"
+      @page-change="changePage"
+    >
+      <template #username="{ record }">
+        <a-popover>
+          <div>
+            {{ record.username }}
+          </div>
+          <template #content>
+            <p>用户ID：{{ record.user_id }}</p>
+          </template>
+        </a-popover>
+      </template>
+      <template #regTime="{ record }">
+        {{ dayjs.tz(record.registration_date).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+      <template #action="{ record }">
+        <a-space>
+          <a-button
+            type="primary"
+            @click="openChangeFeeStandardModal(record.user_id, record.fee_standard_id, record.username)"
+          >
+            修改费率标准
           </a-button>
-        </a-popconfirm>
-      </a-space>
-    </template>
-  </a-table>
+          <a-popconfirm content="确定要取消会费规则吗？" type="warning" @ok="() => handlerRemoveFeeStandard(record.user_id)">
+            <a-button type="primary" status="danger">
+              取消会费规则
+            </a-button>
+          </a-popconfirm>
+        </a-space>
+      </template>
+    </a-table>
+  </a-card>
   <a-modal
     v-model:visible="changeFeeStandardVisible" title="修改费率标准" @cancel="changeFeeStandardVisible = false"
     @before-ok="newFeeStandardFormHandleBeforeOk"

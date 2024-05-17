@@ -1,70 +1,60 @@
 <template>
-  <div class="mb-3 flex justify-between flex-items-center">
-    <a-space>
-      <a-button status="success" @click="fetchGetNewInvitationCode">
-        生成新邀请码
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button status="success" @click="fetchGetNewInvitationCode">
+          生成新邀请码
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
+  <a-card class="mb-4">
+    <div class="flex justify-between">
+      <a-space />
+      <a-button @click="refreshList">
+        <template #icon>
+          <IconRefresh />
+        </template>
+        刷新
       </a-button>
-    </a-space>
-    <!--    <a-space> -->
-    <!--      <a-button @click="submitSearch"> -->
-    <!--        <template #icon> -->
-    <!--          <icon-refresh /> -->
-    <!--        </template> -->
-    <!--        刷新 -->
-    <!--      </a-button> -->
-    <!--    </a-space> -->
-  </div>
-  <div v-if="getNewInvitationCodeSuccess" class="mb-3">
+    </div>
+  </a-card>
+  <div v-if="getNewInvitationCodeSuccess" class="mb-4">
     <a-alert type="success" closable @close="closeInvitationAlert">
       新邀请码生成成功！
     </a-alert>
   </div>
-  <div class="mb-3 flex justify-between">
-    <!--    <a-form :models="searchForm" layout="inline"> -->
-    <!--      <a-form-item label="状态"> -->
-    <!--        <a-select :style="{width:'180px'}" v-models="searchForm.status"> -->
-    <!--          <a-option value="all">所有</a-option> -->
-    <!--          <a-option value="true">已使用</a-option> -->
-    <!--          <a-option value="false">未使用</a-option> -->
-    <!--        </a-select> -->
-    <!--      </a-form-item> -->
-    <!--    </a-form> -->
-    <a-button @click="refreshList">
-      <template #icon>
-        <IconRefresh />
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="tableData"
+      size="large"
+      :pagination="{
+        total: pageData.total,
+        pageSize: pageData.pageSize,
+        current: pageData.currentPage,
+      }"
+      @page-change="changePage"
+    >
+      <template #status="{ record }">
+        <a-tag v-if="record.is_used" color="cyan">
+          已使用
+        </a-tag>
+        <a-tag v-else-if="dayjs.tz(record.expires_at).isBefore(dayjs.tz())" color="gray">
+          已过期
+        </a-tag>
+        <a-tag v-else color="green">
+          未使用
+        </a-tag>
       </template>
-      刷新
-    </a-button>
-  </div>
-  <a-table
-    :columns="columns"
-    :data="tableData"
-    size="large"
-    :pagination="{
-      total: pageData.total,
-      pageSize: pageData.pageSize,
-      current: pageData.currentPage,
-    }"
-    @page-change="changePage"
-  >
-    <template #status="{ record }">
-      <a-tag v-if="record.is_used" color="cyan">
-        已使用
-      </a-tag>
-      <a-tag v-else-if="dayjs.tz(record.expires_at).isBefore(dayjs.tz())" color="gray">
-        已过期
-      </a-tag>
-      <a-tag v-else color="green">
-        未使用
-      </a-tag>
-    </template>
-    <template #created_at="{ record }">
-      {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #expired_at="{ record }">
-      {{ dayjs.tz(record.expires_at).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-  </a-table>
+      <template #created_at="{ record }">
+        {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+      <template #expired_at="{ record }">
+        {{ dayjs.tz(record.expires_at).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+    </a-table>
+  </a-card>
 </template>
 
 <script setup lang="ts">

@@ -1,27 +1,31 @@
 <template>
   <div class="of-hidden">
-    <div class="description-block grid mb-4 gap-xl">
-      <div class="w-full">
-        <a-typography-title :heading="4">
-          CPU信息
-        </a-typography-title>
-        <a-descriptions :data="cpuInfoData" size="large" :column="1" bordered />
+    <a-card class="mb-4">
+      <div class="description-block grid gap-xl">
+        <div class="w-full">
+          <a-typography-title :heading="4">
+            CPU信息
+          </a-typography-title>
+          <a-descriptions :data="cpuInfoData" size="large" :column="1" bordered />
+        </div>
+        <div class="h-sm w-full">
+          <VChart :theme="chartTheme" :option="cpuInfoOption" :autoresize="true" />
+        </div>
       </div>
-      <div class="h-sm w-full">
-        <VChart :theme="chartTheme" :option="cpuInfoOption" :autoresize="true" />
+    </a-card>
+    <a-card>
+      <div class="description-block grid mb-4 gap-xl">
+        <div class="w-full">
+          <a-typography-title :heading="4">
+            内存信息
+          </a-typography-title>
+          <a-descriptions class="description" :data="memInfoData" size="large" :column="1" bordered />
+        </div>
+        <div class="h-sm w-full">
+          <VChart :theme="chartTheme" :option="memInfoOption" :autoresize="true" />
+        </div>
       </div>
-    </div>
-    <div class="description-block grid mb-4 gap-xl">
-      <div class="w-full">
-        <a-typography-title :heading="4">
-          内存信息
-        </a-typography-title>
-        <a-descriptions class="description" :data="memInfoData" size="large" :column="1" bordered />
-      </div>
-      <div class="h-sm w-full">
-        <VChart :theme="chartTheme" :option="memInfoOption" :autoresize="true" />
-      </div>
-    </div>
+    </a-card>
   </div>
 </template>
 

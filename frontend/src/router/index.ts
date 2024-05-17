@@ -216,17 +216,29 @@ const routes: Array<routeRecordWithRole> = [
               {
                 path: '/admin/management/adminActionLog',
                 name: 'adminActionLog',
-                component: () => import('@/views/admin/management/adminActionLog.vue')
+                component: () => import('@/views/admin/management/adminActionLog.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '管理员操作日志'
+                }
               },
               {
                 path: '/admin/management/userActionLog',
                 name: 'userActionLog',
-                component: () => import('@/views/admin/management/memberActionLog.vue')
+                component: () => import('@/views/admin/management/memberActionLog.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '用户操作日志'
+                }
               },
               {
                 path: '/admin/management/systemInfo',
                 name: 'systemInfo',
-                component: () => import('@/views/admin/management/systemInfo.vue')
+                component: () => import('@/views/admin/management/systemInfo.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '系统信息'
+                }
               }
             ]
           },

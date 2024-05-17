@@ -11,6 +11,13 @@ Using PostgreSQL and Redis to store data.
 - [x] Role Management
 - [x] Auto Dark Mode
 
+## TODO
+- [ ] 整理会员界面
+- [ ] 会员端会费功能
+- [ ] 管理员端活动管理类型管理页面
+- [ ] 管理员端活动查看活动详情
+- [ ] 管理员端活动编辑活动信息页面
+
 ## Environment
 - go 1.22
 - node 18.0.0

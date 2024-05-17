@@ -202,6 +202,6 @@ async function handleSubmit(form: {
 
 .submit-button {
   gap: 5px;
-  font-size: 14px;
+  font-size: 1rem;
 }
 </style>

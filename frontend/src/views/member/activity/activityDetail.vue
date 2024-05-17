@@ -142,6 +142,8 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="less">
+@import "@/assets/variable.less";
+
 .activity-detail-content {
   padding: 10px;
 
@@ -149,7 +151,7 @@ onMounted(async () => {
     padding-bottom: 10px;
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid @border-color;
     }
   }
 }

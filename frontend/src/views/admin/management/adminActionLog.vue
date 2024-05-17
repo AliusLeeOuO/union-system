@@ -1,66 +1,64 @@
 <template>
-  <div class="mb-3 flex justify-between">
-    <!--    <a-form :models="searchForm" layout="inline">
-      <a-form-item label="状态">
-        <a-select :style="{width:'180px'}" v-models="searchForm.status">
-          <a-option value="all">所有</a-option>
-          <a-option value="true">成功</a-option>
-          <a-option value="false">失败</a-option>
-        </a-select>
-      </a-form-item>
-    </a-form> -->
-    <a-button @click="refreshList">
-      <template #icon>
-        <IconRefresh />
+  <a-card class="mb-4">
+    <div class="flex justify-between">
+      <a-space />
+      <a-space>
+        <a-button @click="refreshList">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="tableData"
+      size="large"
+      :pagination="{
+        total: pageData.total,
+        pageSize: pageData.pageSize,
+        current: pageData.currentPage,
+      }"
+      @page-change="changePage"
+    >
+      <template #username="{ record }">
+        <a-popover>
+          <div>
+            {{ record.user.username }}
+          </div>
+          <template #content>
+            <p>用户ID：{{ record.user.id }}</p>
+          </template>
+        </a-popover>
       </template>
-      刷新
-    </a-button>
-  </div>
-  <a-table
-    :columns="columns"
-    :data="tableData"
-    size="large"
-    :pagination="{
-      total: pageData.total,
-      pageSize: pageData.pageSize,
-      current: pageData.currentPage,
-    }"
-    @page-change="changePage"
-  >
-    <template #username="{ record }">
-      <a-popover>
-        <div>
-          {{ record.user.username }}
-        </div>
-        <template #content>
-          <p>用户ID：{{ record.user.id }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #detail="{ record }">
-      <a-popover>
-        <div>
-          {{ record.detail }}
-        </div>
-        <template #content>
-          <p>{{ record.detail }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #actionModule="{ record }">
-      <a-popover>
-        <div>
-          {{ record.action.name }}
-        </div>
-        <template #content>
-          <p>模块ID：{{ record.action.id }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #time="{ record }">
-      {{ dayjs.tz(record.time).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-  </a-table>
+      <template #detail="{ record }">
+        <a-popover>
+          <div>
+            {{ record.detail }}
+          </div>
+          <template #content>
+            <p>{{ record.detail }}</p>
+          </template>
+        </a-popover>
+      </template>
+      <template #actionModule="{ record }">
+        <a-popover>
+          <div>
+            {{ record.action.name }}
+          </div>
+          <template #content>
+            <p>模块ID：{{ record.action.id }}</p>
+          </template>
+        </a-popover>
+      </template>
+      <template #time="{ record }">
+        {{ dayjs.tz(record.time).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+    </a-table>
+  </a-card>
 </template>
 
 <script setup lang="ts">

@@ -91,9 +91,11 @@ async function fetchRead(notificationId: number) {
 </script>
 
 <style scoped lang="less">
+@import "@/assets/variable.less";
+
 body[arco-theme="dark"] {
   .notification-block {
-    background-color: #232324;
+    background-color: @dark-mode-bg;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     &.notification-block-read {
@@ -125,7 +127,7 @@ body[arco-theme="dark"] {
     }
 
     .notification-right {
-      font-size: 14px;
+      font-size: 1rem;
       display: flex;
       align-items: center;
       gap: 10px;

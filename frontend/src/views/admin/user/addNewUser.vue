@@ -27,23 +27,25 @@
     <a-form-item field="phone" label="手机号">
       <a-input v-model="formItem.phone" />
     </a-form-item>
-    <div>
-      <a-button type="primary" html-type="submit" size="large" long>
+    <div class="flex flex-col gap-2">
+      <a-button type="primary" html-type="submit" size="large" :loading="loadingSubmitNewUser" long>
         添加
+      </a-button>
+      <a-button size="large" long @click="handlerClose">
+        取消
       </a-button>
     </div>
   </a-form>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, defineEmits, reactive, ref } from 'vue'
 import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
-import { useRouter } from 'vue-router'
 import { getRoleName, roles } from '@/utils/roleHelper'
 import { handleXhrResponse } from '@/api'
 import useAdminApi from '@/api/adminApi'
 
-const router = useRouter()
+const emit = defineEmits(['closeDrawer', 'successCreateUser'])
 const adminApi = useAdminApi()
 
 const roleOptions = computed(() => {
@@ -64,6 +66,8 @@ const formItem = reactive({
   phone: ''
 })
 
+const loadingSubmitNewUser = ref(false)
+
 const rules: Record<string, FieldRule | FieldRule[]> = {
   username: [{ required: true, message: '请输入用户名' }],
   password: [{ required: true, message: '请输入密码' }],
@@ -75,7 +79,6 @@ const rules: Record<string, FieldRule | FieldRule[]> = {
           if (value !== formItem.password) {
             callback('两次密码不一致')
           }
-
           resolve(void 0)
         })
       }
@@ -123,16 +126,29 @@ async function handleSubmit(form: {
   errors: Record<string, ValidatedError> | undefined
 }) {
   if (!form.errors) {
-    await handleXhrResponse(() => adminApi.addNewUser(
-      form.values.username,
-      form.values.password,
-      form.values.role,
-      form.values.email,
-      form.values.phone
-    ), Message)
-    Message.success('添加成功')
-    await router.push('/admin/manageUser')
+    try {
+      loadingSubmitNewUser.value = true
+      await handleXhrResponse(() => adminApi.addNewUser(
+        form.values.username,
+        form.values.password,
+        form.values.role,
+        form.values.email,
+        form.values.phone
+      ), Message)
+      Message.success('添加成功')
+      emit('successCreateUser')
+    }
+    catch (error: any) {
+      Message.error(error.message)
+    }
+    finally {
+      loadingSubmitNewUser.value = false
+    }
   }
+}
+
+function handlerClose() {
+  emit('closeDrawer')
 }
 </script>
 

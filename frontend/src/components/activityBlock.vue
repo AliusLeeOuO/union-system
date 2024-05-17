@@ -45,9 +45,10 @@ dayjs.tz.setDefault('Asia/Shanghai')
 </script>
 
 <style scoped lang="less">
+@import "@/assets/variable.less";
 body[arco-theme="dark"] {
   .block {
-    background-color: #232324;
+    background-color: @dark-mode-bg;
     box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   }
 }

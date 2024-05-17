@@ -1,17 +1,19 @@
 <template>
-  <div class="notification-top flex justify-between flex-items-center">
-    <a-space>
-      <a-button v-if="notificationList.length !== 0" @click="fetchReadAll">
-        一键已读
-      </a-button>
-      <a-button @click="refreshNotifications">
-        <template #icon>
-          <IconRefresh />
-        </template>
-        刷新
-      </a-button>
-    </a-space>
-  </div>
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button v-if="notificationList.length !== 0" @click="fetchReadAll">
+          一键已读
+        </a-button>
+        <a-button @click="refreshNotifications">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
   <div v-if="notificationList.length === 0">
     <a-empty />
   </div>

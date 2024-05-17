@@ -369,6 +369,8 @@ async function submitChangeActivityLocation(form: {
 </script>
 
 <style scoped lang="less">
+@import "@/assets/variable.less";
+
 .activity-detail-content {
   padding: 10px;
 
@@ -376,7 +378,7 @@ async function submitChangeActivityLocation(form: {
     padding-bottom: 10px;
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid @border-color;
     }
   }
 }

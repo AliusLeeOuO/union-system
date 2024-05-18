@@ -257,7 +257,7 @@ func (r *ActivityRepository) CheckActivityTypeExistByID(typeID uint) bool {
 // CreateActivityType 创建活动类型
 func (r *ActivityRepository) CreateActivityType(typeName string) (uint, error) {
 	activityType := domain.ActivityType{TypeName: typeName}
-	result := r.DB.Create(&activityType)
+	result := r.DB.Omit("del_flag").Create(&activityType)
 	if result.Error != nil {
 		return 0, result.Error
 	}

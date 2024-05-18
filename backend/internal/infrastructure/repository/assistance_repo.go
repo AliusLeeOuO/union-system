@@ -200,7 +200,7 @@ func (r *AssistanceRepository) CloseAssistanceRequest(requestID uint, userID uin
 // GetAssistanceType 获取工单类型
 func (r *AssistanceRepository) GetAssistanceType() ([]domain.AssistanceType, error) {
 	var assistanceTypes []domain.AssistanceType
-	result := r.DB.Find(&assistanceTypes)
+	result := r.DB.Where("del_flag = ?", false).Find(&assistanceTypes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -243,4 +243,37 @@ func (r *AssistanceRepository) GetAssistanceCountByStatus(memberID uint, statusI
 		Where("member_id = ? AND status_id = ?", memberID, statusID).
 		Count(&count)
 	return uint(count), result.Error
+}
+
+// CheckAssistanceTypeExists 检查工单类型是否存在
+func (r *AssistanceRepository) CheckAssistanceTypeExists(typeName string) bool {
+	var count int64
+	result := r.DB.Model(&domain.AssistanceType{}).Where("type_name = ?", typeName).Where("del_flag", false).Count(&count)
+	if result.Error != nil {
+		return false
+	}
+	return count > 0
+}
+
+// CreateNewAssistanceType 创建新的工单类型
+func (r *AssistanceRepository) CreateNewAssistanceType(typeName string) error {
+	newType := domain.AssistanceType{
+		TypeName: typeName,
+	}
+	return r.DB.Omit("del_flag").Create(&newType).Error
+}
+
+// CheckAssistanceTypeExistsByID 检查工单类型是否存在
+func (r *AssistanceRepository) CheckAssistanceTypeExistsByID(typeID uint) bool {
+	var count int64
+	result := r.DB.Model(&domain.AssistanceType{}).Where("assistance_type_id = ?", typeID).Where("del_flag", false).Count(&count)
+	if result.Error != nil {
+		return false
+	}
+	return count > 0
+}
+
+// DeleteAssistanceType 删除工单类型
+func (r *AssistanceRepository) DeleteAssistanceType(typeID uint) error {
+	return r.DB.Model(&domain.AssistanceType{}).Where("assistance_type_id = ?", typeID).Update("del_flag", true).Error
 }

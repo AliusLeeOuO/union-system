@@ -33,6 +33,7 @@
           :start-time="item.startTime"
           :end-time="item.endTime"
           :max-participants="item.maxParticipants"
+          @check-detail="showModifyActivity"
         />
       </div>
       <div class="mt-4 flex justify-end">
@@ -57,6 +58,15 @@
     </template>
     <AddNewActivity @close-drawer="handleNewActivityCancel" />
   </a-drawer>
+  <a-drawer
+    :width="700" :visible="modifyActivityVisible" unmount-on-close :footer="false"
+    @cancel="handleModifyActivityCancel"
+  >
+    <template #title>
+      查看/编辑活动
+    </template>
+    <ActivityDetail :activity-id="activityId" @close-drawer="handleModifyActivityCancel" />
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
@@ -67,6 +77,7 @@ import { handleXhrResponse } from '@/api'
 import useAdminApi from '@/api/adminApi'
 import ActivityBlock from '@/components/activityBlock.vue'
 import AddNewActivity from '@/views/admin/activity/addNewActivity.vue'
+import ActivityDetail from '@/views/admin/activity/activityDetail.vue'
 
 const adminApi = useAdminApi()
 
@@ -112,5 +123,19 @@ function showNewActivity() {
 
 function handleNewActivityCancel() {
   newActivityVisible.value = false
+}
+
+// 查看/编辑活动抽屉
+const activityId = ref(-1)
+const modifyActivityVisible = ref(false)
+
+function showModifyActivity(emitActivityId: number) {
+  activityId.value = emitActivityId
+  modifyActivityVisible.value = true
+}
+
+function handleModifyActivityCancel() {
+  modifyActivityVisible.value = false
+  pageSizeChange(pagination.pageSize)
 }
 </script>

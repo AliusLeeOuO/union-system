@@ -1,4 +1,4 @@
-package admin_activity
+package admin_assistance
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -11,16 +11,19 @@ import (
 
 func DeleteType(c *fiber.Ctx) error {
 	// 从 URL 路径参数中获取ID
-	activityID := c.Params("typeId")
+	assistanceTypeID := c.Params("typeId")
 	// 转换为 uint 类型
-	activityIDConverter, err := strconv.ParseUint(activityID, 10, 64)
+	assistanceTypeIDConverter, err := strconv.ParseUint(assistanceTypeID, 10, 64)
 	if err != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
-	activityIDUint := uint(activityIDConverter)
-	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
-	err = activityService.DeleteActivityType(activityIDUint)
+	assistanceTypeIDUint := uint(assistanceTypeIDConverter)
+	// 初始化 service
+	assistanceService := service.NewAssistanceService(repository.NewAssistanceRepository(global.Database))
+	// 调用 service 删除数据
+	err = assistanceService.DeleteAssistanceType(assistanceTypeIDUint)
 	if err != nil {
+		// 使用 BaseResponse 发送错误响应
 		return models.SendFailureResponse(c, models.QueryParamErrorCode, err.Error())
 	}
 	return models.SendSuccessResponse(c, nil)

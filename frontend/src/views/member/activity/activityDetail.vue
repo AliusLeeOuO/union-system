@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { onMounted, reactive } from 'vue'
-import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
+import { Message } from '@arco-design/web-vue'
 import { useRoute } from 'vue-router'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -78,18 +78,6 @@ dayjs.tz.setDefault('Asia/Shanghai')
 
 const memberApi = useMemberApi()
 const route = useRoute()
-
-// 面包屑
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/member/activity',
-    label: '活动'
-  },
-  {
-    path: route.path,
-    label: '查看活动'
-  }
-]
 
 const activityDetail = reactive({
   title: '',

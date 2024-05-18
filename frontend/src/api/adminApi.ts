@@ -61,6 +61,11 @@ export interface assistanceListItem {
   status: number
 }
 
+export interface assistanceTypeResponse {
+  assistance_type_id: number
+  type_name: string
+}
+
 export interface assistanceDetailResponse {
   id: number
   assistance_type: string
@@ -72,10 +77,7 @@ export interface assistanceDetailResponse {
     id: number
     name: string
   }
-  type: {
-    assistance_type_id: number
-    type_name: string
-  }
+  type: assistanceTypeResponse
   responses: assistanceDetailResponseData[]
 }
 
@@ -295,6 +297,11 @@ export default function useAdminApi() {
       }
       return axiosInstance.post('/admin/assistance/requests', qs.stringify(params))
     },
+    getAssistanceTypes: (): Promise<AxiosApiResponse<assistanceTypeResponse[]>> => axiosInstance.get('/admin/assistance/type'),
+    newAssistanceType: (typeName: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/assistance/type', qs.stringify({
+      name: typeName
+    })),
+    deleteAssistanceType: (typeId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/assistance/type/${typeId}`),
     assistanceDetail: (assistanceId: number): Promise<AxiosApiResponse<assistanceDetailResponse>> =>
       axiosInstance.post(
         `/admin/assistance/viewAssistance`,

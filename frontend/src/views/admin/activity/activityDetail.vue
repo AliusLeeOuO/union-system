@@ -1,13 +1,4 @@
 <template>
-  <!--  <div class="global-breadcrumb">
-    <a-breadcrumb :routes="routes">
-      <template #item-render="{ route }">
-        <router-link :to="route">
-          {{ route.label }}
-        </router-link>
-      </template>
-    </a-breadcrumb>
-  </div> -->
   <div class="activity-detail-content">
     <div class="activity-detail-item">
       <div class="description-title">
@@ -209,22 +200,23 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { onMounted, reactive, ref } from 'vue'
+import { defineEmits, onMounted, reactive, ref } from 'vue'
 import { type FormInstance, Message, type ValidatedError } from '@arco-design/web-vue'
-import { useRoute, useRouter } from 'vue-router'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { handleXhrResponse } from '@/api'
 import useAdminApi, { type activityRegistrations } from '@/api/adminApi'
 
+const props = defineProps<{
+  activityId: number
+}>()
+const emits = defineEmits(['closeDrawer'])
 dayjs.extend(timezone)
 dayjs.extend(utc)
 
 dayjs.tz.setDefault('Asia/Shanghai')
 
 const adminApi = useAdminApi()
-const route = useRoute()
-const router = useRouter()
 
 const activityDetail = reactive({
   title: '',
@@ -236,8 +228,6 @@ const activityDetail = reactive({
   endTime: '1970-01-01T08:00:00+08:00',
   activityTypeName: ''
 })
-
-const activityId = Number(route.params.id)
 
 const regUserList = reactive<activityRegistrations[]>([])
 
@@ -257,9 +247,9 @@ async function getActivityDetail(activityId: number) {
 }
 
 async function cancelUserReg(userId: number) {
-  await handleXhrResponse(() => adminApi.cancelUserReg(activityId, userId), Message)
+  await handleXhrResponse(() => adminApi.cancelUserReg(props.activityId, userId), Message)
   Message.success('取消报名成功')
-  await getActivityDetail(activityId)
+  await getActivityDetail(props.activityId)
 }
 
 const visibleWarning = ref(false)
@@ -271,18 +261,17 @@ const dropActivityFormRef = ref<FormInstance | null>(null)
 
 async function handleWarningDropActivity(done: (closed: boolean) => void) {
   if (dropActivityFormRef.value && dropActivityFormRef.value && !await dropActivityFormRef.value.validate()) {
-    await handleXhrResponse(() => adminApi.dropActivity(activityId, dropActivityForm.password), Message)
+    await handleXhrResponse(() => adminApi.dropActivity(props.activityId, dropActivityForm.password), Message)
     Message.success('删除活动成功')
     done(true)
-    await router.replace('/admin/manageActivity')
+    emits('closeDrawer')
     return
   }
   done(false)
 }
 
 onMounted(async () => {
-  const activityId = Number(route.params.id)
-  await getActivityDetail(activityId)
+  await getActivityDetail(props.activityId)
 })
 
 // 修改活动名称
@@ -304,13 +293,13 @@ async function submitChangeActivityTitle(form: {
 }) {
   if (!form.errors) {
     // 提交修改活动
-    await handleXhrResponse(() => adminApi.modifyActivityTitle(activityId, changeActivityTitleForm.title), Message)
+    await handleXhrResponse(() => adminApi.modifyActivityTitle(props.activityId, changeActivityTitleForm.title), Message)
     Message.success('修改活动名称成功')
     changeActivityTitleForm.title = ''
     changeActivityTitle.value = false
     changeActivityDescription.value = false
     changeActivityLocation.value = false
-    await getActivityDetail(activityId)
+    await getActivityDetail(props.activityId)
   }
 }
 
@@ -330,13 +319,13 @@ async function submitChangeActivityDescription(form: {
 }) {
   if (!form.errors) {
     // 提交修改活动
-    await handleXhrResponse(() => adminApi.modifyActivityDescription(activityId, changeActivityDescriptionForm.description), Message)
+    await handleXhrResponse(() => adminApi.modifyActivityDescription(props.activityId, changeActivityDescriptionForm.description), Message)
     Message.success('修改活动描述成功')
     changeActivityDescriptionForm.description = ''
     changeActivityTitle.value = false
     changeActivityDescription.value = false
     changeActivityLocation.value = false
-    await getActivityDetail(activityId)
+    await getActivityDetail(props.activityId)
   }
 }
 
@@ -357,13 +346,13 @@ async function submitChangeActivityLocation(form: {
 }) {
   if (!form.errors) {
     // 提交修改活动
-    await handleXhrResponse(() => adminApi.modifyActivityLocation(activityId, changeActivityLocationForm.location), Message)
+    await handleXhrResponse(() => adminApi.modifyActivityLocation(props.activityId, changeActivityLocationForm.location), Message)
     Message.success('修改活动地址成功')
     changeActivityLocationForm.location = ''
     changeActivityTitle.value = false
     changeActivityDescription.value = false
     changeActivityLocation.value = false
-    await getActivityDetail(activityId)
+    await getActivityDetail(props.activityId)
   }
 }
 </script>

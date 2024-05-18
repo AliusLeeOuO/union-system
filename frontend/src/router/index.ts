@@ -126,14 +126,16 @@ const routes: Array<routeRecordWithRole> = [
                 name: 'userManage',
                 component: () => import('@/views/admin/user/userManage.vue'),
                 meta: {
-                  roles: roles.ADMIN,
                   title: '用户管理'
                 }
               },
               {
                 path: '/admin/user/invitationCode',
                 name: 'invitationCodeManage',
-                component: () => import('@/views/admin/user/invitationCodeManage.vue')
+                component: () => import('@/views/admin/user/invitationCodeManage.vue'),
+                meta: {
+                  title: '邀请码管理'
+                }
               }
             ]
           },
@@ -142,7 +144,6 @@ const routes: Array<routeRecordWithRole> = [
             name: 'addNewUser',
             component: () => import('@/views/admin/user/addNewUser.vue'),
             meta: {
-              roles: roles.ADMIN,
               title: '添加用户'
             }
           },
@@ -151,7 +152,6 @@ const routes: Array<routeRecordWithRole> = [
             name: 'manageSoloUser',
             component: () => import('@/views/admin/user/manageSoloUser.vue'),
             meta: {
-              roles: roles.ADMIN,
               title: '管理用户'
             }
           },
@@ -160,8 +160,15 @@ const routes: Array<routeRecordWithRole> = [
             name: 'manageAssistance',
             component: () => import('@/views/admin/assistance/assistanceManage.vue'),
             meta: {
-              roles: roles.ADMIN,
               title: '援助管理'
+            }
+          },
+          {
+            path: '/admin/manageAssistance/type',
+            name: 'manageAssistanceType',
+            component: () => import('@/views/admin/assistance/assistanceTypes.vue'),
+            meta: {
+              title: '援助类型管理'
             }
           },
           {
@@ -189,15 +196,6 @@ const routes: Array<routeRecordWithRole> = [
             meta: {
               roles: roles.ADMIN,
               title: '活动类型管理'
-            }
-          },
-          {
-            path: '/admin/manageActivityDetail/:id',
-            name: 'manageActivityDetail',
-            component: () => import('@/views/admin/activity/activityDetail.vue'),
-            meta: {
-              roles: roles.ADMIN,
-              title: '活动详情'
             }
           },
           {

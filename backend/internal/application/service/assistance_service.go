@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
 	"time"
 	"union-system/global"
 	dto "union-system/internal/application/dto"
@@ -78,32 +77,18 @@ func (s *AssistanceService) GetAssistanceType(c *fiber.Ctx) ([]dto.GetAssistance
 	const cacheKey = "assistanceTypes"
 	var response []dto.GetAssistanceTypeRequest
 
-	// 尝试从Redis缓存中获取数据
-	cachedData, err := global.RedisClient.Get(c.Context(), cacheKey).Result()
-	if errors.Is(err, redis.Nil) {
-		// 缓存未命中，从数据库获取数据
-		assistanceTypes, dbErr := s.Repo.GetAssistanceType()
-		if dbErr != nil {
-			return nil, dbErr
-		}
+	// 缓存未命中，从数据库获取数据
+	assistanceTypes, dbErr := s.Repo.GetAssistanceType()
+	if dbErr != nil {
+		return nil, dbErr
+	}
 
-		// 将数据库查询结果转换为响应数据
-		for _, assistanceType := range assistanceTypes {
-			response = append(response, dto.GetAssistanceTypeRequest{
-				AssistanceTypeId: assistanceType.AssistanceTypeID,
-				TypeName:         assistanceType.TypeName,
-			})
-		}
-
-		// 序列化并保存到Redis
-		serialized, _ := json.Marshal(response)
-		global.RedisClient.Set(c.Context(), cacheKey, serialized, 24*time.Hour) // 设置24小时过期
-	} else if err != nil {
-		// 处理Redis错误
-		return nil, err
-	} else {
-		// 缓存命中，使用缓存的数据
-		json.Unmarshal([]byte(cachedData), &response)
+	// 将数据库查询结果转换为响应数据
+	for _, assistanceType := range assistanceTypes {
+		response = append(response, dto.GetAssistanceTypeRequest{
+			AssistanceTypeId: assistanceType.AssistanceTypeID,
+			TypeName:         assistanceType.TypeName,
+		})
 	}
 
 	return response, nil
@@ -170,4 +155,24 @@ func (s *AssistanceService) GetAssistanceStatus(c *fiber.Ctx) ([]dto.AssistanceS
 		global.RedisClient.Set(c.Context(), assistanceStatusCacheKey, serialized, 24*time.Hour) // 缓存 24 小时
 	}
 	return response, nil
+}
+
+// NewAssistanceType 创建新的工单类型
+func (s *AssistanceService) NewAssistanceType(typeName string) error {
+	// 先检查是否存在同名的工单类型
+	if s.Repo.CheckAssistanceTypeExists(typeName) {
+		return errors.New("类型已存在")
+	}
+	// 创建新的工单类型
+	return s.Repo.CreateNewAssistanceType(typeName)
+}
+
+// DeleteAssistanceType 删除工单类型
+func (s *AssistanceService) DeleteAssistanceType(typeID uint) error {
+	// 先检查是否存在该工单类型
+	if !s.Repo.CheckAssistanceTypeExistsByID(typeID) {
+		return errors.New("类型不存在")
+	}
+	// 删除工单类型
+	return s.Repo.DeleteAssistanceType(typeID)
 }

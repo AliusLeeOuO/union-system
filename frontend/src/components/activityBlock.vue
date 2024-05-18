@@ -1,31 +1,30 @@
 <template>
-  <router-link v-slot="{ navigate }" :to="props.path" custom>
-    <a-card class="block cursor-pointer" @click="navigate">
-      <div class="text-xl font-bold">
-        {{ props.title }}
-      </div>
-      <div class="display-box line-clamp-3 mt-2.5 overflow-hidden text-ellipsis">
-        {{ props.description }}
-      </div>
-      <div class="mt-2.5">
-        报名人数：{{ props.registrationCount }}/{{ props.maxParticipants }}
-      </div>
-      <div class="mt-2.5">
-        地址：{{ props.location }}
-        活动类型：{{ props.activityTypeName }}
-      </div>
-      <div class="mt-2.5">
-        {{ dayjs.tz(props.startTime).format('YYYY年MM月DD日 HH:mm') }} -
-        {{ dayjs.tz(props.endTime).format('YYYY年MM月DD日 HH:mm') }}
-      </div>
-    </a-card>
-  </router-link>
+  <a-card class="block cursor-pointer" @click="navigate">
+    <div class="text-xl font-bold">
+      {{ props.title }}
+    </div>
+    <div class="display-box line-clamp-3 mt-2.5 overflow-hidden text-ellipsis">
+      {{ props.description }}
+    </div>
+    <div class="mt-2.5">
+      报名人数：{{ props.registrationCount }}/{{ props.maxParticipants }}
+    </div>
+    <div class="mt-2.5">
+      地址：{{ props.location }}
+      活动类型：{{ props.activityTypeName }}
+    </div>
+    <div class="mt-2.5">
+      {{ dayjs.tz(props.startTime).format('YYYY年MM月DD日 HH:mm') }} -
+      {{ dayjs.tz(props.endTime).format('YYYY年MM月DD日 HH:mm') }}
+    </div>
+  </a-card>
 </template>
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { defineEmits, defineProps } from 'vue'
 
 const props = defineProps<{
   path: string
@@ -39,9 +38,15 @@ const props = defineProps<{
   startTime: string
   endTime: string
 }>()
+
+const emits = defineEmits(['checkDetail'])
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
+
+function navigate() {
+  emits('checkDetail', props.activityId)
+}
 </script>
 
 <style scoped lang="less">

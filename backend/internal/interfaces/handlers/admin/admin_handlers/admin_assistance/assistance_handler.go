@@ -6,7 +6,9 @@ func Init(app fiber.Router) {
 	assistance := app.Group("/assistance")
 	// 注册路由
 	assistance.Post("/requests", GetAssistanceList)
-	assistance.Post("/getAssistanceType", GetAssistanceType)
+	assistance.Get("/type", GetAssistanceType)
+	assistance.Post("/type", NewAssistanceType)
+	assistance.Delete("/type/:typeId", DeleteType)
 	assistance.Post("/viewAssistance", ViewAssistance)
 	assistance.Post("/replyAssistance", ReplyAssistance)
 }

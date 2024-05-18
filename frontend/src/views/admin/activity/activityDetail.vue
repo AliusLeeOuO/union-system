@@ -16,9 +16,9 @@
       <div v-else class="activity-detail-item-content">
         <a-form
           :model="changeActivityTitleForm" :label-col-props="{
-            span: 2,
+            span: 4,
           }" :wrapper-col-props="{
-            span: 22,
+            span: 20,
           }" @submit="submitChangeActivityTitle"
         >
           <a-form-item field="title" label="活动名称" :rules="[{ required: true, message: '请输入活动名称' }]">
@@ -48,9 +48,9 @@
       <div v-else class="activity-detail-item-content">
         <a-form
           :model="changeActivityDescriptionForm" :label-col-props="{
-            span: 2,
+            span: 4,
           }" :wrapper-col-props="{
-            span: 22,
+            span: 20,
           }" @submit="submitChangeActivityDescription"
         >
           <a-form-item field="description" label="活动描述" :rules="[{ required: true, message: '请输入活动描述' }]">
@@ -86,7 +86,7 @@
         </a-button>
       </div>
       <div class="activity-detail-item-content activity-detail-flex">
-        {{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants }}
+        <span class="whitespace-nowrap">{{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants }}</span>
         <a-progress :percent="activityDetail.registrationCount / activityDetail.maxParticipants" :show-text="false" />
       </div>
     </div>
@@ -106,9 +106,9 @@
       <div v-else class="activity-detail-item-content">
         <a-form
           :model="changeActivityLocationForm" :label-col-props="{
-            span: 2,
+            span: 4,
           }" :wrapper-col-props="{
-            span: 22,
+            span: 20,
           }" @submit="submitChangeActivityLocation"
         >
           <a-form-item field="location" label="活动地址" :rules="[{ required: true, message: '请输入活动地址' }]">
@@ -362,6 +362,7 @@ async function submitChangeActivityLocation(form: {
 
 .activity-detail-content {
   padding: 10px;
+  overflow: hidden;
 
   .activity-detail-item {
     padding-bottom: 10px;
@@ -393,6 +394,7 @@ async function submitChangeActivityLocation(form: {
 
 .activity-detail-item-content {
   line-height: 28px;
+  word-break: break-all;
 
   .reg-user-block {
     display: grid;

@@ -7,7 +7,7 @@
         </a-button>
       </a-space>
       <a-space>
-        <a-button>
+        <a-button @click="pageSizeChange(pagination.pageSize)">
           <template #icon>
             <IconRefresh />
           </template>

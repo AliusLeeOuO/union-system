@@ -26,6 +26,7 @@
   </a-card>
   <a-card>
     <a-table
+      :loading="tableLoading"
       :columns="columns"
       :data="tableData"
       size="large"
@@ -52,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import dayjs from 'dayjs'
 import { IconRefresh } from '@arco-design/web-vue/es/icon'
@@ -97,6 +98,7 @@ const columns = [
 ]
 
 const tableData = reactive<loginLogItem[]>([])
+const tableLoading = ref(false)
 
 const pageData = reactive({
   total: 0,
@@ -105,11 +107,20 @@ const pageData = reactive({
 })
 
 async function fetchLoginLog() {
-  const { data } = await handleXhrResponse(() => adminApi.getLoginLog(pageData.currentPage, pageData.pageSize, searchForm.status), Message)
-  tableData.splice(0, tableData.length)
-  pageData.total = data.data.total
-  if (data.data.data) {
-    tableData.push(...data.data.data)
+  try {
+    tableLoading.value = true
+    const { data } = await handleXhrResponse(() => adminApi.getLoginLog(pageData.currentPage, pageData.pageSize, searchForm.status), Message)
+    tableData.splice(0, tableData.length)
+    pageData.total = data.data.total
+    if (data.data.data) {
+      tableData.push(...data.data.data)
+    }
+  }
+  catch (e) {
+    console.error(e)
+  }
+  finally {
+    tableLoading.value = false
   }
 }
 

@@ -17,6 +17,7 @@
       :columns="columns"
       :data="tableData"
       size="large"
+      :loading="tableLoading"
       :pagination="{
         total: pageData.total,
         pageSize: pageData.pageSize,
@@ -62,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import dayjs from 'dayjs'
 import { IconRefresh } from '@arco-design/web-vue/es/icon'
@@ -110,6 +111,7 @@ const columns = [
 ]
 
 const tableData = reactive<logAdminListItem[]>([])
+const tableLoading = ref(false)
 
 const pageData = reactive({
   total: 0,
@@ -118,11 +120,19 @@ const pageData = reactive({
 })
 
 async function fetchLoginLog() {
-  const { data } = await handleXhrResponse(() => adminApi.getLogAdminList(pageData.currentPage, pageData.pageSize), Message)
-  tableData.splice(0, tableData.length)
-  pageData.total = data.data.total
-  if (data.data.data) {
-    tableData.push(...data.data.data)
+  try {
+    tableLoading.value = true
+    const { data } = await handleXhrResponse(() => adminApi.getLogAdminList(pageData.currentPage, pageData.pageSize), Message)
+    pageData.total = data.data.total
+    if (data.data.data) {
+      tableData.splice(0, tableData.length, ...data.data.data)
+    }
+  }
+  catch (e) {
+    console.error(e)
+  }
+  finally {
+    tableLoading.value = false
   }
 }
 

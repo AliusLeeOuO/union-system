@@ -1,64 +1,69 @@
 <template>
-  <div class="description-title">
-    我的会费标准
+  <div v-if="feeStatus.loading" class="full-bg h-full w-full flex justify-center flex-items-center">
+    <a-spin tip="正在获取会费状态" />
   </div>
-  <div class="fee-overview grid grid-cols-3 p-4">
-    <div class="text-center">
-      <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
-    </div>
-    <div class="text-center">
-      <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
-    </div>
-    <div class="text-center">
-      <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
-    </div>
+  <div v-else-if="!feeStatus.status" class="full-bg h-full w-full flex justify-center flex-items-center">
+    <a-result status="warning" title="您还没有注册会费！" />
   </div>
-  <div class="description-title">
-    查看会费记录
+  <div v-else>
+    <a-card title="我的会费标准" class="mb-4">
+      <div class="fee-overview grid grid-cols-3 p-4">
+        <div class="text-center">
+          <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
+        </div>
+        <div class="text-center">
+          <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
+        </div>
+        <div class="text-center">
+          <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
+        </div>
+      </div>
+    </a-card>
+    <a-card title="查看会费记录" class="mb-4">
+      <a-empty v-if="feeHistoryData.length === 0" />
+      <a-table
+        v-else
+        :columns="feeHistoryColumns"
+        :data="feeHistoryData"
+        size="large"
+        :pagination="{
+          total: feeHistoryPagination.total,
+          pageSize: feeHistoryPagination.pageSize,
+        }"
+        @page-change="feeHistoryChangePage"
+      >
+        <template #created_at="{ record }">
+          {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+      </a-table>
+    </a-card>
+    <a-card title="等待缴费项目">
+      <a-empty v-if="waitingFeeData.length === 0" />
+      <a-table
+        v-else
+        :columns="waitingFeeColumns"
+        :data="waitingFeeData"
+        size="large"
+        :pagination="{
+          total: waitingFeePagination.total,
+          pageSize: waitingFeePagination.pageSize,
+        }"
+        @page-change="waitingFeeChangePage"
+      >
+        <template #created_at="{ record }">
+          {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+        <template #action>
+          <a-button>缴费</a-button>
+        </template>
+      </a-table>
+    </a-card>
   </div>
-  <a-empty v-if="feeHistoryData.length === 0" />
-  <a-table
-    v-else
-    :columns="feeHistoryColumns"
-    :data="feeHistoryData"
-    size="large"
-    :pagination="{
-      total: feeHistoryPagination.total,
-      pageSize: feeHistoryPagination.pageSize,
-    }"
-    @page-change="feeHistoryChangePage"
-  >
-    <template #created_at="{ record }">
-      {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-  </a-table>
-  <div class="description-title">
-    等待缴费项目
-  </div>
-  <a-empty v-if="waitingFeeData.length === 0" />
-  <a-table
-    v-else
-    :columns="waitingFeeColumns"
-    :data="waitingFeeData"
-    size="large"
-    :pagination="{
-      total: waitingFeePagination.total,
-      pageSize: waitingFeePagination.pageSize,
-    }"
-    @page-change="waitingFeeChangePage"
-  >
-    <template #created_at="{ record }">
-      {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #action>
-      <a-button>缴费</a-button>
-    </template>
-  </a-table>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive } from 'vue'
-import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
+import { Message } from '@arco-design/web-vue'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -66,29 +71,26 @@ import { handleXhrResponse } from '@/api'
 import useMemberApi, { type feeHistoryResponse } from '@/api/memberApi'
 
 const memberApi = useMemberApi()
+const feeStatus = reactive({
+  status: false,
+  loading: true
+})
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/member/fee',
-    label: '会费'
-  }
-]
-
 const currentFeeInfo = reactive({
   amount: 0,
   standard_id: 0,
-  category_id: 0
+  category: ''
 })
 
 async function fetchFeeInfo() {
   const { data } = await handleXhrResponse(() => memberApi.feeStandard(), Message)
-  currentFeeInfo.amount = data.data.amount
+  currentFeeInfo.amount = Number.parseFloat(data.data.standard_amount)
   currentFeeInfo.standard_id = data.data.standard_id
-  currentFeeInfo.category_id = data.data.category_id
+  currentFeeInfo.category = data.data.standard_name
 }
 
 const feeHistoryColumns = [
@@ -211,6 +213,16 @@ onMounted(async () => {
   await fetchFeeInfo()
   await fetchFeeHistory()
   await fetchWaitingFee()
+})
+
+async function fetchFeeStatus() {
+  const { data } = await handleXhrResponse(() => memberApi.getFeeStatus(), Message)
+  feeStatus.status = data.data
+  feeStatus.loading = false
+}
+
+onMounted(async () => {
+  await fetchFeeStatus()
 })
 </script>
 

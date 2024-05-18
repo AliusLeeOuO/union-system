@@ -1,25 +1,6 @@
 <template>
-  <a-space>
-    <custom-route-link to="/member/assistance/myAssistance">
-      我的援助
-    </custom-route-link>
-    <custom-route-link to="/member/assistance/newAssistance">
-      新建援助
-    </custom-route-link>
-  </a-space>
-  <div class="mb-3 mt-4">
-    <router-view />
-  </div>
+  <router-view />
 </template>
 
 <script setup lang="ts">
-import type { BreadcrumbRoute } from '@arco-design/web-vue'
-import customRouteLink from '@/components/customRouteLink.vue'
-// 面包屑
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/member/assistance',
-    label: '帮助'
-  }
-]
 </script>

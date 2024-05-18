@@ -81,8 +81,8 @@ export interface assistanceNewResponse {
 
 export interface feeStandardResponse {
   standard_id: number
-  amount: number
-  category_id: number
+  standard_name: string
+  standard_amount: string
 }
 
 export interface feeHistoryResponseData extends pageResponse {
@@ -202,8 +202,7 @@ export default function useMemberApi() {
           description
         })
       ),
-    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> =>
-      axiosInstance.post('/member/fee/standard'),
+    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> => axiosInstance.post('/member/fee/standard'),
     feeHistory: (
       pageSize: number,
       pageNum: number
@@ -239,6 +238,7 @@ export default function useMemberApi() {
       ),
     notificationRead: (notificationId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/notification/read/${notificationId}`),
     notificationReadAll: (): Promise<AxiosApiResponse<null>> => axiosInstance.post('/member/notification/readAll'),
-    getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get('/member/notification/unreadCount')
+    getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get('/member/notification/unreadCount'),
+    getFeeStatus: (): Promise<AxiosApiResponse<boolean>> => axiosInstance.get('/member/fee/status')
   }
 }

@@ -62,15 +62,27 @@ func (repo *AdminRepository) GetLogAdminsByPage(pageSize, pageNum uint) ([]Admin
 	var total int64
 
 	offset := (pageNum - 1) * pageSize
-	result := repo.DB.Table("tb_log_admin").
+
+	// First, count the total number of records
+	countResult := repo.DB.Table("tb_log_admin").
+		Joins("left join tb_user on tb_user.user_id = tb_log_admin.user_id").
+		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_admin.module_id").
+		Count(&total)
+
+	if countResult.Error != nil {
+		return nil, 0, countResult.Error
+	}
+
+	// Then, get the data
+	dataResult := repo.DB.Table("tb_log_admin").
 		Select("tb_log_admin.*, tb_user.username as username, tb_log_modules.module_name as action_name").
 		Joins("left join tb_user on tb_user.user_id = tb_log_admin.user_id").
 		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_admin.module_id").
 		Order("action_time DESC").Offset(int(offset)).Limit(int(pageSize)).
-		Count(&total).Find(&logs)
+		Find(&logs)
 
-	if result.Error != nil {
-		return nil, 0, result.Error
+	if dataResult.Error != nil {
+		return nil, 0, dataResult.Error
 	}
 
 	return logs, uint(total), nil
@@ -88,15 +100,27 @@ func (repo *AdminRepository) GetLogMembersByPage(pageSize, pageNum uint) ([]Memb
 	var total int64
 
 	offset := (pageNum - 1) * pageSize
-	result := repo.DB.Table("tb_log_member").
+
+	// First, count the total number of records
+	countResult := repo.DB.Table("tb_log_member").
+		Joins("left join tb_user on tb_user.user_id = tb_log_member.user_id").
+		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_member.module_id").
+		Count(&total)
+
+	if countResult.Error != nil {
+		return nil, 0, countResult.Error
+	}
+
+	// Then, get the data
+	dataResult := repo.DB.Table("tb_log_member").
 		Select("tb_log_member.*, tb_user.username as username, tb_log_modules.module_name as action_name").
 		Joins("left join tb_user on tb_user.user_id = tb_log_member.user_id").
 		Joins("left join tb_log_modules on tb_log_modules.module_id = tb_log_member.module_id").
 		Order("action_time DESC").Offset(int(offset)).Limit(int(pageSize)).
-		Count(&total).Find(&logs)
+		Find(&logs)
 
-	if result.Error != nil {
-		return nil, 0, result.Error
+	if dataResult.Error != nil {
+		return nil, 0, dataResult.Error
 	}
 
 	return logs, uint(total), nil

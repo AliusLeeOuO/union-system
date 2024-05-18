@@ -16,31 +16,33 @@
       </a-space>
     </div>
   </a-card>
-  <a-table
-    :columns="columns"
-    :data="feeList"
-    size="large"
-    :pagination="false"
-  >
-    <template #standard_name="{ record }">
-      <a-popover>
-        <div>
-          {{ record.standard_name }}
-        </div>
-        <template #content>
-          <p>费率ID：{{ record.standard_id }}</p>
-        </template>
-      </a-popover>
-    </template>
-    <template #regTime="{ record }">
-      {{ dayjs.tz(record.registration_date).format('YYYY-MM-DD HH:mm:ss') }}
-    </template>
-    <template #action="{ record }">
-      <a-button @click="handlerVisible(record.standard_id)">
-        修改费率标准
-      </a-button>
-    </template>
-  </a-table>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="feeList"
+      size="large"
+      :pagination="false"
+    >
+      <template #standard_name="{ record }">
+        <a-popover>
+          <div>
+            {{ record.standard_name }}
+          </div>
+          <template #content>
+            <p>费率ID：{{ record.standard_id }}</p>
+          </template>
+        </a-popover>
+      </template>
+      <template #regTime="{ record }">
+        {{ dayjs.tz(record.registration_date).format('YYYY-MM-DD HH:mm:ss') }}
+      </template>
+      <template #action="{ record }">
+        <a-button @click="handlerVisible(record.standard_id)">
+          修改费率标准
+        </a-button>
+      </template>
+    </a-table>
+  </a-card>
   <a-modal
     v-model:visible="changeFeeStandardVisible" title="修改费率标准" @cancel="changeFeeStandardVisible = false"
     @before-ok="changeFeeStandardFormHandleBeforeOk"

@@ -3,10 +3,11 @@ import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import type { Message } from '@arco-design/web-vue'
 import { useUserStore } from '@/stores/user'
 
-const API_URL: string = import.meta.env.VITE_API_URL || '/'
+const API_PROTOCOL: string = import.meta.env.VITE_API_PROTOCOL || 'http'
+const API_URL: string = import.meta.env.VITE_API_URL || ''
 
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_PROTOCOL}://${API_URL}`,
   timeout: 10000
 })
 

@@ -21,9 +21,12 @@
         :auto-size="{ minRows: 3 }"
       />
     </a-form-item>
-    <div>
+    <div class="flex flex-col gap-2">
       <a-button type="primary" long size="large" html-type="submit">
         提交
+      </a-button>
+      <a-button long size="large" @click="handlerCloseDrawer">
+        取消
       </a-button>
     </div>
   </a-form>
@@ -32,12 +35,11 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
 import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
-import { useRouter } from 'vue-router'
 import type { assistanceTypeResponse } from '@/api/memberApi'
 import { handleXhrResponse } from '@/api'
 import useMemberApi from '@/api/memberApi'
 
-const router = useRouter()
+const emits = defineEmits(['closeDrawer', 'successFetchNewAssistance'])
 const memberApi = useMemberApi()
 
 const rules: Record<string, FieldRule | FieldRule[]> = {
@@ -79,13 +81,17 @@ async function submitRequest(form: {
   if (!form.errors) {
     const { data } = await handleXhrResponse(() => memberApi.assistanceNew(newFormItem.type_id, newFormItem.title, newFormItem.description), Message)
     Message.success('提交成功')
-    await router.push(`/member/assistanceDetail/${data.data.request_id}`)
+    emits('successFetchNewAssistance', data.data.request_id)
   }
 }
 
 onMounted(async () => {
   await getAssistanceType()
 })
+
+function handlerCloseDrawer() {
+  emits('closeDrawer')
+}
 </script>
 
 <style scoped lang="less">

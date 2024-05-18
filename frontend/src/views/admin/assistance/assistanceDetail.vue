@@ -1,84 +1,73 @@
 <template>
-  <div class="flex justify-between">
-    <div class="description-title mt-4">
-      援助状态
-    </div>
-  </div>
-  <a-steps label-placement="vertical" :current="state.status.id" class="mb-4 mt-4">
-    <a-step description="This is a description">
-      待审核
-    </a-step>
-    <a-step description="This is a description">
-      处理中
-    </a-step>
-    <a-step description="This is a description">
-      已解决
-    </a-step>
-    <a-step description="This is a description">
-      已关闭
-    </a-step>
-  </a-steps>
-  <div>
+  <a-card class="mb-4" title="援助状态">
+    <a-steps label-placement="vertical" :current="state.status.id" class="mb-4 mt-4">
+      <a-step>
+        待审核
+      </a-step>
+      <a-step>
+        处理中
+      </a-step>
+      <a-step>
+        已解决
+      </a-step>
+      <a-step>
+        已关闭
+      </a-step>
+    </a-steps>
+  </a-card>
+  <a-card class="mb-4" title="帮助信息">
     <a-descriptions
-      :data="descriptionData" size="large" title="帮助信息" layout="inline-vertical" :column="4"
+      :data="descriptionData" size="large" layout="inline-vertical" :column="4"
       bordered
     />
-    <div>
-      <div class="description-title">
-        交流记录
-      </div>
-      <div>
-        <a-empty v-if="state.responses.length === 0" />
-        <a-comment
-          v-for="response in state.responses"
-          v-else
-          :key="response.response_id"
-          :author="response.username"
-          :content="response.response_text"
-          :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
+  </a-card>
+  <a-card class="mb-4" title="交流记录">
+    <a-empty v-if="state.responses.length === 0" />
+    <a-comment
+      v-for="response in state.responses"
+      v-else
+      :key="response.response_id"
+      :author="response.username"
+      :content="response.response_text"
+      :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
+    />
+  </a-card>
+  <a-card v-if="state.status.id !== 4" class="mb-4" title="回复援助">
+    <a-form :model="submitAssistanceForm" @submit="handleSubmit">
+      <a-form-item
+        hide-label
+        validate-trigger="blur"
+        :rules="[{ required: true, message: '请输入回复内容' }]"
+        field="response_text"
+      >
+        <a-textarea
+          v-model="submitAssistanceForm.response_text"
+          placeholder="在这里输入你的回复"
+          auto-size
         />
+      </a-form-item>
+      <div class="submit-button flex justify-end flex-items-center">
+        <span>新状态：</span>
+        <a-select v-model="submitAssistanceForm.new_status" :style="{ width: '220px' }" placeholder="选择回复状态">
+          <a-option :value="1">
+            待审核
+          </a-option>
+          <a-option :value="2">
+            处理中
+          </a-option>
+          <a-option :value="3">
+            已解决
+          </a-option>
+          <a-option :value="4">
+            已关闭
+          </a-option>
+        </a-select>
+        <a-button type="primary" html-type="submit">
+          提交回复
+        </a-button>
       </div>
-      <div v-if="state.status.id !== 4">
-        <div class="description-title">
-          补充反馈
-        </div>
-        <a-form :model="submitAssistanceForm" @submit="handleSubmit">
-          <a-form-item
-            hide-label
-            validate-trigger="blur"
-            :rules="[{ required: true, message: '请输入回复内容' }]"
-            field="response_text"
-          >
-            <a-textarea
-              v-model="submitAssistanceForm.response_text"
-              placeholder="在这里输入你的回复"
-              auto-size
-            />
-          </a-form-item>
-          <div class="submit-button flex justify-end flex-items-center">
-            <span>新状态：</span>
-            <a-select v-model="submitAssistanceForm.new_status" :style="{ width: '220px' }" placeholder="选择回复状态">
-              <a-option :value="1">
-                待审核
-              </a-option>
-              <a-option :value="2">
-                处理中
-              </a-option>
-              <a-option :value="3">
-                已解决
-              </a-option>
-              <a-option :value="4">
-                已关闭
-              </a-option>
-            </a-select>
-            <a-button type="primary" html-type="submit">
-              提交回复
-            </a-button>
-          </div>
-        </a-form>
-      </div>
-    </div>
-  </div>
+    </a-form>
+  </a-card>
 </template>
 
 <script setup lang="ts">
@@ -97,18 +86,6 @@ const route = useRoute()
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
-
-// 面包屑
-const routes = [
-  {
-    path: '/admin/manageAssistance',
-    label: '援助管理'
-  },
-  {
-    path: route.path,
-    label: '查看详情'
-  }
-]
 
 const state = reactive<assistanceDetailResponse>({
   created_at: '',

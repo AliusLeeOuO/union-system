@@ -222,6 +222,22 @@ export interface feeListItem {
   amount: string
 }
 
+export interface getFeeBillData {
+  bill_id: number
+  user_id: number
+  amount: number
+  due_date: string
+  fee_period: string
+  fee_category: string
+  payment_status: boolean
+  created_at: string
+  user_name: string
+}
+
+export interface getFeeBillResponse extends pageResponse {
+  history: getFeeBillData[]
+}
+
 export default function useAdminApi() {
   return {
     getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = '', role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
@@ -401,6 +417,11 @@ export default function useAdminApi() {
     changeMemberFeeStandard: (userId: number, standardId: number): Promise<AxiosApiResponse<null>> => axiosInstance.put(`/admin/fee/changeFeeStandard/${userId}`, qs.stringify({
       new_standard_id: standardId
     })),
-    removeMemberFeeStandard: (userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/fee/removeFeeStandard/${userId}`)
+    removeMemberFeeStandard: (userId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/fee/removeFeeStandard/${userId}`),
+    getFeeBill: (pageSize: number, pageNum: number): Promise<AxiosApiResponse<getFeeBillResponse>> => axiosInstance.post('/admin/fee/getBills', qs.stringify({
+      page_num: pageNum,
+      page_size: pageSize
+    })
+    )
   }
 }

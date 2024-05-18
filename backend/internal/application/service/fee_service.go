@@ -38,7 +38,6 @@ func (s *FeeService) GetWaitingFeeBillsByUserID(userID int) ([]dto.FeeBillRespon
 			CreatedAt:     bill.CreatedAt.Format(time.RFC3339),
 			PaymentStatus: bill.Paid,
 			FeePeriod:     bill.BillingPeriod,
-			FeeCategory:   "会费",
 		})
 	}
 	return responses, nil
@@ -68,7 +67,7 @@ func (s *FeeService) GenerateMonthlyFeeBills(billingPeriod string) error {
 		if !exists {
 
 			bill := domain.FeeBill{
-				UserID:        int(detail.UserID),
+				UserID:        detail.UserID,
 				Amount:        feeStandard.Amount,
 				CreatedAt:     now,
 				DueDate:       dueDate,
@@ -197,4 +196,56 @@ func (s *FeeService) RemoveMemberFeeStandard(userID uint) error {
 		return err
 	}
 	return s.Repo.RemoveMemberFeeStandard(userID)
+}
+
+// CheckFeeStatus 检查会费状态
+func (s *FeeService) CheckFeeStatus(userID uint) (bool, error) {
+	return s.Repo.CheckUserHasFeeStandard(userID)
+}
+
+func (s *FeeService) CheckFeeStandard(userId uint) (domain.FeeStandardNew, error) {
+	standardId, err := s.Repo.CheckFeeStandard(userId)
+	if err != nil {
+		return domain.FeeStandardNew{}, err
+	}
+	return s.Repo.GetFeeStandardById(standardId)
+}
+
+// GetBills 分页获取账单
+func (s *FeeService) GetBills(pageSize uint, pageNum uint) ([]dto.FeeBillResponse, uint, error) {
+	offset := (pageNum - 1) * pageSize
+	bills, total, err := s.Repo.GetBills(pageSize, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	// ��用map存储bills[i]: userId 的键值对
+	userIdMap := make(map[int]uint)
+	for index, bill := range bills {
+		userIdMap[index] = bill.UserID
+	}
+	// 获取用户信息
+	users, err := s.Repo.GetUserNameByIds(userIdMap)
+
+	// Create a map where the keys are the user IDs and the values are the user names
+	userNameMap := make(map[uint]string)
+	for _, user := range users {
+		userNameMap[user.UserID] = user.Username
+	}
+
+	var responses []dto.FeeBillResponse
+	// 将用户信息与账单信息合并
+	for _, bill := range bills {
+		responses = append(responses, dto.FeeBillResponse{
+			BillID:        bill.BillID,
+			UserID:        bill.UserID,
+			Amount:        bill.Amount,
+			DueDate:       bill.DueDate.Format(time.RFC3339),
+			CreatedAt:     bill.CreatedAt.Format(time.RFC3339),
+			PaymentStatus: bill.Paid,
+			FeePeriod:     bill.BillingPeriod,
+			UserName:      userNameMap[bill.UserID], // Get the user name from the map
+		})
+	}
+
+	return responses, total, nil
 }

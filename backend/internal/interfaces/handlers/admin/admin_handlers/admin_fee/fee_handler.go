@@ -12,4 +12,5 @@ func Init(app fiber.Router) {
 	fee.Post("/addNewFeeStandard", AddNewFeeStandard)
 	fee.Put("/changeFeeStandard/:user_id", ChangeFeeStandard)
 	fee.Delete("/removeFeeStandard/:user_id", RemoveMemberFeeStandard)
+	fee.Post("/getBills", GetBills)
 }

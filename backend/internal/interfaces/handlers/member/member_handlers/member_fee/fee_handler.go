@@ -16,4 +16,5 @@ func Init(app fiber.Router) {
 	fee.Post("/pay", PayForFee)
 	// POST 申请会费减免
 	fee.Post("/apply", ApplyFeeReduction)
+	fee.Get("/status", CheckFeeStatus)
 }

@@ -2,17 +2,11 @@ package dto
 
 import "time"
 
-type FeeStandardResponse struct {
-	SetStandard bool    `json:"set_standard"`
-	StandardID  uint    `json:"standard_id"`
-	Amount      float64 `json:"amount"`
-	CategoryID  uint    `json:"category_id"`
-}
-
 // FeeBillResponse 用于返回给用户的等待缴费账单信息
 type FeeBillResponse struct {
 	BillID        uint    `json:"bill_id"`                  // 账单ID
 	UserID        uint    `json:"user_id"`                  // 用户ID
+	UserName      string  `json:"user_name"`                // 用户名
 	Amount        float64 `json:"amount"`                   // 应缴费用金额
 	DueDate       string  `json:"due_date"`                 // 缴费截止日期
 	FeePeriod     string  `json:"fee_period"`               // 缴费周期，例如“2024年第一季度”

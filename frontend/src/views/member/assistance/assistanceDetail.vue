@@ -1,72 +1,63 @@
 <template>
-  <div class="assistance-status">
-    <div class="description-title">
-      援助状态
-    </div>
-    <a-button v-if="state.status.id !== 4" @click="closeModal = true">
-      关闭本援助
-    </a-button>
-  </div>
-  <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
-    <a-step description="This is a description">
-      待审核
-    </a-step>
-    <a-step description="This is a description">
-      处理中
-    </a-step>
-    <a-step description="This is a description">
-      已解决
-    </a-step>
-    <a-step description="This is a description">
-      已关闭
-    </a-step>
-  </a-steps>
-  <div>
+  <a-card title="援助状态" class="mb-4">
+    <template #extra>
+      <a-button v-if="state.status.id !== 4" @click="closeModal = true">
+        关闭本援助
+      </a-button>
+    </template>
+    <a-steps label-placement="vertical" :current="state.status.id" class="step-items">
+      <a-step>
+        待审核
+      </a-step>
+      <a-step>
+        处理中
+      </a-step>
+      <a-step>
+        已解决
+      </a-step>
+      <a-step>
+        已关闭
+      </a-step>
+    </a-steps>
+  </a-card>
+  <a-card title="帮助信息" class="mb-4">
     <a-descriptions
-      :data="descriptionData" size="large" title="帮助信息" layout="inline-vertical" :column="4"
+      :data="descriptionData" size="large" layout="inline-vertical" :column="4"
       bordered
     />
-    <div>
-      <div class="description-title">
-        交流记录
-      </div>
-      <div>
-        <a-empty v-if="state.responses.length === 0" />
-        <a-comment
-          v-for="response in state.responses"
-          v-else
-          :key="response.response_id"
-          :author="response.username"
-          :content="response.response_text"
-          :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
+  </a-card>
+  <a-card title="交流记录" class="mb-4">
+    <a-empty v-if="state.responses.length === 0" />
+    <a-comment
+      v-for="response in state.responses"
+      v-else
+      :key="response.response_id"
+      :author="response.username"
+      :content="response.response_text"
+      :datetime="dayjs.tz(response.created_at).format('YYYY-MM-DD HH:mm:ss')"
+    />
+  </a-card>
+  <a-card v-if="state.status.id !== 4" title="补充反馈">
+    <a-form :model="submitAssistanceForm" @submit="handleSubmit">
+      <a-form-item
+        hide-label
+        validate-trigger="blur"
+        :rules="[{ required: true, message: '请输入回复内容' }]"
+        field="response_text"
+      >
+        <a-textarea
+          v-model="submitAssistanceForm.response_text"
+          placeholder="在这里输入你的回复"
+          auto-size
         />
+      </a-form-item>
+      <div class="submit-button">
+        <a-button type="primary" html-type="submit">
+          提交回复
+        </a-button>
       </div>
-      <div v-if="state.status.id !== 4">
-        <div class="description-title">
-          补充反馈
-        </div>
-        <a-form :model="submitAssistanceForm" @submit="handleSubmit">
-          <a-form-item
-            hide-label
-            validate-trigger="blur"
-            :rules="[{ required: true, message: '请输入回复内容' }]"
-            field="response_text"
-          >
-            <a-textarea
-              v-model="submitAssistanceForm.response_text"
-              placeholder="在这里输入你的回复"
-              auto-size
-            />
-          </a-form-item>
-          <div class="submit-button">
-            <a-button type="primary" html-type="submit">
-              提交回复
-            </a-button>
-          </div>
-        </a-form>
-      </div>
-    </div>
-  </div>
+    </a-form>
+  </a-card>
   <a-modal v-model:visible="closeModal" @ok="closeAssistance">
     <template #title>
       关闭援助
@@ -79,7 +70,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { type BreadcrumbRoute, Message, type ValidatedError } from '@arco-design/web-vue'
+import { Message, type ValidatedError } from '@arco-design/web-vue'
 import { onMounted, reactive, ref } from 'vue'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -92,18 +83,6 @@ dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 const memberApi = useMemberApi()
 const route = useRoute()
-
-// 面包屑
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/member/assistance',
-    label: '帮助'
-  },
-  {
-    path: route.path,
-    label: '查看详情'
-  }
-]
 
 const state = reactive<assistanceDetailResponse>({
   created_at: '',

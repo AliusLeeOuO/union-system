@@ -152,12 +152,13 @@ interface memInfoContent {
   usage: number
   used: number
 }
-
+const API_URL: string = import.meta.env.VITE_API_URL || ''
+const WS_PROTOCOL: string = import.meta.env.VITE_WS_PROTOCOL || ''
 let ws: WebSocket
 const userStore = useUserStore()
 
 function connect() {
-  ws = new WebSocket(`ws://localhost:9999/admin/management/deviceInfo?AuthorizationQuery=Bearer%20${userStore.userInfo.token}`)
+  ws = new WebSocket(`${WS_PROTOCOL}://${API_URL}/admin/management/deviceInfo?AuthorizationQuery=Bearer%20${userStore.userInfo.token}`)
   let wsPingTime = dayjs().unix()
   // let wsPingInterval: number
   let wsConnectCheck: number

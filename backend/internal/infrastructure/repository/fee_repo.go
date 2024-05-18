@@ -127,7 +127,7 @@ func (r *FeeRepository) GetNonRegisteredUsers(pageSize, pageNum uint) ([]domain.
 	err := r.DB.
 		Table("tb_user").
 		Where("is_active = ? AND fee_standard = ? AND user_type_id = ?", true, -1, 2).
-		Offset(int(pageNum)).
+		Offset(int(pageNum) - 1).
 		Limit(int(pageSize)).
 		Find(&users).Error
 	if err != nil {
@@ -199,4 +199,46 @@ func (r *FeeRepository) CheckUserHasFeeStandard(userID uint) (bool, error) {
 	var count int64
 	err := r.DB.Model(&domain.User{}).Where("user_id = ? AND fee_standard != ?", userID, -1).Count(&count).Error
 	return count > 0, err
+}
+
+// CheckFeeStandard 检查用户的会费标准ID
+func (r *FeeRepository) CheckFeeStandard(userID uint) (uint, error) {
+	var feeStandardID uint
+	err := r.DB.Model(&domain.User{}).Select("fee_standard").Where("user_id = ?", userID).First(&feeStandardID).Error
+	return feeStandardID, err
+}
+
+// GetFeeStandardById 根据ID获取会费标准
+func (r *FeeRepository) GetFeeStandardById(standardID uint) (domain.FeeStandardNew, error) {
+	var feeStandard domain.FeeStandardNew
+	err := r.DB.Where("standard_id = ?", standardID).First(&feeStandard).Error
+	return feeStandard, err
+}
+
+// GetBills 分页获取账单
+func (r *FeeRepository) GetBills(pageSize uint, pageNum uint) ([]domain.FeeBill, uint, error) {
+	var bills []domain.FeeBill
+	var total int64
+	err := r.DB.
+		Order("created_at DESC").
+		Limit(int(pageSize)).
+		Offset(int(pageNum-1) * int(pageSize)).
+		Find(&bills).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	err = r.DB.Model(&domain.FeeBill{}).Count(&total).Error
+	return bills, uint(total), err
+}
+
+// GetUserNameByIds 根据用户ID获取用户名
+func (r *FeeRepository) GetUserNameByIds(userIdMap map[int]uint) ([]domain.User, error) {
+	var users []domain.User
+	// Convert map values to slice
+	var userIds []uint
+	for _, id := range userIdMap {
+		userIds = append(userIds, id)
+	}
+	err := r.DB.Where("user_id IN ?", userIds).Find(&users).Error
+	return users, err
 }

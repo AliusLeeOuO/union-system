@@ -13,6 +13,7 @@ export interface userListItem {
   status: number
   username: string
   create_time: string
+  account_type: 'ADMIN' | 'MEMBER'
 }
 
 export interface userDetail {
@@ -22,6 +23,7 @@ export interface userDetail {
   status: boolean
   phone: string
   email: string
+  account_type: 'ADMIN' | 'MEMBER'
 }
 
 export interface getLoginLogResponseData extends pageResponse {
@@ -238,6 +240,31 @@ export interface getFeeBillResponse extends pageResponse {
   history: getFeeBillData[]
 }
 
+export interface allowPermissionGroupResponse {
+  type_id: number
+  description: string
+}
+
+export interface allowRoleGroupResponse {
+  type_id: number
+  type_name: string
+  allow_account_type: string
+  description: string
+}
+
+export interface PermissionGroupResponse {
+  permission_id: number
+  permission_name: string
+  description: string
+  role_type: string
+  parent_permission_id: number
+  permission_node: string
+  icon: string
+  gmt_create: string
+  list_order: number
+  children: PermissionGroupResponse[]
+}
+
 export default function useAdminApi() {
   return {
     getUserList: (pageNum: number, pageSize: number, id: number = -1, username: string = '', role: number = -1): Promise<AxiosApiResponse<getUserResponseData>> => {
@@ -259,33 +286,27 @@ export default function useAdminApi() {
       }
       return axiosInstance.post('/admin/management/getUserList', qs.stringify(params))
     },
-    addNewUser: (username: string, password: string, role: number, email: string, phone: number): Promise<AxiosApiResponse<null>> => {
+    addNewUser: (username: string, password: string, role: number, email: string, phone: string, account_type: string): Promise<AxiosApiResponse<null>> => {
       return axiosInstance.post('/admin/management/addNewUser', qs.stringify({
         username,
         password,
         role,
         email,
-        phone
+        phone,
+        account_type
       }))
     },
-    getUserInfo: (user_id: number): Promise<AxiosApiResponse<userDetail>> => {
-      return axiosInstance.post('/admin/management/getUserInfo', qs.stringify({ user_id }))
-    },
-    updateUser: (user_id: number, username: string, status: boolean, phone: string, email: string, password?: string): Promise<AxiosApiResponse<null>> => {
+    getUserInfo: (user_id: number): Promise<AxiosApiResponse<userDetail>> => axiosInstance.post('/admin/management/getUserInfo', qs.stringify({ user_id })),
+    updateUser: (user_id: number, username: string, status: boolean, phone: string, email: string, permission_group: number, password?: string): Promise<AxiosApiResponse<null>> => {
       const params: {
         user_id: number
         username: string
         status: boolean
         phone: string
         email: string
+        permission_group: number
         password?: string
-      } = {
-        user_id,
-        username,
-        status,
-        phone,
-        email
-      }
+      } = { user_id, username, status, phone, email, permission_group }
       if (password) {
         params.password = password
       }
@@ -422,6 +443,44 @@ export default function useAdminApi() {
       page_num: pageNum,
       page_size: pageSize
     })
-    )
+    ),
+    getPermissionList: (userId: number | string): Promise<AxiosApiResponse<allowPermissionGroupResponse[]>> => axiosInstance.get(`/admin/management/getPermissionList/${userId}`),
+    getRoleGroupList: (): Promise<AxiosApiResponse<allowRoleGroupResponse[]>> => axiosInstance.get('/admin/management/getRoleGroup'),
+    getPermissionGroupList: (roleId: number): Promise<AxiosApiResponse<PermissionGroupResponse[]>> => axiosInstance.post('/admin/management/getPermissionGroup', qs.stringify({
+      role_id: roleId
+    })),
+    newNode: (
+      parent_node: number,
+      permission_node: string,
+      permission_type: string,
+      list_order: number,
+      list_hidden: boolean,
+      permission_name: string,
+      description: string
+    ): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/management/permissionNode', qs.stringify({
+      parent_node,
+      permission_node,
+      permission_type,
+      list_order,
+      list_hidden,
+      permission_name,
+      description
+    })),
+    getPermissionNodeByRoleType: (roleType: string): Promise<AxiosApiResponse<PermissionGroupResponse[]>> => axiosInstance.get(`/admin/management/permissionNode/${roleType}`),
+    deleteNode: (permission_id: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/management/permissionNode/${permission_id}`),
+    addNewPermissionGroup: (typeName: string, description: string, allowRoleType: string): Promise<AxiosApiResponse<null>> => axiosInstance.post('/admin/management/permissionGroup', qs.stringify({
+      type_name: typeName,
+      description,
+      allow_role_type: allowRoleType
+    })),
+    deletePermissionGroup: (typeId: number): Promise<AxiosApiResponse<null>> => axiosInstance.delete(`/admin/management/permissionGroup/${typeId}`),
+    updatePermissionGroupNode: (groupId: number, permissionIds: number[]): Promise<AxiosApiResponse<null>> => axiosInstance.put(`/admin/management/permissionGroup`, {
+      group_id: groupId,
+      permission_ids: permissionIds
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   }
 }

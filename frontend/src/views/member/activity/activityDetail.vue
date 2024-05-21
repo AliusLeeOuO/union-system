@@ -1,65 +1,32 @@
 <template>
-  <div class="activity-detail-content">
-    <div class="activity-detail-item">
-      <div class="description-title">
-        活动名称
-      </div>
-      <div class="activity-detail-item-content">
-        {{ activityDetail.title }}
-      </div>
+  <a-card title="活动名称" class="mb-4">
+    <span class="break-all line-height-6">{{ activityDetail.title }}</span>
+  </a-card>
+  <a-card title="活动描述" class="mb-4">
+    <span class="break-all line-height-6">{{ activityDetail.description }}</span>
+  </a-card>
+  <a-card title="活动类型" class="mb-4">
+    <span class="break-all line-height-6">{{ activityDetail.activityTypeName }}</span>
+  </a-card>
+  <a-card title="报名人数" class="mb-4">
+    <div class="flex gap-2">
+      <span class="whitespace-nowrap">{{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants }}</span>
+      <a-progress :percent="activityDetail.registrationCount / activityDetail.maxParticipants" :show-text="false" />
     </div>
-    <div class="activity-detail-item">
-      <div class="description-title">
-        活动描述
-      </div>
-      <div class="activity-detail-item-content">
-        {{ activityDetail.description }}
-      </div>
-    </div>
-    <div class="activity-detail-item">
-      <div class="description-title">
-        活动类型
-      </div>
-      <div class="activity-detail-item-content">
-        {{ activityDetail.activityTypeName }}
-      </div>
-    </div>
-    <div class="activity-detail-item">
-      <div class="description-title">
-        报名人数
-      </div>
-      <div class="activity-detail-item-content">
-        {{ activityDetail.registrationCount }}/{{ activityDetail.maxParticipants
-        }}
-      </div>
-    </div>
-    <div class="activity-detail-item">
-      <div class="description-title">
-        活动地址
-      </div>
-      <div class="activity-detail-item-content">
-        {{ activityDetail.location }}
-      </div>
-    </div>
-    <div class="activity-detail-item">
-      <div class="description-title">
-        活动时间
-      </div>
-      <div class="activity-detail-item-content">
-        {{ dayjs.tz(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }}
-        -
-        {{ dayjs.tz(activityDetail.endTime).format("YYYY年MM月DD日 HH:mm") }}
-      </div>
-    </div>
-  </div>
-  <div>
+  </a-card>
+  <a-card title="活动时间" class="mb-4">
+    {{ dayjs.tz(activityDetail.startTime).format("YYYY年MM月DD日 HH:mm") }}
+    -
+    {{ dayjs.tz(activityDetail.endTime).format("YYYY年MM月DD日 HH:mm") }}
+  </a-card>
+  <a-card>
     <a-button v-if="userActivityStatus.isRegistered" long size="large" @click="signUpActivity">
       报名活动
     </a-button>
     <a-button v-else long size="large" status="warning" @click="cancelSignUpActivity">
       取消报名
     </a-button>
-  </div>
+  </a-card>
 </template>
 
 <script setup lang="ts">
@@ -128,39 +95,3 @@ onMounted(async () => {
   await getActivityDetail(activityId)
 })
 </script>
-
-<style scoped lang="less">
-@import "@/assets/variable.less";
-
-.activity-detail-content {
-  padding: 10px;
-
-  .activity-detail-item {
-    padding-bottom: 10px;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid @border-color;
-    }
-  }
-}
-
-.description-title {
-  margin-top: 10px;
-  font-size: 16px;
-  padding-bottom: 10px;
-
-  &::before {
-    content: "";
-    display: inline-block;
-    width: 8px; /* 方块的宽度 */
-    height: 18px; /* 方块的高度 */
-    background-color: rgb(var(--primary-6)); /* 方块的颜色 */
-    margin-right: 8px; /* 和文本之间的距离 */
-    vertical-align: middle;
-  }
-}
-
-.activity-detail-item-content {
-  line-height: 28px;
-}
-</style>

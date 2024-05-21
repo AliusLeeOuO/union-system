@@ -26,8 +26,12 @@ func BuildPermissionTree(permissions []domain.Permission) []*PermissionNode {
 			roots = append(roots, node)
 		} else {
 			// Otherwise, it's a child node, so append it to its parent's children
-			parent := nodes[node.Permission.ParentPermissionID]
-			parent.Children = append(parent.Children, node)
+			parent, exists := nodes[node.Permission.ParentPermissionID]
+			if exists {
+				parent.Children = append(parent.Children, node)
+			} else {
+				// If the parent node does not exist, the child node will be discarded
+			}
 		}
 	}
 

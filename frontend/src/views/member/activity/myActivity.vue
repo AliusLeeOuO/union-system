@@ -1,33 +1,39 @@
 <template>
-  <a-empty v-if="memberActivityList.length === 0" />
-  <div v-else class="activity-content">
-    <div class="activity-items">
-      <ActivityBlock
-        v-for="item in memberActivityList"
-        :key="item.activityId"
-        :path="`/member/activityDetail/${item.activityId}`"
-        :activity-id="item.activityId"
-        :title="item.title"
-        :registration-count="item.registrationCount"
-        :activity-type-name="item.activityTypeName"
-        :description="item.description"
-        :location="item.location"
-        :start-time="item.startTime"
-        :end-time="item.endTime"
-        :max-participants="item.maxParticipants"
-      />
+  <a-card>
+    <a-empty v-if="memberActivityList.length === 0" />
+    <div v-else class="activity-content">
+      <div class="flex flex-col gap-4">
+        <router-link
+          v-for="item in memberActivityList"
+          :key="item.activityId"
+          :to="`/member/activityDetail/${item.activityId}`"
+          class="decoration-none"
+        >
+          <ActivityBlock
+            :activity-id="item.activityId"
+            :title="item.title"
+            :registration-count="item.registrationCount"
+            :activity-type-name="item.activityTypeName"
+            :description="item.description"
+            :location="item.location"
+            :start-time="item.startTime"
+            :end-time="item.endTime"
+            :max-participants="item.maxParticipants"
+          />
+        </router-link>
+      </div>
+      <div class="flex justify-end flex-items-center p-4">
+        <a-pagination
+          v-model:page-size="pagination.pageSize"
+          v-model:current="pagination.current"
+          :total="pagination.total"
+          :default-page-size="5"
+          show-page-size @change="memberPageChange"
+          @page-size-change="memberPageSizeChange"
+        />
+      </div>
     </div>
-    <div class="flex justify-end flex-items-center p-4">
-      <a-pagination
-        v-model:page-size="pagination.pageSize"
-        v-model:current="pagination.current"
-        :total="pagination.total"
-        :default-page-size="5"
-        show-page-size @change="memberPageChange"
-        @page-size-change="memberPageSizeChange"
-      />
-    </div>
-  </div>
+  </a-card>
 </template>
 
 <script setup lang="ts">

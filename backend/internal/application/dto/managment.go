@@ -1,20 +1,13 @@
 package dto
 
-type CreateUserRequest struct {
-	Username string `json:"username" form:"username" validate:"required"`
-	Password string `json:"password" form:"password" validate:"required"`
-	Email    string `json:"email" form:"email" validate:"required"`
-	Role     uint   `json:"role" form:"role" validate:"required"`
-	Phone    uint   `json:"phone" form:"phone" validate:"required"`
-}
-
 type UpdateUserRequest struct {
-	UserId   uint    `json:"user_id" form:"user_id" validate:"required"`
-	Username string  `json:"username" form:"username" validate:"required"`
-	Email    string  `json:"email" form:"email" validate:"required"`
-	Phone    string  `json:"phone_number" form:"phone" validate:"required"`
-	Status   bool    `json:"is_active" form:"status" validate:"required"`
-	Password *string `json:"password,omitempty" form:"password"` // 使用指针以便区分未传递和空字符串
+	UserId          uint    `json:"user_id" form:"user_id" validate:"required"`
+	Username        string  `json:"username" form:"username" validate:"required"`
+	Email           string  `json:"email" form:"email" validate:"required"`
+	Phone           string  `json:"phone_number" form:"phone" validate:"required"`
+	Status          bool    `json:"is_active" form:"status" validate:"required"`
+	PermissionGroup uint    `json:"permission_group" form:"permission_group" validate:"required"`
+	Password        *string `json:"password,omitempty" form:"password"` // 使用指针以便区分未传递和空字符串
 }
 
 type CPUInfo struct {

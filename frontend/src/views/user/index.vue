@@ -2,7 +2,7 @@
   <div class="grid gap-2">
     <a-card>
       <div class="flex gap-2 font-size-6">
-        <span>Hi, {{ userStore.userInfo.userName }} {{ getRoleName(userStore.userInfo.userRole) }} !</span>
+        <span>Hi, {{ userStore.userInfo.userName }} {{ getRoleName(userStore.userInfo.accountType) }} !</span>
         <span v-if="new Date().getHours() < 12">早上好</span>
         <span v-else-if="new Date().getHours() < 14">中午好</span>
         <span v-else-if="new Date().getHours() < 18">下午好</span>
@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { type FormInstance, Message } from '@arco-design/web-vue'
 
 import { useRouter } from 'vue-router'
@@ -123,7 +123,7 @@ const personalData = [
   },
   {
     label: '角色',
-    value: getRoleName(userStore.userInfo.userRole)
+    value: getRoleName(userStore.userInfo.accountType)
   },
   {
     label: '邮箱',
@@ -146,6 +146,20 @@ async function submitChangePasswordNew(done: (closed: boolean) => void) {
   done(true)
   changePasswordRef.value?.resetFields()
 }
+
+async function fetchUserInfo() {
+  const { data } = await handleXhrResponse(() => userApi.getUserInfo(), Message)
+  userStore.userInfo.userName = data.data.username
+  userStore.userInfo.userId = data.data.userID
+  userStore.userInfo.userRole = data.data.role
+  userStore.userInfo.phone = data.data.phone
+  userStore.userInfo.email = data.data.email
+  userStore.userInfo.accountType = data.data.account_type
+}
+
+onMounted(async () => {
+  await fetchUserInfo()
+})
 </script>
 
 <style scoped lang="less">

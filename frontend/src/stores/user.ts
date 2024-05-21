@@ -9,7 +9,8 @@ export const useUserStore = defineStore('user', () => {
     userName: '',
     userRole: -1,
     phone: '',
-    email: ''
+    email: '',
+    accountType: ''
   })
 
   const isUserLoggedIn = computed(() => {
@@ -46,6 +47,7 @@ export const useUserStore = defineStore('user', () => {
     userInfo.userRole = -1
     userInfo.phone = ''
     userInfo.email = ''
+    userInfo.accountType = ''
     userPermissions.value.splice(0, userPermissions.value.length)
   }
 

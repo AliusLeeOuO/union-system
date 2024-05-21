@@ -68,8 +68,13 @@
       }"
       @page-change="changePage"
     >
+      <template #account_type="{ record }">
+        <a-tag>{{ getRoleName(record.account_type) }}</a-tag>
+      </template>
       <template #role="{ record }">
-        <a-tag>{{ getRoleName(record.role) }}</a-tag>
+        <a-tooltip :content="`权限组ID：${record.role}`">
+          <span>{{ record.role_description }}</span>
+        </a-tooltip>
       </template>
       <template #status="{ record }">
         <a-tag v-if="record.status" color="cyan">
@@ -123,8 +128,8 @@ import { onMounted, reactive, ref } from 'vue'
 import { type FormInstance, Message } from '@arco-design/web-vue'
 import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
 import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import { getRoleName } from '../../../utils/roleHelper'
 import useAdminApi, { type userListItem } from '@/api/adminApi'
-import { getRoleName } from '@/utils/roleHelper'
 import { roles } from '@/router'
 import { handleXhrResponse } from '@/api'
 import AddNewUser from '@/views/admin/user/addNewUser.vue'
@@ -154,6 +159,11 @@ const columns: TableColumnData[] = [
   },
   {
     title: '角色',
+    slotName: 'account_type'
+  },
+  {
+    // todo：权限组，要显示权限组的名称
+    title: '权限组',
     slotName: 'role'
   },
   {

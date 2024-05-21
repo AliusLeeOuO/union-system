@@ -15,6 +15,7 @@ import (
 	"union-system/utils/generate_random_code"
 	"union-system/utils/jwt"
 	"union-system/utils/password_crypt"
+	"union-system/utils/user_role_enum"
 )
 
 type UserService struct {
@@ -83,18 +84,13 @@ func (s *UserService) Login(c *fiber.Ctx, username, password, captchaID, captcha
 	return &responseData, nil
 }
 
-func (s *UserService) GetUserList(page int, pageSize int, username string, userId uint, userRole uint) ([]domain.User, int64, error) {
-	users, err := s.Repo.GetUsers(page, pageSize, username, userId, userRole)
+func (s *UserService) GetUserList(page uint, pageSize uint, username string, userId uint, userRole uint) ([]dto.UserWithPermissionInfo, uint, error) {
+	users, total, err := s.Repo.GetUsers(page, pageSize, username, userId, userRole)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	count, err := s.Repo.CountAdminUsers(username, userId, userRole)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return users, count, nil
+	return users, total, nil
 }
 
 func (s *UserService) ChangeUserPassword(userId uint, oldPassword string, newPassword string) error {
@@ -115,7 +111,7 @@ func (s *UserService) GetUserById(userId uint) (*domain.User, error) {
 	return s.Repo.GetUserByID(userId)
 }
 
-func (s *UserService) CreateUser(username, password, email string, role uint, phone string) error {
+func (s *UserService) CreateUser(username, password, email string, role uint, phone string, accountType string) error {
 	// 密码加密
 	passwordHash, err := password_crypt.PasswordHash(password)
 	if err != nil {
@@ -123,7 +119,7 @@ func (s *UserService) CreateUser(username, password, email string, role uint, ph
 	}
 
 	// 创建用户
-	_, err = s.Repo.CreateUser(username, passwordHash, email, role, phone)
+	_, err = s.Repo.CreateUser(username, passwordHash, email, role, phone, accountType)
 	if err != nil {
 		return err
 	}
@@ -147,7 +143,7 @@ func (s *UserService) RegisterUser(username, password, email, phoneNumber, invit
 		return err
 	}
 
-	userID, err := s.Repo.CreateUser(username, encPassword, email, 2, phoneNumber)
+	userID, err := s.Repo.CreateUser(username, encPassword, email, 0, phoneNumber, user_role_enum.MEMBER)
 	if err != nil {
 		return err
 	}
@@ -237,4 +233,9 @@ func (s *UserService) GetPermissions(c *fiber.Ctx, userID uint) ([]*build_permis
 	permissionTree := build_permission_tree.BuildPermissionTree(permissions)
 	// 如果查询到，返回权限列表
 	return permissionTree, nil
+}
+
+// GetRoleGroupList 获取角色组列表
+func (s *UserService) GetRoleGroupList() ([]domain.UserType, error) {
+	return s.Repo.GetRoleGroupList()
 }

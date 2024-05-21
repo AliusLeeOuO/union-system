@@ -27,12 +27,13 @@ func GetUserInfoHandler(c *fiber.Ctx) error {
 
 	// 准备返回的数据
 	responseData := dto.UserInfoResponse{
-		UserID:   user.UserID,
-		Username: user.Username,
-		Role:     user.UserTypeID,
-		Email:    user.Email,
-		Phone:    user.PhoneNumber,
-		Status:   user.IsActive,
+		UserID:      user.UserID,
+		Username:    user.Username,
+		Role:        user.UserTypeID,
+		Email:       user.Email,
+		Phone:       user.PhoneNumber,
+		Status:      user.IsActive,
+		AccountType: user.UserRole,
 	}
 
 	// 发送成功响应

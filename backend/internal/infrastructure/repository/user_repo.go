@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"union-system/global"
+	"union-system/internal/application/dto"
 	"union-system/internal/domain"
 	"union-system/utils/password_crypt"
 )
@@ -17,25 +18,45 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (r *UserRepository) GetUsers(page int, pageSize int, username string, userId uint, userRole uint) ([]domain.User, error) {
-	var users []domain.User
+func (r *UserRepository) GetUsers(page uint, pageSize uint, username string, userId uint, userRole uint) ([]dto.UserWithPermissionInfo, uint, error) {
+	var userWithPermissions []dto.UserWithPermissionInfo
 	offset := (page - 1) * pageSize
-
-	query := r.DB.Model(&domain.User{}).Omit("Password").Order("user_id ASC").Offset(offset).Limit(pageSize)
+	query := r.DB.Table("tb_user").
+		Select("tb_user.user_id, tb_user.username, tb_user.registration_date as create_time, tb_user.email, tb_user.phone_number, tb_user.user_role as account_type, tb_user_type.type_name, tb_user.user_type_id as role, tb_user_type.description as role_name, tb_user.is_active").
+		Joins("JOIN tb_user_type ON tb_user.user_type_id = tb_user_type.type_id").
+		Offset(int(offset)).
+		Limit(int(pageSize))
 	if username != "" {
-		query = query.Where("username LIKE ?", "%"+username+"%")
+		query = query.Where("tb_user.username LIKE ?", "%"+username+"%")
 	}
 	if userId != 0 {
-		query = query.Where("user_id = ?", userId)
+		query = query.Where("tb_user.user_id = ?", userId)
 	}
 	if userRole != 0 {
-		query = query.Where("user_type_id = ?", userRole)
+		query = query.Where("tb_user.user_type_id = ?", userRole)
 	}
+	if err := query.Find(&userWithPermissions).Error; err != nil {
+		return nil, 0, err
+	}
+	// 计算符合条件的总记录数 带上筛选条件
+	var total int64
+	err := r.DB.Table("tb_user").
+		Joins("JOIN tb_user_type ON tb_user.user_type_id = tb_user_type.type_id")
 
-	if err := query.Find(&users).Error; err != nil {
-		return nil, err
+	if username != "" {
+		err = err.Where("tb_user.username LIKE ?", "%"+username+"%")
 	}
-	return users, nil
+	if userId != 0 {
+		err = err.Where("tb_user.user_id = ?", userId)
+	}
+	if userRole != 0 {
+		err = err.Where("tb_user.user_type_id = ?", userRole)
+	}
+	countError := err.Count(&total).Error
+	if countError != nil {
+		return nil, 0, countError
+	}
+	return userWithPermissions, uint(total), nil
 }
 
 func (r *UserRepository) CountAdminUsers(username string, userId uint, userRole uint) (int64, error) {
@@ -107,16 +128,17 @@ func (r *UserRepository) ChangePasswordByID(userID uint, newPassword string) err
 	return nil
 }
 
-func (r *UserRepository) CreateUser(username string, password string, email string, role uint, phone string) (uint, error) {
+func (r *UserRepository) CreateUser(username string, password string, email string, role uint, phone string, accountType string) (uint, error) {
 	user := domain.User{
 		Username:    username,
 		Password:    password,
 		Email:       email,
 		UserTypeID:  role,
 		PhoneNumber: phone,
+		UserRole:    accountType,
 	}
 
-	result := r.DB.Omit("registration_date", "is_active").Create(&user)
+	result := r.DB.Omit("registration_date", "is_active", "fee_standard").Create(&user)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -199,4 +221,14 @@ func (r *UserRepository) GetPermissionsByIDs(permissionIDs []uint) ([]domain.Per
 		return nil, result.Error
 	}
 	return permissions, nil
+}
+
+// GetRoleGroupList 获取角色组列表
+func (r *UserRepository) GetRoleGroupList() ([]domain.UserType, error) {
+	var roleGroups []domain.UserType
+	result := r.DB.Find(&roleGroups)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return roleGroups, nil
 }

@@ -11,6 +11,7 @@ type User struct {
 	PhoneNumber      string    `gorm:"column:phone_number"`
 	RegistrationDate time.Time `gorm:"column:registration_date"`
 	UserTypeID       uint      `gorm:"column:user_type_id"`
+	UserRole         string    `gorm:"column:user_role"`
 	IsActive         bool      `gorm:"column:is_active"`
 	FeeStandard      int       `gorm:"column:fee_standard"`
 }

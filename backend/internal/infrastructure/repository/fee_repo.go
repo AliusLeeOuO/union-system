@@ -34,7 +34,6 @@ func (r *FeeRepository) GetWaitingFeeBillsByUserID(userID int) ([]domain.FeeBill
 func (r *FeeRepository) FetchActiveFeePayingMembers() ([]domain.User, error) {
 	var users []domain.User
 	err := r.DB.Where("user_type_id = ? AND is_fee_active = ?", 2, true).Find(&users).Error
-	fmt.Println("---------------------------------")
 	fmt.Println(users)
 	return users, err
 }
@@ -240,5 +239,14 @@ func (r *FeeRepository) GetUserNameByIds(userIdMap map[int]uint) ([]domain.User,
 		userIds = append(userIds, id)
 	}
 	err := r.DB.Where("user_id IN ?", userIds).Find(&users).Error
+	return users, err
+}
+
+// GetAllRegisteredFeeStandardUser 获取所有已注册的会费标准用户
+func (r *FeeRepository) GetAllRegisteredFeeStandardUser() ([]domain.User, error) {
+	var users []domain.User
+	err := r.DB.Where("fee_standard != ?", -1).
+		Where("is_active", true).
+		Find(&users).Error
 	return users, err
 }

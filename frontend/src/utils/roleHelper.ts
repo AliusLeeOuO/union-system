@@ -1,22 +1,21 @@
 import type { permissionResponseData } from '@/api/userApi'
 
 export enum roles {
-  ADMIN = 1,
-  USER = 2
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER'
 }
 
-export function getRoleName(role: roles): string {
+export function getRoleName(role: string): string {
   switch (role) {
     case roles.ADMIN:
       return '管理员'
-    case roles.USER:
-      return '用户'
+    case roles.MEMBER:
+      return '会员'
     default:
       return '未知角色'
   }
 }
 
-// 递归查找权限节点，如果找到则返回当前节点，否则返回 null
 // 递归查找权限节点，如果找到则返回当前节点，否则返回 null
 export function findPermissionNode(permissions: permissionResponseData[], permissionNode: string): permissionResponseData | null {
   for (let i = 0; i < permissions.length; i++) {

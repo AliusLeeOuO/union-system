@@ -27,7 +27,6 @@ import timezone from 'dayjs/plugin/timezone'
 import { defineEmits, defineProps } from 'vue'
 
 const props = defineProps<{
-  path: string
   activityId: number
   title: string
   description: string

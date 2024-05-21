@@ -17,6 +17,15 @@ func Init(app fiber.Router) {
 	management.Post("/generateInvitationCode", GenerateInvitationCodeHandler)
 	management.Post("/getLogAdminList", GetLogAdmin)
 	management.Post("/getLogMemberList", GetLogMember)
+	management.Get("/getPermissionList/:userInfo", GetPermissionList)
+	management.Post("/getPermissionGroup", GetPermissionGroup)
+	management.Get("/getRoleGroup", GetRoleGroup)
+	management.Post("/permissionNode", NewPermissionNode)
+	management.Get("/permissionNode/:type", GetPermissionNodeByType)
+	management.Delete("/permissionNode/:nodeId", DeletePermissionNode)
+	management.Post("/permissionGroup", AddPermissionGroup)
+	management.Delete("/permissionGroup/:permissionGroup", DeletePermissionGroup)
+	management.Put("/permissionGroup", ModifyGroupPermissions)
 
 	// 添加 WebSocket 路由
 	// 初始化PubSub实例

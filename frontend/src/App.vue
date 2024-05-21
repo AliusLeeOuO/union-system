@@ -28,6 +28,7 @@ onMounted(async () => {
     userStore.userInfo.userRole = data.data.role
     userStore.userInfo.phone = data.data.phone
     userStore.userInfo.email = data.data.email
+    userStore.userInfo.accountType = data.data.account_type
   }
 })
 </script>

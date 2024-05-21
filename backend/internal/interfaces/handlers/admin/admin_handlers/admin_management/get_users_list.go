@@ -19,7 +19,7 @@ func GetUserList(c *fiber.Ctx) error {
 	}
 
 	userService := service.NewUserService(repository.NewUserRepository(global.Database))
-	adminUsers, total, err := userService.GetUserList(int(request.PageNum), int(request.PageSize), request.Username, request.ID, request.Role)
+	adminUsers, total, err := userService.GetUserList(request.PageNum, request.PageSize, request.Username, request.ID, request.Role)
 	if err != nil {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode)
 	}
@@ -27,11 +27,13 @@ func GetUserList(c *fiber.Ctx) error {
 	var adminUsersResponse []dto.GetAdminUserResponse
 	for _, user := range adminUsers {
 		adminUsersResponse = append(adminUsersResponse, dto.GetAdminUserResponse{
-			ID:         user.UserID,
-			Username:   user.Username,
-			Role:       user.UserTypeID,
-			Status:     user.IsActive,
-			CreateTime: user.RegistrationDate.Format(time.RFC3339),
+			ID:              user.UserID,
+			Username:        user.Username,
+			Role:            user.Role,
+			RoleDescription: user.RoleName,
+			Status:          user.IsActive,
+			CreateTime:      user.CreateTime.Format(time.RFC3339),
+			AccountType:     user.AccountType,
 		})
 	}
 
@@ -40,7 +42,7 @@ func GetUserList(c *fiber.Ctx) error {
 		PageResponse: dto.PageResponse{
 			PageSize: request.PageSize,
 			PageNum:  request.PageNum,
-			Total:    uint(total),
+			Total:    total,
 		},
 	})
 }

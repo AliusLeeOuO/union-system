@@ -24,6 +24,7 @@ interface getUserInfoResponseData {
   username: string
   phone: string
   email: string
+  account_type: 'ADMIN' | 'MEMBER'
 }
 
 export interface permissionResponseData {

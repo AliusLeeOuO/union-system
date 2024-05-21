@@ -57,11 +57,13 @@ type GetAdminUserListResponse struct {
 }
 
 type GetAdminUserResponse struct {
-	ID         uint   `json:"id"`
-	Username   string `json:"username"`
-	Role       uint   `json:"role"`
-	Status     bool   `json:"status"`
-	CreateTime string `json:"create_time"`
+	ID              uint   `json:"id"`
+	Username        string `json:"username"`
+	Role            uint   `json:"role"`
+	RoleDescription string `json:"role_description"`
+	Status          bool   `json:"status"`
+	CreateTime      string `json:"create_time"`
+	AccountType     string `json:"account_type"`
 }
 
 type LoginLogListRequest struct {

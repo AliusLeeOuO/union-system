@@ -10,9 +10,13 @@ import (
 	"union-system/internal/interfaces/models"
 )
 
+type UserQueryRequest struct {
+	UserID uint `form:"user_id" validate:"required"`
+}
+
 func GetUserInfoHandler(c *fiber.Ctx) error {
 	var validate = validator.New()
-	var form dto.UserQueryRequest
+	var form UserQueryRequest
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode)
 	}
@@ -28,12 +32,13 @@ func GetUserInfoHandler(c *fiber.Ctx) error {
 
 	// 准备返回的数据
 	responseData := dto.UserInfoResponse{
-		UserID:   user.UserID,
-		Username: user.Username,
-		Role:     user.UserTypeID,
-		Email:    user.Email,
-		Phone:    user.PhoneNumber,
-		Status:   user.IsActive,
+		UserID:      user.UserID,
+		Username:    user.Username,
+		Role:        user.UserTypeID,
+		Email:       user.Email,
+		Phone:       user.PhoneNumber,
+		Status:      user.IsActive,
+		AccountType: user.UserRole,
 	}
 
 	// 发送成功响应

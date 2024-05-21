@@ -1,32 +1,38 @@
 <template>
-  <div class="activity-content">
-    <div class="activity-items">
-      <ActivityBlock
-        v-for="item in activityList"
-        :key="item.activityId"
-        :path="`/member/activityDetail/${item.activityId}`"
-        :activity-id="item.activityId"
-        :title="item.title"
-        :registration-count="item.registrationCount"
-        :activity-type-name="item.activityTypeName"
-        :description="item.description"
-        :location="item.location"
-        :start-time="item.startTime"
-        :end-time="item.endTime"
-        :max-participants="item.maxParticipants"
-      />
+  <a-card>
+    <div class="activity-content">
+      <div class="activity-items flex flex-col gap-4">
+        <router-link
+          v-for="item in activityList"
+          :key="item.activityId"
+          :to="`/member/activityDetail/${item.activityId}`"
+          class="decoration-none"
+        >
+          <ActivityBlock
+            :activity-id="item.activityId"
+            :title="item.title"
+            :registration-count="item.registrationCount"
+            :activity-type-name="item.activityTypeName"
+            :description="item.description"
+            :location="item.location"
+            :start-time="item.startTime"
+            :end-time="item.endTime"
+            :max-participants="item.maxParticipants"
+          />
+        </router-link>
+      </div>
+      <div class="flex justify-end flex-items-center p-4">
+        <a-pagination
+          v-model:page-size="pagination.pageSize"
+          v-model:current="pagination.current"
+          :total="pagination.total"
+          :default-page-size="5"
+          show-page-size @change="pageChange"
+          @page-size-change="pageSizeChange"
+        />
+      </div>
     </div>
-    <div class="flex justify-end flex-items-center p-4">
-      <a-pagination
-        v-model:page-size="pagination.pageSize"
-        v-model:current="pagination.current"
-        :total="pagination.total"
-        :default-page-size="5"
-        show-page-size @change="pageChange"
-        @page-size-change="pageSizeChange"
-      />
-    </div>
-  </div>
+  </a-card>
 </template>
 
 <script setup lang="ts">

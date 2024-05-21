@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"union-system/global"
 	"union-system/internal/application/dto"
-	service2 "union-system/internal/application/service"
-	repository2 "union-system/internal/infrastructure/repository"
+	"union-system/internal/application/service"
+	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
 	"union-system/utils/check_fields"
 	"union-system/utils/log_model_enum"
@@ -30,13 +30,13 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode, "手机号格式错误")
 	}
 
-	adminService := service2.NewAdminService(repository2.NewAdminRepository(global.Database))
+	adminService := service.NewAdminService(repository.NewAdminRepository(global.Database))
 	if err := adminService.UpdateUser(updateReq.UserId, updateReq); err != nil {
 		return models.SendFailureResponse(c, models.InternalServerErrorCode, err.Error())
 	}
 
 	// 记录日志
-	logService := service2.NewLogService(repository2.NewLogRepository(global.Database))
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
 	logString := fmt.Sprintf("修改用户信息: %v", updateReq.UserId)
 	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.MANAGEMENT)
 

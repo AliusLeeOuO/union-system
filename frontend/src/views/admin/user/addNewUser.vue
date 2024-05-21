@@ -27,6 +27,16 @@
     <a-form-item field="phone" label="手机号">
       <a-input v-model="formItem.phone" />
     </a-form-item>
+    <a-form-item field="permission_group" label="权限组">
+      <a-select v-model="formItem.permissionGroup" placeholder="权限组" :disabled="roleListLoading">
+        <a-option :value="-1" disabled>
+          请选择权限组
+        </a-option>
+        <a-option v-for="item in roleList" :key="item.type_id" :value="item.type_id">
+          {{ item.description }}
+        </a-option>
+      </a-select>
+    </a-form-item>
     <div class="flex flex-col gap-2">
       <a-button type="primary" html-type="submit" size="large" :loading="loadingSubmitNewUser" long>
         添加
@@ -39,11 +49,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, reactive, ref } from 'vue'
+import { computed, defineEmits, reactive, ref, watch } from 'vue'
 import { type FieldRule, Message, type ValidatedError } from '@arco-design/web-vue'
 import { getRoleName, roles } from '@/utils/roleHelper'
 import { handleXhrResponse } from '@/api'
-import useAdminApi from '@/api/adminApi'
+import useAdminApi, { type allowPermissionGroupResponse } from '@/api/adminApi'
 
 const emit = defineEmits(['closeDrawer', 'successCreateUser'])
 const adminApi = useAdminApi()
@@ -61,9 +71,10 @@ const formItem = reactive({
   username: '',
   password: '',
   reTypePassword: '',
-  role: -1,
+  role: '',
   email: '',
-  phone: ''
+  phone: '',
+  permissionGroup: -1
 })
 
 const loadingSubmitNewUser = ref(false)
@@ -71,6 +82,20 @@ const loadingSubmitNewUser = ref(false)
 const rules: Record<string, FieldRule | FieldRule[]> = {
   username: [{ required: true, message: '请输入用户名' }],
   password: [{ required: true, message: '请输入密码' }],
+  permission_group: [
+    {
+      required: true,
+      message: '请选择权限组',
+      validator: (value, callback) => {
+        return new Promise((resolve) => {
+          if (formItem.permissionGroup === -1) {
+            callback('请选择权限组')
+          }
+          resolve(void 0)
+        })
+      }
+    }
+  ],
   reTypePassword: [
     { required: true, message: '请重复密码' },
     {
@@ -94,7 +119,7 @@ const rules: Record<string, FieldRule | FieldRule[]> = {
             callback('请选择角色')
           }
 
-          if (value !== roles.ADMIN && value !== roles.USER) {
+          if (value !== roles.ADMIN && value !== roles.MEMBER) {
             callback('请选择正确的角色')
           }
 
@@ -129,11 +154,12 @@ async function handleSubmit(form: {
     try {
       loadingSubmitNewUser.value = true
       await handleXhrResponse(() => adminApi.addNewUser(
-        form.values.username,
-        form.values.password,
-        form.values.role,
-        form.values.email,
-        form.values.phone
+        formItem.username,
+        formItem.password,
+        formItem.permissionGroup,
+        formItem.email,
+        formItem.phone,
+        formItem.role
       ), Message)
       Message.success('添加成功')
       emit('successCreateUser')
@@ -144,6 +170,27 @@ async function handleSubmit(form: {
     finally {
       loadingSubmitNewUser.value = false
     }
+  }
+}
+
+watch(() => formItem.role, async (value: string) => {
+  await fetchAllowPermissionGroup(value)
+})
+
+const roleListLoading = ref(false)
+const roleList = reactive<allowPermissionGroupResponse[]>([])
+async function fetchAllowPermissionGroup(groupName: string) {
+  try {
+    roleListLoading.value = true
+    formItem.permissionGroup = -1
+    const { data } = await handleXhrResponse(() => adminApi.getPermissionList(groupName), Message)
+    roleList.splice(0, roleList.length, ...data.data)
+  }
+  catch (error: any) {
+    Message.error(error.message)
+  }
+  finally {
+    roleListLoading.value = false
   }
 }
 

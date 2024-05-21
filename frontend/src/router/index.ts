@@ -136,6 +136,22 @@ const routes: Array<routeRecordWithRole> = [
                 meta: {
                   title: '邀请码管理'
                 }
+              },
+              {
+                path: '/admin/user/permissionGroup',
+                name: 'permissionGroup',
+                component: () => import('@/views/admin/user/permissionGroup.vue'),
+                meta: {
+                  title: '权限组管理'
+                }
+              },
+              {
+                path: '/admin/user/permission',
+                name: 'permissionNode',
+                component: () => import('@/views/admin/user/permissionNode.vue'),
+                meta: {
+                  title: '权限节点管理'
+                }
               }
             ]
           },

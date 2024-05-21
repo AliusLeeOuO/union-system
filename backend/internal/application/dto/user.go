@@ -37,15 +37,13 @@ type ChangePasswordRequest struct {
 
 // UserInfoResponse 定义了获取用户信息响应的数据结构
 type UserInfoResponse struct {
-	UserID   uint   `json:"user_id"`
-	Username string `json:"username"`
-	Role     uint   `json:"role"`
-	Status   bool   `json:"status"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-}
-type UserQueryRequest struct {
-	UserID uint `form:"user_id" validate:"required"`
+	UserID      uint   `json:"user_id"`
+	Username    string `json:"username"`
+	Role        uint   `json:"role"`
+	Status      bool   `json:"status"`
+	Phone       string `json:"phone"`
+	Email       string `json:"email"`
+	AccountType string `json:"account_type"`
 }
 
 type UserRegisterRequest struct {
@@ -76,4 +74,19 @@ type NewInvitationCodeResponse struct {
 	Code      string `json:"code"`
 	CreatedAt string `json:"created_at"`
 	ExpiresAt string `json:"expires_at"`
+}
+
+type UserWithPermissionInfo struct {
+	UserID   uint   `json:"user_id"`
+	Username string `json:"username"`
+	// 权限组ID
+	Role uint `json:"role"`
+	// 权限组名称
+	RoleName string `json:"role_name"`
+	// 账号类型
+	AccountType string    `json:"account_type"`
+	IsActive    bool      `json:"status"`
+	Phone       string    `json:"phone"`
+	Email       string    `json:"email"`
+	CreateTime  time.Time `json:"create_time"`
 }

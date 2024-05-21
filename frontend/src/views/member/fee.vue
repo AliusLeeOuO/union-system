@@ -53,8 +53,10 @@
         <template #created_at="{ record }">
           {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
-        <template #action>
-          <a-button>缴费</a-button>
+        <template #action="{ record }">
+          <a-button :disabled="dayjs.tz(record.due_date) < dayjs.tz()">
+            {{ dayjs.tz(record.due_date) < dayjs.tz() ? '已过期' : '缴费' }}
+          </a-button>
         </template>
       </a-table>
     </a-card>

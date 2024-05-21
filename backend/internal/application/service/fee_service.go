@@ -44,47 +44,6 @@ func (s *FeeService) GetWaitingFeeBillsByUserID(userID int) ([]dto.FeeBillRespon
 }
 
 // Deprecated: 请使用新方法
-func (s *FeeService) GenerateMonthlyFeeBills(billingPeriod string) error {
-	// 获取所有激活了会费的会员
-	memberDetails, err := s.Repo.GetActiveFeeMembers()
-	if err != nil {
-		return fmt.Errorf("获取激活会费的会员失败: %w", err)
-	}
-
-	// 获取当前日期，用于确定账单创建和到期时间
-	now := time.Now()
-	dueDate := now.AddDate(0, 1, -now.Day()) // 下个月的最后一天
-	// 查询会员类别的会费标准
-	feeStandard, _ := s.GetFeeStandardByCategory(1)
-	for _, detail := range memberDetails {
-		// 检查是否已经为当前账期生成了账单
-		exists, err := s.Repo.CheckBillExists(detail.UserID, billingPeriod)
-		if err != nil {
-			return fmt.Errorf("检查账单存在失败: %w", err)
-		}
-
-		// 如果账单不存在，为用户创建新的账单
-		if !exists {
-
-			bill := domain.FeeBill{
-				UserID:        detail.UserID,
-				Amount:        feeStandard.Amount,
-				CreatedAt:     now,
-				DueDate:       dueDate,
-				Paid:          false,
-				BillingPeriod: billingPeriod,
-			}
-
-			if err := s.Repo.CreateFeeBill(bill); err != nil {
-				return fmt.Errorf("创建会费账单失败: %w", err)
-			}
-		}
-	}
-
-	return nil
-}
-
-// Deprecated: 请使用新方法
 func (s *FeeService) GetFeeHistory(userID uint, pageSize, pageNum uint) (dto.FeeHistoryResponse, error) {
 	bills, total, err := s.Repo.GetFeeHistoryByUserID(userID, int(pageSize), int(pageNum))
 	if err != nil {
@@ -95,7 +54,7 @@ func (s *FeeService) GetFeeHistory(userID uint, pageSize, pageNum uint) (dto.Fee
 	for _, bill := range bills {
 		responses.History = append(responses.History, dto.FeeBillResponse{
 			BillID:        bill.BillID,
-			UserID:        uint(bill.UserID),
+			UserID:        bill.UserID,
 			Amount:        bill.Amount,
 			DueDate:       bill.DueDate.Format(time.RFC3339),
 			CreatedAt:     bill.CreatedAt.Format(time.RFC3339),
@@ -248,4 +207,77 @@ func (s *FeeService) GetBills(pageSize uint, pageNum uint) ([]dto.FeeBillRespons
 	}
 
 	return responses, total, nil
+}
+
+// GenerateMonthlyFeeBillsNew 生成月度会费账单
+func (s *FeeService) GenerateMonthlyFeeBillsNew(billingPeriod string) error {
+	// 获取所有激活了会费的会员
+	memberDetails, err := s.Repo.GetAllRegisteredFeeStandardUser()
+	if err != nil {
+		return fmt.Errorf("获取激活会费的会员失败: %w", err)
+	}
+
+	// 获取当前日期，用于确定账单创建和到期时间
+	now := time.Now()
+	dueDate := now.AddDate(0, 1, -now.Day()) // 下个月的最后一天
+	// 查询会员类别的会费标准
+	// 收集所有会费标准和会员ID
+	feeStandardMap := make(map[int]bool)
+	var memberIds []uint
+	for _, member := range memberDetails {
+		memberIds = append(memberIds, member.UserID)
+		_, ok := feeStandardMap[member.FeeStandard]
+		if !ok {
+			feeStandardMap[member.FeeStandard] = true
+		}
+	}
+	// 从map中读取出ID数组
+	var feeStandards []int
+	for i, _ := range feeStandardMap {
+		feeStandards = append(feeStandards, i)
+	}
+	// 传入Repo中进行查询会费标准
+	standard, err := s.Repo.GetFeeStandardByIds(feeStandards)
+	if err != nil {
+		return err
+	}
+	// 检查是否已经为当前账期生成了账单，先查询所有账单
+	existBillMemberIds, err := s.Repo.CheckBillExistsNew(memberIds, billingPeriod)
+	if err != nil {
+		return err
+	}
+	// 将已存在的账单ID从memberIds中删除
+	for _, id := range existBillMemberIds {
+		for i, memberId := range memberIds {
+			if memberId == id {
+				memberIds = append(memberIds[:i], memberIds[i+1:]...)
+				break
+			}
+		}
+	}
+	// 为剩余的用户创建账单创建一个map，key为用户ID，value为会费标准，然后传入repo
+	memberStandardMap := make(map[uint]int)
+
+	// 创建一个map，key为用户ID，value为会费标准
+	memberDetailsMap := make(map[uint]int)
+	for _, member := range memberDetails {
+		memberDetailsMap[member.UserID] = member.FeeStandard
+	}
+
+	// 仅限于已注册会费标准的用户
+	for _, memberId := range memberIds {
+		memberStandardMap[memberId] = memberDetailsMap[memberId]
+	}
+
+	// 如果没有任何用户需要创建账单，直接返回
+	if len(memberStandardMap) == 0 {
+		return nil
+	}
+
+	// 将整个map传入repo
+	if err = s.Repo.CreateFeeBillNew(memberStandardMap, standard, billingPeriod, dueDate); err != nil {
+		return err
+	}
+
+	return nil
 }

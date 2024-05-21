@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"time"
 	"union-system/internal/application/dto"
 	"union-system/internal/domain"
 )
@@ -249,4 +250,37 @@ func (r *FeeRepository) GetAllRegisteredFeeStandardUser() ([]domain.User, error)
 		Where("is_active", true).
 		Find(&users).Error
 	return users, err
+}
+
+// GetFeeStandardByIds 根据ID列表获取会费标准
+func (r *FeeRepository) GetFeeStandardByIds(ids []int) ([]domain.FeeStandardNew, error) {
+	var feeStandards []domain.FeeStandardNew
+	err := r.DB.Where("standard_id IN ?", ids).Find(&feeStandards).Error
+	return feeStandards, err
+}
+
+func (r *FeeRepository) CheckBillExistsNew(userIDs []uint, billingPeriod string) ([]uint, error) {
+	var userIds []uint
+	err := r.DB.Model(&domain.FeeBill{}).Where("user_id in ? AND billing_period = ?", userIDs, billingPeriod).Pluck("user_id", &userIds).Error
+	return userIds, err
+}
+
+// CreateFeeBillNew 创建新的会费账单 s.Repo.CreateFeeBillNew(memberStandardMap, standard, billingPeriod, dueDate)
+func (r *FeeRepository) CreateFeeBillNew(memberStandardMap map[uint]int, standard []domain.FeeStandardNew, billingPeriod string, dueDate time.Time) error {
+	var bills []domain.FeeBill
+	for userID, feeStandard := range memberStandardMap {
+		for _, s := range standard {
+			if s.StandardId == uint(feeStandard) {
+				bill := domain.FeeBill{
+					UserID:        userID,
+					BillingPeriod: billingPeriod,
+					DueDate:       dueDate,
+					Amount:        s.StandardAmount,
+				}
+				bills = append(bills, bill)
+				break
+			}
+		}
+	}
+	return r.DB.Create(&bills).Error
 }

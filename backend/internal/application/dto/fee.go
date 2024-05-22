@@ -22,11 +22,6 @@ type FeeHistoryResponse struct {
 	History []FeeBillResponse `json:"history"`
 }
 
-// PayForFeeRequest 用于接收用户缴费请求
-type PayForFeeRequest struct {
-	BillID uint `json:"bill_id" form:"bill_id"` // 账单ID
-}
-
 // WaitingFeeResponse 用于返回给用户的等待缴费账单信息
 type WaitingFeeResponse struct {
 	Bills []FeeBillResponse `json:"bills"`

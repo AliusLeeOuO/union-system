@@ -17,13 +17,6 @@ func NewFeeRepository(db *gorm.DB) *FeeRepository {
 	return &FeeRepository{DB: db}
 }
 
-// GetFeeStandardByCategory 根据会员类别获取会费标准
-func (r *FeeRepository) GetFeeStandardByCategory(categoryID uint) (domain.FeeStandard, error) {
-	var standards domain.FeeStandard
-	err := r.DB.Where("category_id = ?", categoryID).First(&standards).Error
-	return standards, err
-}
-
 // GetWaitingFeeBillsByUserID 根据用户ID获取待缴费账单
 func (r *FeeRepository) GetWaitingFeeBillsByUserID(userID int) ([]domain.FeeBill, error) {
 	var bills []domain.FeeBill
@@ -76,7 +69,6 @@ func (r *FeeRepository) GetFeeHistoryByUserID(userID uint, pageSize, pageNum int
 	return bills, uint(total), err
 }
 
-// CheckFeePaid 检查用户指定账单是否已支付
 func (r *FeeRepository) CheckFeePaid(billID uint) (bool, error) {
 	var bill domain.FeeBill
 	result := r.DB.Select("paid").Where("bill_id = ?", billID).First(&bill)
@@ -89,9 +81,26 @@ func (r *FeeRepository) CheckFeePaid(billID uint) (bool, error) {
 	return bill.Paid, nil
 }
 
+// CheckFeePaidNew 检查账单是否已支付
+func (r *FeeRepository) CheckFeePaidNew(userID, billID uint) (bool, error) {
+	var bill domain.FeeBill
+	result := r.DB.Select("user_id, paid").Where("bill_id = ?", billID).First(&bill)
+	// 如果user_id不匹配，返回false
+	if bill.UserID != userID {
+		return false, errors.New("账单不存在")
+	}
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return bill.Paid, nil
+}
+
 // MarkFeeAsPaid 标记会费账单为已支付
-func (r *FeeRepository) MarkFeeAsPaid(billID uint) error {
-	result := r.DB.Model(&domain.FeeBill{}).Where("bill_id = ?", billID).Update("paid", true)
+func (r *FeeRepository) MarkFeeAsPaid(userID, billID uint) error {
+	result := r.DB.Model(&domain.FeeBill{}).
+		Where("bill_id = ?", billID).
+		Where("user_id = ?", userID).
+		Update("paid", true)
 	return result.Error
 }
 

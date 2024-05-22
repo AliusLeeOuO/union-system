@@ -2,15 +2,19 @@ import type { permissionResponseData } from '@/api/userApi'
 
 export enum roles {
   ADMIN = 'ADMIN',
-  MEMBER = 'MEMBER'
+  MEMBER = 'MEMBER',
+  SYSTEM = 'SYSTEM'
 }
 
 export function getRoleName(role: string): string {
+  console.log('role', role)
   switch (role) {
     case roles.ADMIN:
       return '管理员'
     case roles.MEMBER:
       return '会员'
+    case roles.SYSTEM:
+      return '系统'
     default:
       return '未知角色'
   }

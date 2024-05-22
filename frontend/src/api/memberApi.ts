@@ -92,7 +92,7 @@ export interface feeHistoryResponseData extends pageResponse {
 export interface feeHistoryResponse {
   bill_id: number
   user_id: number
-  amount: number
+  amount: string
   due_date: string
   fee_period: string
   fee_category: string
@@ -115,7 +115,7 @@ export interface notificationResponseObject {
   read_status: boolean
   title: string
   sender_name: string
-  sender_role: number
+  sender_role: string
 }
 
 export interface activityTypeResponse {
@@ -239,6 +239,7 @@ export default function useMemberApi() {
     notificationRead: (notificationId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/notification/read/${notificationId}`),
     notificationReadAll: (): Promise<AxiosApiResponse<null>> => axiosInstance.post('/member/notification/readAll'),
     getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get('/member/notification/unreadCount'),
-    getFeeStatus: (): Promise<AxiosApiResponse<boolean>> => axiosInstance.get('/member/fee/status')
+    getFeeStatus: (): Promise<AxiosApiResponse<boolean>> => axiosInstance.get('/member/fee/status'),
+    payFee: (billId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/fee/pay`, qs.stringify({ bill_id: billId }))
   }
 }

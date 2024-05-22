@@ -17,12 +17,6 @@ func NewFeeService(repo *repository.FeeRepository) *FeeService {
 	return &FeeService{Repo: repo}
 }
 
-// Deprecated: 请使用新方法
-func (s *FeeService) GetFeeStandardByCategory(categoryID uint) (domain.FeeStandard, error) {
-	return s.Repo.GetFeeStandardByCategory(categoryID)
-}
-
-// Deprecated: 请使用新方法
 func (s *FeeService) GetWaitingFeeBillsByUserID(userID int) ([]dto.FeeBillResponse, error) {
 	bills, err := s.Repo.GetWaitingFeeBillsByUserID(userID)
 	if err != nil {
@@ -70,18 +64,16 @@ func (s *FeeService) GetFeeHistory(userID uint, pageSize, pageNum uint) (dto.Fee
 	return responses, nil
 }
 
-// Deprecated: 请使用新方法
-func (s *FeeService) PayFee(billID uint) error {
+func (s *FeeService) PayFee(userID, billID uint) error {
 	// 首先检查账单是否已支付
-	paid, err := s.Repo.CheckFeePaid(billID)
+	paid, err := s.Repo.CheckFeePaidNew(userID, billID)
 	if err != nil {
 		return err
 	}
 	if paid {
-		return errors.New("会费已支付，无需重复支付")
+		return errors.New("账单已支付")
 	}
-	// 标记账单为已支付
-	return s.Repo.MarkFeeAsPaid(billID)
+	return s.Repo.MarkFeeAsPaid(userID, billID)
 }
 
 func (s *FeeService) GetRegisteredFeeList(pageSize, pageNum uint) ([]dto.UserWithFee, uint, error) {

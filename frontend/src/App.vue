@@ -1,20 +1,21 @@
 <template>
   <RouterView />
 </template>
+
 <script setup lang="ts">
-import { RouterView } from "vue-router"
-import { useDark } from "@vueuse/core"
-import { onMounted } from "vue"
-import { useUserStore } from "@/stores/user"
-import useUserApi from "@/api/userApi"
-import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
+import { RouterView } from 'vue-router'
+import { useDark } from '@vueuse/core'
+import { onMounted } from 'vue'
+import { Message } from '@arco-design/web-vue'
+import { useUserStore } from '@/stores/user'
+import useUserApi from '@/api/userApi'
+import { handleXhrResponse } from '@/api'
 
 useDark({
-  selector: "body",
-  attribute: "arco-theme",
-  valueDark: "dark",
-  valueLight: ""
+  selector: 'body',
+  attribute: 'arco-theme',
+  valueDark: 'dark',
+  valueLight: ''
 })
 
 const userStore = useUserStore()
@@ -27,9 +28,7 @@ onMounted(async () => {
     userStore.userInfo.userRole = data.data.role
     userStore.userInfo.phone = data.data.phone
     userStore.userInfo.email = data.data.email
+    userStore.userInfo.accountType = data.data.account_type
   }
 })
 </script>
-<style lang="less" scoped>
-
-</style>

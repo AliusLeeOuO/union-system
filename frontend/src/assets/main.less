@@ -1,12 +1,83 @@
+@import "./variable.less";
 @import "@arco-design/web-vue/es/message/style/index.less";
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* 滚动条轨道 */
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+
+  /* 滚动条上的滑块 */
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  /* 当鼠标悬停在滚动条上时，滑块的样式 */
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@font-face {
+  font-family: HarmonyOS Sans;
+  src: url("./fonts/HarmonyOS_Sans_SC_Regular.woff2") format("woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: HarmonyOS Sans;
+  src: url("./fonts/HarmonyOS_Sans_SC_Bold.woff2") format("woff2");
+  font-weight: bold;
+}
+
+html, body {
+  font-family: HarmonyOS Sans, sans-serif !important;
+  background-color: #F5F5F5;
+}
+
+.arco-card-body {
+  color: var(--color-text-1) !important;
+}
+
+.arco-form-layout-inline {
+  gap: 1rem;
+
+  .arco-form-item {
+    margin: 0 !important;
+  }
+}
+
+.full-bg {
+  background-color: #fff;
 }
 
 body[arco-theme="dark"] {
-  background-color: #3A3A3D;
+  background-color: #121212;
   color: #fff;
+
+  .full-bg {
+    background-color: @dark-mode-bg;
+  }
 }
+

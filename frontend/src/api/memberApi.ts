@@ -1,11 +1,9 @@
-import axiosInstance from "@/api/index"
-import type { AxiosApiResponse } from "@/api/index"
-import qs from "qs"
+import qs from 'qs'
+import axiosInstance from '@/api/index'
+import type { AxiosApiResponse } from '@/api/index'
+import type { pageResponse } from '@/api/public_types'
 
-export interface activityListResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface activityListResponseData extends pageResponse {
   data: activityListResponse[] | null
 }
 
@@ -29,10 +27,7 @@ export interface activityDetailResponse {
 }
 
 // 会员援助列表
-export interface assistanceListResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface assistanceListResponseData extends pageResponse {
   resolved_count: number
   pending_review_count: number
   assistances: assistanceListResponse[] | null
@@ -86,14 +81,11 @@ export interface assistanceNewResponse {
 
 export interface feeStandardResponse {
   standard_id: number
-  amount: number
-  category_id: number
+  standard_name: string
+  standard_amount: string
 }
 
-export interface feeHistoryResponseData {
-  total: number
-  page_size: number
-  page_num: number
+export interface feeHistoryResponseData extends pageResponse {
   history: feeHistoryResponse[] | null
 }
 
@@ -112,10 +104,7 @@ export interface feeWaitingResponseData {
   bills: feeHistoryResponse[] | null
 }
 
-export interface notificationListResponse {
-  page_num: number
-  page_size: number
-  total: number
+export interface notificationListResponse extends pageResponse {
   notifications: notificationResponseObject[] | null
 }
 
@@ -141,7 +130,7 @@ export default function useMemberApi() {
       pageNum: number
     ): Promise<AxiosApiResponse<activityListResponseData>> =>
       axiosInstance.post(
-        "/member/activity/list",
+        '/member/activity/list',
         qs.stringify({
           page_size: pageSize,
           page_num: pageNum
@@ -153,13 +142,13 @@ export default function useMemberApi() {
       axiosInstance.post(`/member/activity/register/${activityId}`),
     activityCancel: (activityId: number): Promise<AxiosApiResponse<null>> =>
       axiosInstance.delete(`/member/activity/cancel/${activityId}`),
-    activityType: (): Promise<AxiosApiResponse<activityTypeResponse[]>> => axiosInstance.get("/member/activity/type"),
+    activityType: (): Promise<AxiosApiResponse<activityTypeResponse[]>> => axiosInstance.get('/member/activity/type'),
     activityMemberList: (
       pageSize: number,
       pageNum: number
     ): Promise<AxiosApiResponse<activityListResponseData>> =>
       axiosInstance.post(
-        "/member/activity/history",
+        '/member/activity/history',
         qs.stringify({
           page_size: pageSize,
           page_num: pageNum
@@ -170,7 +159,7 @@ export default function useMemberApi() {
       pageNum: number
     ): Promise<AxiosApiResponse<assistanceListResponseData>> =>
       axiosInstance.post(
-        "/member/assistance/list",
+        '/member/assistance/list',
         qs.stringify({
           page_size: pageSize,
           page_num: pageNum
@@ -185,7 +174,7 @@ export default function useMemberApi() {
       ),
     assistanceReply: (requestId: number, responseText: string): Promise<AxiosApiResponse<null>> =>
       axiosInstance.post(
-        "/member/assistance/reply",
+        '/member/assistance/reply',
         qs.stringify({
           request_id: requestId,
           response_text: responseText
@@ -193,34 +182,33 @@ export default function useMemberApi() {
       ),
     assistanceClose: (requestId: number): Promise<AxiosApiResponse<null>> =>
       axiosInstance.post(
-        "/member/assistance/close",
+        '/member/assistance/close',
         qs.stringify({
           request_id: requestId
         })
       ),
     assistanceType: (): Promise<AxiosApiResponse<assistanceTypeResponse[]>> =>
-      axiosInstance.get("/member/assistance/type"),
+      axiosInstance.get('/member/assistance/type'),
     assistanceNew: (
       assistanceTypeId: number,
       title: string,
       description: string
     ): Promise<AxiosApiResponse<assistanceNewResponse>> =>
       axiosInstance.post(
-        "/member/assistance/new",
+        '/member/assistance/new',
         qs.stringify({
           type_id: assistanceTypeId,
           title,
           description
         })
       ),
-    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> =>
-      axiosInstance.post("/member/fee/standard"),
+    feeStandard: (): Promise<AxiosApiResponse<feeStandardResponse>> => axiosInstance.post('/member/fee/standard'),
     feeHistory: (
       pageSize: number,
       pageNum: number
     ): Promise<AxiosApiResponse<feeHistoryResponseData>> =>
       axiosInstance.post(
-        "/member/fee/list",
+        '/member/fee/list',
         qs.stringify({
           page_size: pageSize,
           page_num: pageNum
@@ -231,7 +219,7 @@ export default function useMemberApi() {
       pageNum: number
     ): Promise<AxiosApiResponse<feeWaitingResponseData>> =>
       axiosInstance.post(
-        "/member/fee/waiting",
+        '/member/fee/waiting',
         qs.stringify({
           page_size: pageSize,
           page_num: pageNum
@@ -242,14 +230,15 @@ export default function useMemberApi() {
       pageNum: number
     ): Promise<AxiosApiResponse<notificationListResponse>> =>
       axiosInstance.post(
-        "/member/notification/list",
+        '/member/notification/list',
         qs.stringify({
           page_num: pageNum,
           page_size: pageSize
         })
       ),
     notificationRead: (notificationId: number): Promise<AxiosApiResponse<null>> => axiosInstance.post(`/member/notification/read/${notificationId}`),
-    notificationReadAll: (): Promise<AxiosApiResponse<null>> => axiosInstance.post("/member/notification/readAll"),
-    getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get("/member/notification/unreadCount")
+    notificationReadAll: (): Promise<AxiosApiResponse<null>> => axiosInstance.post('/member/notification/readAll'),
+    getNotificationUnreadCount: (): Promise<AxiosApiResponse<number>> => axiosInstance.get('/member/notification/unreadCount'),
+    getFeeStatus: (): Promise<AxiosApiResponse<boolean>> => axiosInstance.get('/member/fee/status')
   }
 }

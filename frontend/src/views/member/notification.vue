@@ -1,27 +1,28 @@
 <template>
-  <div class="notification-top">
-    <a-typography-title :heading="2">
-      我的通知
-    </a-typography-title>
-    <a-space>
-      <a-button @click="fetchReadAll" v-if="notificationList.length !== 0">一键已读</a-button>
-      <a-button @click="refreshNotifications">
-        <template #icon>
-          <icon-refresh />
-        </template>
-        刷新
-      </a-button>
-    </a-space>
-  </div>
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button v-if="notificationList.length !== 0" @click="fetchReadAll">
+          一键已读
+        </a-button>
+        <a-button @click="refreshNotifications">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </a-space>
+    </div>
+  </a-card>
   <div v-if="notificationList.length === 0">
     <a-empty />
   </div>
   <div v-else>
     <div class="notification-items">
-      <notification-block
+      <NotificationBlock
         v-for="item in notificationList"
-        :key="item.notification_id"
         :id="item.notification_id"
+        :key="item.notification_id"
         :title="item.title"
         :create-time="item.created_at"
         :read-status="item.read_status"
@@ -29,26 +30,34 @@
         :sender-username="item.sender_name"
         @update-list="fetchNotificationList"
       >
-        <template v-slot:content>
+        <template #content>
           {{ item.content }}
         </template>
-      </notification-block>
+      </NotificationBlock>
     </div>
-    <div class="pagination">
+    <div class="mt-4 flex justify-end flex-items-center">
       <a-pagination :total="notificationPageData.total" @change="pageChange" />
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import NotificationBlock from "@/components/notificationBlock.vue"
-import useMemberApi, { type notificationResponseObject } from "@/api/memberApi"
-import { handleXhrResponse } from "@/api"
-import { useNotificationStore } from "@/stores/notification"
-import { Message } from "@arco-design/web-vue"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import { onMounted, reactive } from "vue"
+import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import { onMounted, reactive } from 'vue'
+import NotificationBlock from '@/components/notificationBlock.vue'
+import useMemberApi, { type notificationResponseObject } from '@/api/memberApi'
+import { handleXhrResponse } from '@/api'
+import { useNotificationStore } from '@/stores/notification'
 
 const memberApi = useMemberApi()
+
+const routes: BreadcrumbRoute[] = [
+  {
+    path: '/member/notification',
+    label: '通知'
+  }
+]
 
 const notificationPageData = reactive({
   total: 0,
@@ -59,7 +68,8 @@ const notificationPageData = reactive({
 const notificationList = reactive<notificationResponseObject[]>([])
 
 const notificationStore = useNotificationStore()
-const fetchNotificationList = async () => {
+
+async function fetchNotificationList() {
   const { data } = await handleXhrResponse(
     () => memberApi.notificationList(notificationPageData.pageSize, notificationPageData.pageNum),
     Message
@@ -69,43 +79,42 @@ const fetchNotificationList = async () => {
   if (data.data.notifications === null) {
     return
   }
+
   notificationList.push(...data.data.notifications)
   await notificationStore.refreshNotificationCount()
 }
 
-const pageChange = async (current: number) => {
+async function pageChange(current: number) {
   notificationPageData.pageNum = current
   await fetchNotificationList()
 }
 
-
 // 一键已读
-const fetchReadAll = async () => {
+async function fetchReadAll() {
   await handleXhrResponse(
     () => memberApi.notificationReadAll(),
     Message
   )
-  Message.success("已全部标记为已读")
+  Message.success('已全部标记为已读')
   await fetchNotificationList()
 }
 
 // 刷新页面
-const refreshNotifications = async () => {
+async function refreshNotifications() {
   notificationPageData.pageNum = 1 // 将分页设置回第一页
   await fetchNotificationList() // 重新加载通知列表
-  Message.success("通知列表已刷新")
+  Message.success('通知列表已刷新')
 }
 
 onMounted(() => {
   fetchNotificationList()
 })
 </script>
+
 <style scoped lang="less">
 .notification-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   height: 60px;
+
   :deep(.arco-typography) {
     margin: 0;
   }
@@ -113,12 +122,5 @@ onMounted(() => {
   h1 {
     font-size: 20px;
   }
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
 }
 </style>

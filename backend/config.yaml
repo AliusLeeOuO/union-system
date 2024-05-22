@@ -1,0 +1,20 @@
+# /config.yaml
+
+app:
+  port: 9999
+  log_level: "info"
+  debug: true
+  secret_key: "ELfI6Ly3NAfjNCmKFAAAXcNXgad9qHkCatCyehh2tAFJG9O0uFOYE3i6zWeKgzC0Yz7jHWMrXLyNTuK4n7NA6wQGdMBNUxW0W1C26Qn"
+
+PostgreSQLConfig:
+  Host: "githvb.cn"
+  port: 39999
+  User: "db_union"
+  Password: "h2SwHsejTaZNRdcA"
+  Name: "db_union"
+
+redis:
+  host: "githvb.cn"
+  port: 38888
+  password: "18HqvASpQqXUFjqtMTxNR40xoEyq6gE1"
+  db: 0

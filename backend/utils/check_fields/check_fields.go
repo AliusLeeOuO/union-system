@@ -7,8 +7,7 @@ import (
 	"strings"
 )
 
-// CheckFields 检查提供的字段是否为空（对于字符串）或为零（对于数字），除非指定为可跳过
-// skipZeroCheck 字段列表指定哪些数字字段可以为零
+// Deprecated: 请使用库验证器替代此验证器
 func CheckFields(fields map[string]interface{}, skipZeroCheck []string) (bool, string) {
 	var missingFields []string
 	skipCheckMap := make(map[string]bool)
@@ -38,7 +37,7 @@ func CheckFields(fields map[string]interface{}, skipZeroCheck []string) (bool, s
 	return true, ""
 }
 
-// CheckFieldsWithDefaults 仅接受必要参数，使用默认的零值检查跳过规则
+// Deprecated: 请使用库验证器替代此验证器
 func CheckFieldsWithDefaults(fields map[string]interface{}) (bool, string) {
 	return CheckFields(fields, []string{}) // 假设默认情况下不跳过任何字段
 }

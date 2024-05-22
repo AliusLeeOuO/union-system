@@ -1,105 +1,116 @@
 <template>
-  <a-typography-title :heading="2">
-    会费
-  </a-typography-title>
-  <div class="description-title">
-    我的会费标准
+  <div v-if="feeStatus.loading" class="full-bg h-full w-full flex justify-center flex-items-center">
+    <a-spin tip="正在获取会费状态" />
   </div>
-  <div class="fee-overview">
-    <div class="fee-overview-block">
-      <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
-    </div>
-    <div class="fee-overview-block">
-      <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
-    </div>
-    <div class="fee-overview-block">
-      <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
-    </div>
+  <div v-else-if="!feeStatus.status" class="full-bg h-full w-full flex justify-center flex-items-center">
+    <a-result status="warning" title="您还没有注册会费！" />
   </div>
-  <div class="description-title">
-    查看会费记录
+  <div v-else>
+    <a-card title="我的会费标准" class="mb-4">
+      <div class="fee-overview grid grid-cols-3 p-4">
+        <div class="text-center">
+          <a-statistic title="我的会费" :value="currentFeeInfo.amount" :value-from="0" animation :precision="2" />
+        </div>
+        <div class="text-center">
+          <a-statistic title="未交金额" :value="calculateUnpaidFee" :value-from="0" animation :precision="2" />
+        </div>
+        <div class="text-center">
+          <a-statistic title="上次交费日期" :value="undefined" :placeholder="lastFeeDate" />
+        </div>
+      </div>
+    </a-card>
+    <a-card title="查看会费记录" class="mb-4">
+      <a-empty v-if="feeHistoryData.length === 0" />
+      <a-table
+        v-else
+        :columns="feeHistoryColumns"
+        :data="feeHistoryData"
+        size="large"
+        :pagination="{
+          total: feeHistoryPagination.total,
+          pageSize: feeHistoryPagination.pageSize,
+        }"
+        @page-change="feeHistoryChangePage"
+      >
+        <template #created_at="{ record }">
+          {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+      </a-table>
+    </a-card>
+    <a-card title="等待缴费项目">
+      <a-empty v-if="waitingFeeData.length === 0" />
+      <a-table
+        v-else
+        :columns="waitingFeeColumns"
+        :data="waitingFeeData"
+        size="large"
+        :pagination="{
+          total: waitingFeePagination.total,
+          pageSize: waitingFeePagination.pageSize,
+        }"
+        @page-change="waitingFeeChangePage"
+      >
+        <template #created_at="{ record }">
+          {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+        <template #action="{ record }">
+          <a-button :disabled="dayjs.tz(record.due_date) < dayjs.tz()">
+            {{ dayjs.tz(record.due_date) < dayjs.tz() ? '已过期' : '缴费' }}
+          </a-button>
+        </template>
+      </a-table>
+    </a-card>
   </div>
-  <a-empty v-if="feeHistoryData.length === 0" />
-  <a-table
-    v-else
-    :columns="feeHistoryColumns"
-    :data="feeHistoryData"
-    size="large"
-    @page-change="feeHistoryChangePage"
-    :pagination="{
-        total: feeHistoryPagination.total,
-        pageSize: feeHistoryPagination.pageSize
-      }">
-    <template #created_at="{ record }">
-      {{ dayjs.tz(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
-    </template>
-  </a-table>
-  <div class="description-title">
-    等待缴费项目
-  </div>
-  <a-empty v-if="waitingFeeData.length === 0" />
-  <a-table
-    v-else
-    :columns="waitingFeeColumns"
-    :data="waitingFeeData"
-    size="large"
-    @page-change="waitingFeeChangePage"
-    :pagination="{
-        total: waitingFeePagination.total,
-        pageSize: waitingFeePagination.pageSize,
-      }">
-    <template #created_at="{ record }">
-      {{ dayjs.tz(record.created_at).format("YYYY-MM-DD HH:mm:ss") }}
-    </template>
-    <template #action="{ record }">
-      <a-button>缴费</a-button>
-    </template>
-  </a-table>
 </template>
+
 <script setup lang="ts">
-import { reactive, onMounted, computed } from "vue"
-import useMemberApi, { type feeHistoryResponse } from "@/api/memberApi"
-import { handleXhrResponse } from "@/api"
-import { Message } from "@arco-design/web-vue"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import { computed, onMounted, reactive } from 'vue'
+import { Message } from '@arco-design/web-vue'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { handleXhrResponse } from '@/api'
+import useMemberApi, { type feeHistoryResponse } from '@/api/memberApi'
 
 const memberApi = useMemberApi()
+const feeStatus = reactive({
+  status: false,
+  loading: true
+})
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const currentFeeInfo = reactive({
   amount: 0,
   standard_id: 0,
-  category_id: 0
+  category: ''
 })
 
-const fetchFeeInfo = async () => {
+async function fetchFeeInfo() {
   const { data } = await handleXhrResponse(() => memberApi.feeStandard(), Message)
-  currentFeeInfo.amount = data.data.amount
+  currentFeeInfo.amount = Number.parseFloat(data.data.standard_amount)
   currentFeeInfo.standard_id = data.data.standard_id
-  currentFeeInfo.category_id = data.data.category_id
+  currentFeeInfo.category = data.data.standard_name
 }
 
 const feeHistoryColumns = [
   {
-    title: "账单ID",
-    dataIndex: "bill_id"
+    title: '账单ID',
+    dataIndex: 'bill_id'
   },
   {
-    title: "缴费金额",
-    dataIndex: "amount"
+    title: '缴费金额',
+    dataIndex: 'amount'
   },
   {
-    title: "账单创建时间",
-    slotName: "created_at"
+    title: '账单创建时间',
+    slotName: 'created_at'
   },
   {
-    title: "交费标记",
-    dataIndex: "fee_period"
+    title: '交费标记',
+    dataIndex: 'fee_period'
   }
 ]
 const feeHistoryData = reactive<feeHistoryResponse[]>([])
@@ -108,41 +119,45 @@ const feeHistoryPagination = reactive({
   pageSize: 10,
   current: 1
 })
-const feeHistoryChangePage = async (page: number) => {
+
+async function feeHistoryChangePage(page: number) {
   feeHistoryPagination.current = page
   await fetchFeeHistory()
 }
-const fetchFeeHistory = async () => {
+
+async function fetchFeeHistory() {
   const { data } = await handleXhrResponse(() => memberApi.feeHistory(feeHistoryPagination.pageSize, feeHistoryPagination.current), Message)
   feeHistoryData.splice(0, feeHistoryData.length)
   if (data.data.history !== null) {
     feeHistoryData.push(...data.data.history)
-  } else {
+  }
+  else {
     feeHistoryData.push()
   }
+
   feeHistoryPagination.total = data.data.total
 }
 
 const waitingFeeColumns = [
   {
-    title: "账单ID",
-    dataIndex: "bill_id"
+    title: '账单ID',
+    dataIndex: 'bill_id'
   },
   {
-    title: "缴费金额",
-    dataIndex: "amount"
+    title: '缴费金额',
+    dataIndex: 'amount'
   },
   {
-    title: "账单创建时间",
-    slotName: "created_at"
+    title: '账单创建时间',
+    slotName: 'created_at'
   },
   {
-    title: "交费标记",
-    dataIndex: "fee_period"
+    title: '交费标记',
+    dataIndex: 'fee_period'
   },
   {
-    title: "操作",
-    slotName: "action"
+    title: '操作',
+    slotName: 'action'
   }
 ]
 
@@ -154,19 +169,20 @@ const waitingFeePagination = reactive({
   current: 1
 })
 
-const waitingFeeChangePage = async (page: number) => {
+async function waitingFeeChangePage(page: number) {
   feeHistoryPagination.current = page
   await fetchWaitingFee()
 }
 
-const fetchWaitingFee = async () => {
+async function fetchWaitingFee() {
   const { data } = await handleXhrResponse(() => memberApi.waitingFeeList(waitingFeePagination.pageSize, waitingFeePagination.current), Message)
   waitingFeeData.splice(0, waitingFeeData.length)
   if (data.data.bills !== null) {
     waitingFeeData.push(...data.data.bills)
     waitingFeePagination.total = data.data.bills.length
     waitingFeePagination.pageSize = data.data.bills.length
-  } else {
+  }
+  else {
     waitingFeeData.push()
   }
 }
@@ -182,25 +198,36 @@ const calculateUnpaidFee = computed(() => {
 
 // 计算上次交费日期
 const lastFeeDate = computed(() => {
-  let lastDate = ""
+  let lastDate = ''
   feeHistoryData.forEach((item) => {
     if (item.payment_status === true) {
       lastDate = item.created_at
     }
   })
-  if (lastDate === "") {
-    return "无"
+  if (lastDate === '') {
+    return '无'
   }
-  return dayjs.tz(lastDate).format("YYYY-MM-DD")
-})
 
+  return dayjs.tz(lastDate).format('YYYY-MM-DD')
+})
 
 onMounted(async () => {
   await fetchFeeInfo()
   await fetchFeeHistory()
   await fetchWaitingFee()
 })
+
+async function fetchFeeStatus() {
+  const { data } = await handleXhrResponse(() => memberApi.getFeeStatus(), Message)
+  feeStatus.status = data.data
+  feeStatus.loading = false
+}
+
+onMounted(async () => {
+  await fetchFeeStatus()
+})
 </script>
+
 <style scoped lang="less">
 .description-title {
   margin-top: 10px;
@@ -219,13 +246,9 @@ onMounted(async () => {
 }
 
 .fee-overview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
-  padding: 20px;
 
   .fee-overview-block {
-    text-align: center;
 
     .fee-overview-title {
       font-size: 12px;

@@ -1,20 +1,24 @@
 <template>
-  <div class="header">
-    <span>{{ title }}</span>
-    <a-link :href="link" target="_blank" class="link">{{ link }}</a-link>
+  <div class="header flex justify-between flex-items-center overflow-hidden">
+    <span>{{ props.title }}</span>
+    <a-link :href="props.link" target="_blank" class="text-right">
+      {{ props.link }}
+    </a-link>
   </div>
   <div class="content">
     <div>
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 const props = defineProps<{
   title: string
   link: string
 }>()
 </script>
+
 <style lang="less" scoped>
 body[arco-theme="dark"] {
   .header {
@@ -24,21 +28,12 @@ body[arco-theme="dark"] {
   }
 }
 
-
 .header {
   padding: 5px 10px;
   background-color: #eee;
   min-height: 40px;
   border-radius: 5px;
-  overflow: hidden;
   font-size: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .link {
-    text-align: right;
-  }
 }
 
 .content {

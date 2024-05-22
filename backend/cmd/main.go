@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"runtime"
-	"union-system/config"
-	"union-system/cron"
-	"union-system/internal/pkg/database"
-	"union-system/internal/pkg/fiber"
-	"union-system/internal/pkg/logger"
-	"union-system/internal/pkg/redis"
+	"union-system/internal/cron"
+	"union-system/internal/cron/cron_func"
+	"union-system/internal/infrastructure/config"
+	"union-system/internal/infrastructure/database"
+	"union-system/internal/infrastructure/redis"
+	"union-system/pkg/fiber"
+	"union-system/pkg/logger"
 )
 
 func main() {
@@ -23,5 +24,6 @@ func main() {
 	redis.InitRedis(initConfig.Redis.Host, initConfig.Redis.Port, initConfig.Redis.Password, initConfig.Redis.DB)
 	// 初始化定时任务
 	cron.InitCron()
+	cron_func.GetNewBills()
 	fiber.InitFiber(initConfig.App.Port)
 }

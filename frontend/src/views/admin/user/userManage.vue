@@ -1,136 +1,192 @@
 <template>
-  <div class="prime-actions">
-    <a-space>
-      <router-link to="/admin/addNewUser" custom v-slot="{ navigate }">
-        <a-button status="success" @click="navigate">添加新用户</a-button>
-      </router-link>
-    </a-space>
-    <a-space>
-      <a-button @click="submitSearch">
-        <template #icon>
-          <icon-refresh />
-        </template>
-        刷新
-      </a-button>
-    </a-space>
-  </div>
-  <div class="search-item">
-    <a-form
-      layout="inline"
-      ref="searchFormRef"
-      :model="searchFormItem"
-      @submit="submitSearch"
-    >
-      <a-form-item field="id" label="ID">
-        <a-input v-model="searchFormItem.id" placeholder="以ID查询" />
-      </a-form-item>
-      <a-form-item field="username" label="用户名">
-        <a-input v-model="searchFormItem.username" placeholder="以用户名查询" />
-      </a-form-item>
-      <a-form-item field="role" label="角色">
-        <a-select :style="{width:'200px'}" placeholder="选择角色" v-model="searchFormItem.role">
-          <a-option :value="-1">所有角色</a-option>
-          <a-option :value="roles.ADMIN">管理员</a-option>
-          <a-option :value="roles.USER">用户</a-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item>
-        <a-space>
-          <a-button html-type="submit" type="primary">查询</a-button>
-          <a-button status="danger" @click="resetFormItem">清空查询条件</a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
-  </div>
-  <a-table
-    :columns="columns"
-    :data="dataSource"
-    @page-change="changePage"
-    :loading="tableLoading"
-    :pagination="{
-      total: pageItem.total,
-      pageSize: pageItem.pageSize,
-      current: pageItem.current
-    }"
-  >
-    <template #role="{ record }">
-      <a-tag>{{ getRoleName(record.role) }}</a-tag>
-    </template>
-    <template #status="{ record }">
-      <a-tag color="cyan" v-if="record.status">正常</a-tag>
-      <a-tag color="gray" v-else>冻结</a-tag>
-    </template>
-    <template #create_time="{ record }">
-      <span>{{ dayjs.tz(record.create_time).format("YYYY-MM-DD") }}</span>
-    </template>
-    <template #action="{ record }">
-      <a-space class="active-buttons">
-        <router-link :to="`/admin/manageSoloUser/${record.id}`" custom v-slot="{ navigate }">
-          <a-button type="primary" @click="navigate">修改</a-button>
-        </router-link>
+  <a-card class="mb-4">
+    <div class="flex justify-between flex-items-center">
+      <a-space>
+        <a-button status="success" @click="newUserVisibleShow">
+          添加新用户
+        </a-button>
       </a-space>
+    </div>
+  </a-card>
+  <a-card class="mb-4">
+    <div class="search-item flex justify-between">
+      <a-form
+        ref="searchFormRef"
+        layout="inline"
+        :model="searchFormItem"
+        @submit="submitSearch"
+      >
+        <a-form-item field="id" label="ID">
+          <a-input v-model="searchFormItem.id" placeholder="以ID查询" />
+        </a-form-item>
+        <a-form-item field="username" label="用户名">
+          <a-input v-model="searchFormItem.username" placeholder="以用户名查询" />
+        </a-form-item>
+        <a-form-item field="role" label="角色">
+          <a-select v-model="searchFormItem.role" :style="{ width: '200px' }" placeholder="选择角色">
+            <a-option :value="-1">
+              所有角色
+            </a-option>
+            <a-option :value="roles.ADMIN">
+              管理员
+            </a-option>
+            <a-option :value="roles.USER">
+              用户
+            </a-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-space>
+            <a-button html-type="submit" type="primary">
+              查询
+            </a-button>
+            <a-button status="danger" @click="resetFormItem">
+              清空查询条件
+            </a-button>
+          </a-space>
+        </a-form-item>
+      </a-form>
+      <div>
+        <a-button @click="submitSearch">
+          <template #icon>
+            <IconRefresh />
+          </template>
+          刷新
+        </a-button>
+      </div>
+    </div>
+  </a-card>
+  <a-card>
+    <a-table
+      :columns="columns"
+      :data="dataSource"
+      :loading="tableLoading"
+      :pagination="{
+        total: pageItem.total,
+        pageSize: pageItem.pageSize,
+        current: pageItem.current,
+      }"
+      @page-change="changePage"
+    >
+      <template #account_type="{ record }">
+        <a-tag>{{ getRoleName(record.account_type) }}</a-tag>
+      </template>
+      <template #role="{ record }">
+        <a-tooltip :content="`权限组ID：${record.role}`">
+          <span>{{ record.role_description }}</span>
+        </a-tooltip>
+      </template>
+      <template #status="{ record }">
+        <a-tag v-if="record.status" color="cyan">
+          正常
+        </a-tag>
+        <a-tag v-else color="gray">
+          冻结
+        </a-tag>
+      </template>
+      <template #create_time="{ record }">
+        <span>{{ dayjs.tz(record.create_time).format('YYYY-MM-DD') }}</span>
+      </template>
+      <template #action="{ record }">
+        <a-space class="active-buttons">
+          <a-button type="primary" @click="modifyUserVisibleShow(record.id)">
+            修改
+          </a-button>
+        </a-space>
+      </template>
+    </a-table>
+  </a-card>
+  <a-drawer
+    :width="700"
+    :visible="newUserVisible"
+    unmount-on-close :footer="false"
+    @cancel="newUserVisibleCancel"
+  >
+    <template #title>
+      创建新用户
     </template>
-  </a-table>
+    <AddNewUser @close-drawer="newUserVisibleCancel" @success-create-user="successCreateUser" />
+  </a-drawer>
+  <a-drawer
+    :width="700"
+    :visible="modifyUserVisible"
+    unmount-on-close :footer="false"
+    @cancel="modifyUserVisibleCancel"
+  >
+    <template #title>
+      修改用户信息
+    </template>
+    <ManageSoloUser :user-id="modifyUserId" @close-drawer="modifyUserVisibleCancel" @success-modify-user="successModifyUser" />
+  </a-drawer>
 </template>
+
 <script setup lang="ts">
-import { roles } from "@/router"
-import { getRoleName } from "@/utils/roleHelper"
-import dayjs from "dayjs"
-import { IconRefresh } from "@arco-design/web-vue/es/icon"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
-import useAdminApi, { type userListItem } from "@/api/adminApi"
-import { onMounted, reactive, ref } from "vue"
-import { type FormInstance, Message } from "@arco-design/web-vue"
-import type { TableColumnData } from "@arco-design/web-vue/es/table/interface"
-import { handleXhrResponse } from "@/api"
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { onMounted, reactive, ref } from 'vue'
+import { type FormInstance, Message } from '@arco-design/web-vue'
+import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
+import { IconRefresh } from '@arco-design/web-vue/es/icon'
+import { getRoleName } from '../../../utils/roleHelper'
+import useAdminApi, { type userListItem } from '@/api/adminApi'
+import { roles } from '@/router'
+import { handleXhrResponse } from '@/api'
+import AddNewUser from '@/views/admin/user/addNewUser.vue'
+import ManageSoloUser from '@/views/admin/user/manageSoloUser.vue'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Shanghai")
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const adminApi = useAdminApi()
 const searchFormRef = ref<FormInstance | null>(null)
 const searchFormItem = reactive({
-  id: "",
-  username: "",
+  id: '',
+  username: '',
   role: -1
 })
 const tableLoading = ref(true)
 
 const columns: TableColumnData[] = [
   {
-    title: "用户ID",
-    dataIndex: "id"
+    title: '用户ID',
+    dataIndex: 'id'
   },
   {
-    title: "用户名",
-    dataIndex: "username"
+    title: '用户名',
+    dataIndex: 'username'
   },
   {
-    title: "角色",
-    slotName: "role"
+    title: '角色',
+    slotName: 'account_type'
   },
   {
-    title: "账号创建时间",
-    slotName: "create_time"
+    // todo：权限组，要显示权限组的名称
+    title: '权限组',
+    slotName: 'role'
   },
   {
-    title: "账号状态",
-    slotName: "status"
+    title: '账号创建时间',
+    slotName: 'create_time'
   },
   {
-    title: "操作",
-    slotName: "action"
+    title: '账号状态',
+    slotName: 'status'
+  },
+  {
+    title: '操作',
+    slotName: 'action'
   }
 ]
 const dataSource = reactive<userListItem[]>([])
 
-const processedValue = (): number => {
-  if (searchFormItem.id === "") {
+function processedValue(): number {
+  if (searchFormItem.id === '') {
     return -1
   }
-  return parseInt(searchFormItem.id)
+
+  return Number.parseInt(searchFormItem.id)
 }
 
 const pageItem = reactive({
@@ -139,22 +195,22 @@ const pageItem = reactive({
   total: 0
 })
 
-const changePage = async (page: number) => {
+async function changePage(page: number) {
   pageItem.current = page
   await fetchUserList()
 }
 
-const submitSearch = async () => {
+async function submitSearch() {
   pageItem.current = 1
   await fetchUserList()
 }
 
-const resetFormItem = async () => {
+async function resetFormItem() {
   searchFormRef.value?.resetFields()
   await submitSearch()
 }
 
-const fetchUserList = async () => {
+async function fetchUserList() {
   tableLoading.value = true
   const { data } = await handleXhrResponse(() => adminApi.getUserList(pageItem.current, pageItem.pageSize, processedValue(), searchFormItem.username, searchFormItem.role), Message)
   dataSource.splice(0, dataSource.length)
@@ -164,18 +220,42 @@ const fetchUserList = async () => {
   if (data.data.data !== null) {
     dataSource.push(...data.data.data)
   }
+
   tableLoading.value = false
 }
 
 onMounted(async () => {
   await fetchUserList()
 })
-</script>
-<style scoped lang="less">
-.prime-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+
+// 新用户抽屉
+const newUserVisible = ref(false)
+
+function newUserVisibleShow() {
+  newUserVisible.value = true
 }
-</style>
+
+function successCreateUser() {
+  newUserVisible.value = false
+  resetFormItem()
+}
+
+function newUserVisibleCancel() {
+  newUserVisible.value = false
+}
+
+// 修改用户抽屉
+const modifyUserVisible = ref(false)
+const modifyUserId = ref(-1)
+function modifyUserVisibleShow(userId: number) {
+  modifyUserId.value = userId
+  modifyUserVisible.value = true
+}
+function modifyUserVisibleCancel() {
+  modifyUserVisible.value = false
+}
+function successModifyUser() {
+  modifyUserVisible.value = false
+  resetFormItem()
+}
+</script>

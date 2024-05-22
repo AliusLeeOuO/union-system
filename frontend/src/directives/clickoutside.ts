@@ -1,5 +1,5 @@
 // 导入Vue所需的类型，DirectiveBinding用于指令绑定信息，ObjectDirective用于定义Vue指令对象
-import type { DirectiveBinding, ObjectDirective } from "vue"
+import type { DirectiveBinding, ObjectDirective } from 'vue'
 
 // 定义DocumentHandler类型，这是一个用于处理MouseEvent的函数类型
 type DocumentHandler = <T extends MouseEvent>(e: T) => void
@@ -18,12 +18,13 @@ function createDocumentHandler(
   el: HTMLElement,
   binding: DirectiveBinding
 ): DocumentHandler {
-  return function(e: MouseEvent) {
+  return function (e: MouseEvent) {
     const target = e.target as HTMLElement
     // 如果点击的是绑定元素内部的部分，不执行任何操作
     if (el.contains(target)) {
       return false
     }
+
     // 如果绑定了函数（通过v-click-outside="myFunction"这样的语法），则执行该函数
     if (binding.arg) {
       binding.value(e)
@@ -32,7 +33,7 @@ function createDocumentHandler(
 }
 
 // 全局的事件处理函数，用于处理所有点击事件
-const handler = (e: MouseEvent) => {
+function handler(e: MouseEvent) {
   const { documentHandler } = nodeList
   if (documentHandler) {
     documentHandler(e)
@@ -41,7 +42,7 @@ const handler = (e: MouseEvent) => {
 
 // 在window对象上添加点击事件监听器
 // 这个监听器会处理所有的点击事件，然后委托给指令的处理函数
-window.addEventListener("click", handler)
+window.addEventListener('click', handler)
 
 // 定义Vue指令ClickOutSide
 const ClickOutSide: ObjectDirective = {
@@ -62,7 +63,7 @@ const ClickOutSide: ObjectDirective = {
   // unmounted生命周期钩子，在指令与元素解绑时调用
   unmounted() {
     // 移除window上的事件监听器，防止内存泄漏
-    window.removeEventListener("click", handler)
+    window.removeEventListener('click', handler)
   }
 }
 

@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
-import { useUserStore } from "@/stores/user"
+import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { findPermissionNode } from '@/utils/roleHelper'
 
 export enum roles {
   ADMIN = 1,
@@ -10,231 +11,303 @@ export enum roles {
 
 type routeRecordWithRole = RouteRecordRaw & {
   meta: {
-    roles: roles,
+    roles: roles
     title?: string
   }
 }
 
 const routes: Array<routeRecordWithRole> = [
   {
-    path: "/",
-    redirect: "/index",
+    path: '/',
+    redirect: '/index',
     meta: {
       roles: roles.PUBLIC,
-      title: "首页"
+      title: '首页'
     }
   },
   {
-    path: "/login",
-    name: "login",
-    component: () => import("@/views/login.vue"),
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login.vue'),
     meta: {
       roles: roles.PUBLIC,
-      title: "登录"
+      title: '登录'
     }
   },
   {
-    path: "/register",
-    name: "register",
-    component: () => import("@/views/register.vue"),
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/register.vue'),
     meta: {
       roles: roles.PUBLIC,
-      title: "注册"
+      title: '注册'
     }
   },
   {
-    path: "/",
-    name: "defaultLayout",
-    component: () => import("@/layouts/default.vue"),
+    path: '/',
+    name: 'defaultLayout',
+    component: () => import('@/layouts/default.vue'),
     meta: {
       roles: roles.PUBLIC
     },
     children: [
       {
-        path: "/index",
-        name: "index",
-        component: () => import("@/views/index.vue"),
+        path: '/index',
+        name: 'index',
+        component: () => import('@/views/index.vue'),
         meta: {
           roles: roles.PUBLIC,
-          title: "首页"
+          title: '首页'
         }
       },
       {
-        path: "/user",
-        name: "user",
-        component: () => import("@/views/user/index.vue"),
+        path: '/user',
+        name: 'user',
+        component: () => import('@/views/user/index.vue'),
         meta: {
           roles: roles.LOGIN,
-          title: "用户中心"
+          title: '用户中心'
         }
       },
       {
-        path: "/noAuth",
-        name: "noAuth",
-        component: () => import("@/views/noAuth.vue"),
+        path: '/noAuth',
+        name: 'noAuth',
+        component: () => import('@/views/noAuth.vue'),
         meta: {
           roles: roles.PUBLIC,
-          title: "没有权限"
+          title: '没有权限'
         }
       },
       {
-        path: "/openSourceLicense",
-        name: "openSourceLicense",
-        component: () => import("@/views/openSourceLicense.vue"),
+        path: '/openSourceLicense',
+        name: 'openSourceLicense',
+        component: () => import('@/views/openSourceLicense.vue'),
         meta: {
           roles: roles.PUBLIC,
-          title: "开源软件许可协议"
+          title: '开源软件许可协议'
         }
       },
       // 管理员路由
       {
-        path: "/admin",
-        name: "admin",
+        path: '/admin',
+        name: 'admin',
         meta: {
           roles: roles.ADMIN
         },
         children: [
           {
-            path: "/admin",
-            redirect: "/admin/index"
+            path: '/admin',
+            redirect: '/admin/index'
           },
           {
-            path: "/admin/index",
-            name: "adminIndex",
-            component: () => import("@/views/admin/index.vue"),
+            path: '/admin/index',
+            name: 'adminIndex',
+            component: () => import('@/views/admin/index.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "首页"
+              title: '首页'
             }
           },
           {
-            path: "/admin/user",
-            name: "manageUser",
-            component: () => import("@/views/admin/user/index.vue"),
+            path: '/admin/user',
+            name: 'manageUser',
+            component: () => import('@/views/admin/user/index.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "用户管理"
+              title: '用户管理'
             },
             children: [
               {
-                path: "/admin/user",
-                redirect: "/admin/user/manage"
+                path: '/admin/user',
+                redirect: '/admin/user/manage'
               },
               {
-                path: "/admin/user/manage",
-                name: "userManage",
-                component: () => import("@/views/admin/user/userManage.vue"),
+                path: '/admin/user/manage',
+                name: 'userManage',
+                component: () => import('@/views/admin/user/userManage.vue'),
                 meta: {
-                  roles: roles.ADMIN,
-                  title: "用户管理"
+                  title: '用户管理'
                 }
               },
               {
-                path: "/admin/user/invitationCode",
-                name: "invitationCodeManage",
-                component: () => import("@/views/admin/user/invitationCodeManage.vue")
+                path: '/admin/user/invitationCode',
+                name: 'invitationCodeManage',
+                component: () => import('@/views/admin/user/invitationCodeManage.vue'),
+                meta: {
+                  title: '邀请码管理'
+                }
+              },
+              {
+                path: '/admin/user/permissionGroup',
+                name: 'permissionGroup',
+                component: () => import('@/views/admin/user/permissionGroup.vue'),
+                meta: {
+                  title: '权限组管理'
+                }
+              },
+              {
+                path: '/admin/user/permission',
+                name: 'permissionNode',
+                component: () => import('@/views/admin/user/permissionNode.vue'),
+                meta: {
+                  title: '权限节点管理'
+                }
               }
             ]
           },
           {
-            path: "/admin/addNewUser",
-            name: "addNewUser",
-            component: () => import("@/views/admin/user/addNewUser.vue"),
+            path: '/admin/addNewUser',
+            name: 'addNewUser',
+            component: () => import('@/views/admin/user/addNewUser.vue'),
             meta: {
-              roles: roles.ADMIN,
-              title: "添加用户"
+              title: '添加用户'
             }
           },
           {
-            path: "/admin/manageSoloUser/:id",
-            name: "manageSoloUser",
-            component: () => import("@/views/admin/manageSoloUser.vue"),
+            path: '/admin/manageSoloUser/:id',
+            name: 'manageSoloUser',
+            component: () => import('@/views/admin/user/manageSoloUser.vue'),
             meta: {
-              roles: roles.ADMIN,
-              title: "管理用户"
+              title: '管理用户'
             }
           },
           {
-            path: "/admin/manageAssistance",
-            name: "manageAssistance",
-            component: () => import("@/views/admin/assistance/assistanceManage.vue"),
+            path: '/admin/manageAssistance',
+            name: 'manageAssistance',
+            component: () => import('@/views/admin/assistance/assistanceManage.vue'),
             meta: {
-              roles: roles.ADMIN,
-              title: "援助管理"
+              title: '援助管理'
             }
           },
           {
-            path: "/admin/manageAssistanceDetail/:id",
-            name: "manageAssistanceDetail",
-            component: () => import("@/views/admin/assistance/assistanceDetail.vue"),
+            path: '/admin/manageAssistance/type',
+            name: 'manageAssistanceType',
+            component: () => import('@/views/admin/assistance/assistanceTypes.vue'),
             meta: {
-              roles: roles.ADMIN,
-              title: "援助详情"
+              title: '援助类型管理'
             }
           },
           {
-            path: "/admin/manageActivity",
-            name: "manageActivity",
-            component: () => import("@/views/admin/activity/manageActivity.vue"),
+            path: '/admin/manageAssistanceDetail/:id',
+            name: 'manageAssistanceDetail',
+            component: () => import('@/views/admin/assistance/assistanceDetail.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "活动管理"
+              title: '援助详情'
             }
           },
           {
-            path: "/admin/addNewActivity",
-            name: "addNewActivity",
-            component: () => import("@/views/admin/activity/addNewActivity.vue"),
+            path: '/admin/manageActivity',
+            name: 'manageActivity',
+            component: () => import('@/views/admin/activity/manageActivity.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "添加活动"
+              title: '活动管理'
             }
           },
           {
-            path: "/admin/manageActivityDetail/:id",
-            name: "manageActivityDetail",
-            component: () => import("@/views/admin/activity/activityDetail.vue"),
+            path: '/admin/activity/type',
+            name: 'activityType',
+            component: () => import('@/views/admin/activity/manageTypes.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "活动详情"
+              title: '活动类型管理'
             }
           },
           {
-            path: "/admin/log",
-            name: "log",
-            component: () => import("@/views/admin/log/index.vue"),
+            path: '/admin/management',
+            name: 'log',
+            component: () => import('@/views/admin/management/index.vue'),
             meta: {
               roles: roles.ADMIN,
-              title: "日志"
+              title: '日志'
             },
             children: [
               {
-                path: "/admin/log",
-                redirect: "/admin/log/loginLog"
+                path: '/admin/management',
+                redirect: '/admin/management/loginLog'
               },
               {
-                path: "/admin/log/loginLog",
-                name: "loginLog",
-                component: () => import("@/views/admin/log/loginLogView.vue"),
+                path: '/admin/management/loginLog',
+                name: 'loginLog',
+                component: () => import('@/views/admin/management/loginLogView.vue'),
                 meta: {
                   roles: roles.ADMIN,
-                  title: "登录日志"
+                  title: '登录日志'
                 }
               },
               {
-                path: "/admin/log/adminActionLog",
-                name: "adminActionLog",
-                component: () => import("@/views/admin/log/adminActionLog.vue")
+                path: '/admin/management/adminActionLog',
+                name: 'adminActionLog',
+                component: () => import('@/views/admin/management/adminActionLog.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '管理员操作日志'
+                }
               },
               {
-                path: "/admin/log/userActionLog",
-                name: "userActionLog",
-                component: () => import("@/views/admin/log/userActionLog.vue")
+                path: '/admin/management/userActionLog',
+                name: 'userActionLog',
+                component: () => import('@/views/admin/management/memberActionLog.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '用户操作日志'
+                }
               },
               {
-                path: "/admin/log/systemInfo",
-                name: "systemInfo",
-                component: () => import("@/views/admin/log/systemInfo.vue")
+                path: '/admin/management/systemInfo',
+                name: 'systemInfo',
+                component: () => import('@/views/admin/management/systemInfo.vue'),
+                meta: {
+                  roles: roles.ADMIN,
+                  title: '系统信息'
+                }
+              }
+            ]
+          },
+          {
+            path: '/admin/fee',
+            name: 'adminFeeManagement',
+            component: () => import('@/views/admin/fee/index.vue'),
+            meta: {
+              title: '会费管理'
+            },
+            children: [
+              {
+                path: '/admin/fee',
+                redirect: '/admin/fee/registeredMember'
+              },
+              {
+                path: '/admin/fee/feeSetting',
+                name: 'feeSetting',
+                component: () => import('@/views/admin/fee/feeStandardList.vue'),
+                meta: {
+                  title: '会费标准管理'
+                }
+              },
+              {
+                path: '/admin/fee/registeredMember',
+                name: 'registeredMember',
+                component: () => import('@/views/admin/fee/registeredMember.vue'),
+                meta: {
+                  title: '已注册会员管理'
+                }
+              },
+              {
+                path: '/admin/fee/nonRegisteredMember',
+                name: 'nonRegisteredMember',
+                component: () => import('@/views/admin/fee/nonRegisteredMember.vue'),
+                meta: {
+                  title: '未注册会员管理'
+                }
+              },
+              {
+                path: '/admin/fee/bills',
+                name: 'adminBills',
+                component: () => import('@/views/admin/fee/bills.vue'),
+                meta: {
+                  title: '账单管理'
+                }
               }
             ]
           }
@@ -242,125 +315,114 @@ const routes: Array<routeRecordWithRole> = [
       },
       // 用户路由
       {
-        path: "/member",
-        name: "member",
+        path: '/member',
+        name: 'member',
         meta: {
           roles: roles.USER
         },
         children: [
           {
-            path: "/member",
-            redirect: "/member/index"
+            path: '/member',
+            redirect: '/member/index'
           },
           {
-            path: "/member/index",
-            name: "memberIndex",
-            component: () => import("@/views/member/index.vue"),
+            path: '/member/index',
+            name: 'memberIndex',
+            component: () => import('@/views/member/index.vue'),
             meta: {
-              roles: roles.USER,
-              title: "首页"
+              title: '首页'
             }
           },
           {
-            path: "/member/activity",
-            name: "memberActivity",
-            component: () => import("@/views/member/activity/index.vue"),
+            path: '/member/activity',
+            name: 'memberActivity',
+            component: () => import('@/views/member/activity/index.vue'),
             meta: {
-              roles: roles.USER,
-              title: "活动"
+              title: '活动'
             },
             children: [
               {
-                path: "/member/activity",
-                redirect: "/member/activity/plaza"
+                path: '/member/activity',
+                redirect: '/member/activity/plaza'
               },
               {
-                path: "/member/activity/plaza",
-                name: "activityPlaza",
-                component: () => import("@/views/member/activity/activityPlaza.vue"),
+                path: '/member/activity/plaza',
+                name: 'activityPlaza',
+                component: () => import('@/views/member/activity/activityPlaza.vue'),
                 meta: {
-                  roles: roles.USER,
-                  title: "活动广场"
+                  title: '活动广场'
                 }
               },
               {
-                path: "/member/activity/my",
-                name: "activityMy",
-                component: () => import("@/views/member/activity/myActivity.vue"),
+                path: '/member/activity/my',
+                name: 'activityMy',
+                component: () => import('@/views/member/activity/myActivity.vue'),
                 meta: {
-                  roles: roles.USER,
-                  title: "我的活动"
+                  title: '我的活动'
                 }
               }
             ]
           },
           {
-            path: "/member/activityDetail/:id",
-            name: "memberActivityDetail",
-            component: () => import("@/views/member/activity/activityDetail.vue"),
+            path: '/member/activityDetail/:id',
+            name: 'memberActivityDetail',
+            component: () => import('@/views/member/activity/activityDetail.vue'),
             meta: {
-              roles: roles.USER,
-              title: "活动详情"
+              title: '活动详情'
             }
           },
           {
-            path: "/member/assistance",
-            name: "memberAssistance",
-            component: () => import("@/views/member/assistance/index.vue"),
+            path: '/member/assistance',
+            name: 'memberAssistance',
+            component: () => import('@/views/member/assistance/index.vue'),
             meta: {
-              roles: roles.USER,
-              title: "援助"
+              title: '援助'
             },
             children: [
               {
-                path: "/member/assistance",
-                redirect: "/member/assistance/myAssistance"
+                path: '/member/assistance',
+                redirect: '/member/assistance/myAssistance'
               },
               {
-                path: "/member/assistance/myAssistance",
-                name: "myAssistance",
-                component: () => import("@/views/member/assistance/myAssistance.vue"),
+                path: '/member/assistance/myAssistance',
+                name: 'myAssistance',
+                component: () => import('@/views/member/assistance/myAssistance.vue'),
                 meta: {
-                  roles: roles.USER,
-                  title: "我的援助"
+                  title: '我的援助'
                 }
               },
               {
-                path: "/member/assistance/newAssistance",
-                name: "newAssistance",
-                component: () => import("@/views/member/assistance/newAssistance.vue"),
+                path: '/member/assistance/newAssistance',
+                name: 'newAssistance',
+                component: () => import('@/views/member/assistance/newAssistance.vue'),
                 meta: {
-                  roles: roles.USER,
-                  title: "新援助"
+                  title: '新援助'
                 }
               }
             ]
           },
           {
-            path: "/member/assistance/assistanceDetail/:id",
-            name: "memberAssistanceDetail",
-            component: () => import("@/views/member/assistance/assistanceDetail.vue"),
+            path: '/member/assistance/assistanceDetail/:id',
+            name: 'memberAssistanceDetail',
+            component: () => import('@/views/member/assistance/assistanceDetail.vue'),
             meta: {
-              roles: roles.USER,
-              title: "援助详情"
+              title: '援助详情'
             }
           },
           {
-            path: "/member/fee",
-            name: "memberFee",
-            component: () => import("@/views/member/fee.vue"),
+            path: '/member/fee',
+            name: 'memberFee',
+            component: () => import('@/views/member/fee.vue'),
             meta: {
-              roles: roles.USER,
-              title: "会费"
+              title: '会费'
             }
           },
           {
-            path: "/member/notification",
-            name: "memberNotification",
-            component: () => import("@/views/member/notification.vue"),
+            path: '/member/notification',
+            name: 'memberNotification',
+            component: () => import('@/views/member/notification.vue'),
             meta: {
-              roles: roles.USER,
-              title: "通知"
+              title: '通知'
             }
           }
         ]
@@ -381,22 +443,23 @@ router.beforeEach((to, form, next) => {
   if (to.meta.roles !== roles.PUBLIC) {
     // 如果该页面需要登录权限
     if ((to.meta.roles === roles.LOGIN && !userStore.isUserLoggedIn) || !userStore.isUserLoggedIn) {
-      next({ path: "/login" })
+      next({ path: '/login' })
       return
     }
-    if (to.meta.roles !== userStore.userInfo.userRole && to.meta.roles !== roles.LOGIN) {
+    if (!findPermissionNode(userStore.userPermissions, to.path)) {
       next({ path: `/noAuth` })
       return
     }
   }
   // 更改标题
   if (to.meta.title !== undefined) {
-    document.title = to.meta.title + " - 工会管理系统"
-  } else {
-    document.title = "工会管理系统"
+    document.title = `${to.meta.title} - 工会管理系统`
   }
+  else {
+    document.title = '工会管理系统'
+  }
+
   next()
 })
-
 
 export default router

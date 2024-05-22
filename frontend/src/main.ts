@@ -1,20 +1,20 @@
-import { createApp } from "vue"
-import { createPinia } from "pinia"
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import ClickOutside from './directives/clickoutside'
+import './assets/main.less'
+import 'virtual:uno.css'
 
-import "./assets/main.less"
-import { Message } from '@arco-design/web-vue'
-
-import App from "./App.vue"
-import router from "./router"
+import App from './App.vue'
+import router from './router'
 
 const piniaInstance = createPinia()
 piniaInstance.use(piniaPluginPersistedstate)
 
-const app = createApp(App)
+createApp(App)
   .use(piniaInstance)
   .use(router)
-  .directive("click-outside", ClickOutside)
-  .mount("#app")
-
+  .use(ArcoVueIcon)
+  .directive('click-outside', ClickOutside)
+  .mount('#app')

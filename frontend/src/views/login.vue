@@ -135,7 +135,7 @@ body[arco-theme="dark"] {
     }
 
     .login-form-container {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.6);
     }
   }
 }

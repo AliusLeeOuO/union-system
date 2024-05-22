@@ -2,14 +2,15 @@ package member_fee
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"union-system/global"
 	"union-system/internal/application/dto"
-	service2 "union-system/internal/application/service"
-	repository2 "union-system/internal/infrastructure/repository"
+	"union-system/internal/application/service"
+	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
 	"union-system/utils/check_fields"
 	"union-system/utils/log_model_enum"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func PayForFee(c *fiber.Ctx) error {
@@ -30,7 +31,7 @@ func PayForFee(c *fiber.Ctx) error {
 	}
 
 	// 调用Service层进行支付处理
-	feeService := service2.NewFeeService(repository2.NewFeeRepository(global.Database))
+	feeService := service.NewFeeService(repository.NewFeeRepository(global.Database))
 	err := feeService.PayFee(form.BillID)
 	if err != nil {
 		if err.Error() == "会费已支付，无需重复支付" {
@@ -40,7 +41,7 @@ func PayForFee(c *fiber.Ctx) error {
 	}
 
 	// 记录日志
-	logService := service2.NewLogService(repository2.NewLogRepository(global.Database))
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
 	logString := fmt.Sprintf("会员支付了会费，账单ID: %d", form.BillID)
 	_ = logService.AddMemberLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.FEE)
 

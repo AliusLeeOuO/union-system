@@ -14,14 +14,16 @@ Using PostgreSQL and Redis to store data.
 - [x] 管理员端活动查看活动详情
 - [x] 管理员端 援助类型管理
 - [x] 管理员端活动编辑活动信息页面
+- [x] RBAC权限控制 角色添加/删除
+- [x] 整理会员界面
 
 ## TODO
-- [ ] 整理会员界面
-- [ ] 会员端会费功能
-- [ ] RBAC权限控制 角色添加/删除 
 
+- [ ] 会员端会费功能
+- [ ] 修复通知功能
 
 ## Environment
+
 - go 1.22
 - node 18.0.0
 - PostgreSQL 16.2
@@ -32,17 +34,18 @@ Using PostgreSQL and Redis to store data.
 ### Frontend
 
 Change api url in `frontend/.env` file.
+
 ```bash
 cd frontend
 pnpm install
 pnpm dev
 ```
+
 ### Backend
 
 Before run backend, you need change PostgreSQL and Redis connect config in `backend/config/config.yaml` file.
 
 MySQL database schema file is `backend/config/schema.sql`.
-
 
 ```bash
 cd backend/cmd

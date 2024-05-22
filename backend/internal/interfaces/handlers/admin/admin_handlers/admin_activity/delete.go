@@ -2,15 +2,16 @@ package admin_activity
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"union-system/global"
 	"union-system/internal/application/dto"
-	service2 "union-system/internal/application/service"
-	repository2 "union-system/internal/infrastructure/repository"
+	"union-system/internal/application/service"
+	"union-system/internal/infrastructure/repository"
 	"union-system/internal/interfaces/models"
 	"union-system/utils/log_model_enum"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 func DeleteActivityHandler(c *fiber.Ctx) error {
@@ -31,14 +32,14 @@ func DeleteActivityHandler(c *fiber.Ctx) error {
 	}
 
 	// 初始化 userService 并验证密码
-	userService := service2.NewUserService(repository2.NewUserRepository(global.Database))
+	userService := service.NewUserService(repository.NewUserRepository(global.Database))
 	isValidPassword, err := userService.VerifyPassword(userID, request.Password)
 	if err != nil || !isValidPassword {
 		return models.SendFailureResponse(c, models.LoginAuthErrorCode, "密码验证失败")
 	}
 
 	// 初始化 activityService
-	activityService := service2.NewActivityService(repository2.NewActivityRepository(global.Database))
+	activityService := service.NewActivityService(repository.NewActivityRepository(global.Database))
 
 	// 删除活动
 	err = activityService.DeleteActivity(uint(activityIdInt))
@@ -47,7 +48,7 @@ func DeleteActivityHandler(c *fiber.Ctx) error {
 	}
 
 	// 记录日志
-	logService := service2.NewLogService(repository2.NewLogRepository(global.Database))
+	logService := service.NewLogService(repository.NewLogRepository(global.Database))
 	logString := fmt.Sprintf("活动ID: %v, 删除活动。", activityID)
 	_ = logService.AddAdminLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.ACTIVITY)
 

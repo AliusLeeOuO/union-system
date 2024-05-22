@@ -44,7 +44,7 @@ const props = defineProps<{
   title: string
   createTime: string
   readStatus: boolean
-  senderRole: number
+  senderRole: string
   senderUsername: string
 }>()
 const emit = defineEmits(['updateList'])
@@ -95,7 +95,6 @@ async function fetchRead(notificationId: number) {
 
 body[arco-theme="dark"] {
   .notification-block {
-    background-color: @dark-mode-bg;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     &.notification-block-read {
@@ -108,13 +107,17 @@ body[arco-theme="dark"] {
   display: block;
   color: inherit;
   text-decoration: none;
-  border-radius: 10px;
-  background-color: #f5f5f5;
-  padding: 20px;
+  border-radius: var(--border-radius-small);
+  background-color: var(--color-bg-2);
+  padding: 16px;
+  border: 1px solid var(--color-neutral-3);
   margin-top: 20px;
   margin-bottom: 20px;
   cursor: pointer;
   transition: all 0.3s;
+  &.notification-block-read {
+    color: var(--color-neutral-6);
+  }
 
   .notification-top {
     display: flex;

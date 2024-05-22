@@ -15,6 +15,7 @@ import (
 
 // NewAssistance 创建新的求助请求
 func NewAssistance(c *fiber.Ctx) error {
+
 	var validate = validator.New()
 	var form dto.NewAssistanceRequest
 	if err := c.BodyParser(&form); err != nil || validate.Struct(form) != nil {
@@ -35,6 +36,9 @@ func NewAssistance(c *fiber.Ctx) error {
 	logService := service.NewLogService(repository.NewLogRepository(global.Database))
 	logString := fmt.Sprintf("创建了新的求助请求 %d", id)
 	_ = logService.AddMemberLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.ASSISTANCE)
+
+	notificationService := service.NewNotificationService(repository.NewNotificationRepository(global.Database))
+	_ = notificationService.InsertNotificationBySystem("创建新援助成功", "您已成功创建新援助", memberID)
 
 	return models.SendSuccessResponse(c, fiber.Map{
 		"request_id": id,

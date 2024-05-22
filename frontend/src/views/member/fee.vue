@@ -54,7 +54,7 @@
           {{ dayjs.tz(record.created_at).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template #action="{ record }">
-          <a-button :disabled="dayjs.tz(record.due_date) < dayjs.tz()">
+          <a-button :disabled="dayjs.tz(record.due_date) < dayjs.tz()" @click="fetchPayFee(record.bill_id)">
             {{ dayjs.tz(record.due_date) < dayjs.tz() ? '已过期' : '缴费' }}
           </a-button>
         </template>
@@ -191,7 +191,7 @@ async function fetchWaitingFee() {
 const calculateUnpaidFee = computed(() => {
   let c = 0
   waitingFeeData.forEach((item) => {
-    c += item.amount
+    c += Number.parseFloat(item.amount)
   })
   return c
 })
@@ -226,6 +226,13 @@ async function fetchFeeStatus() {
 onMounted(async () => {
   await fetchFeeStatus()
 })
+
+async function fetchPayFee(billId: number) {
+  await handleXhrResponse(() => memberApi.payFee(billId), Message)
+  Message.success('缴费成功')
+  await fetchFeeHistory()
+  await fetchWaitingFee()
+}
 </script>
 
 <style scoped lang="less">

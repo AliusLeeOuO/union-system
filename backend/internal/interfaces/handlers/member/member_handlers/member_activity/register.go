@@ -31,5 +31,8 @@ func RegisterForActivity(c *fiber.Ctx) error {
 	logString := fmt.Sprintf("用户报名了活动: %d", activityID)
 	_ = logService.AddMemberLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.ACTIVITY)
 
+	notificationService := service.NewNotificationService(repository.NewNotificationRepository(global.Database))
+	_ = notificationService.InsertNotificationBySystem("报名成功", "您已成功报名活动", userID)
+
 	return models.SendSuccessResponse(c, nil)
 }

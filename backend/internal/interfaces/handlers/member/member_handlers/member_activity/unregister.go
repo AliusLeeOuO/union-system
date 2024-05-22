@@ -31,5 +31,8 @@ func UnregisterFromActivity(c *fiber.Ctx) error {
 	logString := fmt.Sprintf("用户取消了活动报名: %d", activityID)
 	_ = logService.AddMemberLog(c.Locals("userID").(uint), c.IP(), logString, log_model_enum.ACTIVITY)
 
+	notificationService := service.NewNotificationService(repository.NewNotificationRepository(global.Database))
+	_ = notificationService.InsertNotificationBySystem("取消报名成功", "您已成功取消报名", userID)
+
 	return models.SendSuccessResponse(c, nil)
 }

@@ -19,7 +19,7 @@ func GetList(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
 
 	notificationService := service.NewNotificationService(repository.NewNotificationRepository(global.Database))
-	response, err := notificationService.GetNotificationsByRecipientID(userID, form.PageSize, form.PageNum)
+	response, err := notificationService.GetNotificationsByRecipientIDNew(userID, form.PageSize, form.PageNum)
 	if err != nil {
 		return models.SendFailureResponse(c, models.QueryParamErrorCode, err.Error())
 	}

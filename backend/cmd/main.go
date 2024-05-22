@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"runtime"
 	"union-system/internal/cron"
-	"union-system/internal/cron/cron_func"
 	"union-system/internal/infrastructure/config"
 	"union-system/internal/infrastructure/database"
 	"union-system/internal/infrastructure/redis"
@@ -24,6 +23,5 @@ func main() {
 	redis.InitRedis(initConfig.Redis.Host, initConfig.Redis.Port, initConfig.Redis.Password, initConfig.Redis.DB)
 	// 初始化定时任务
 	cron.InitCron()
-	cron_func.GetNewBills()
 	fiber.InitFiber(initConfig.App.Port)
 }

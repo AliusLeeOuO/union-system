@@ -15,7 +15,9 @@
     </div>
   </a-card>
   <div v-if="notificationList.length === 0">
-    <a-empty />
+    <a-card>
+      <a-empty />
+    </a-card>
   </div>
   <div v-else>
     <div class="notification-items">
@@ -42,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { type BreadcrumbRoute, Message } from '@arco-design/web-vue'
+import { Message } from '@arco-design/web-vue'
 import { IconRefresh } from '@arco-design/web-vue/es/icon'
 import { onMounted, reactive } from 'vue'
 import NotificationBlock from '@/components/notificationBlock.vue'
@@ -51,13 +53,6 @@ import { handleXhrResponse } from '@/api'
 import { useNotificationStore } from '@/stores/notification'
 
 const memberApi = useMemberApi()
-
-const routes: BreadcrumbRoute[] = [
-  {
-    path: '/member/notification',
-    label: '通知'
-  }
-]
 
 const notificationPageData = reactive({
   total: 0,

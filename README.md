@@ -17,11 +17,6 @@ Using PostgreSQL and Redis to store data.
 - [x] RBAC权限控制 角色添加/删除
 - [x] 整理会员界面
 
-## TODO
-
-- [ ] 会员端会费功能
-- [ ] 修复通知功能
-
 ## Environment
 
 - go 1.22
@@ -43,9 +38,9 @@ pnpm dev
 
 ### Backend
 
-Before run backend, you need change PostgreSQL and Redis connect config in `backend/config/config.yaml` file.
+Before run backend, you need change PostgreSQL and Redis connect config in `backend/config.yaml` file.
 
-MySQL database schema file is `backend/config/schema.sql`.
+PostgreSQL database schema file is `backend/union.sql`.
 
 ```bash
 cd backend/cmd
